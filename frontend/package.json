@@ -1,0 +1,45 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start -p 3001",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@nivo/core": "^0.99.0",
+    "@nivo/tree": "^0.99.0",
+    "@nivo/treemap": "^0.99.0",
+    "@types/d3-hierarchy": "^3.1.7",
+    "@types/d3-polygon": "^3.0.2",
+    "@types/three": "^0.185.1",
+    "d3": "^7.9.0",
+    "d3-hierarchy": "^3.1.2",
+    "d3-polygon": "^3.0.1",
+    "framer-motion": "^12.42.0",
+    "lucide-react": "^1.22.0",
+    "mermaid": "^11.16.0",
+    "next": "16.2.9",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-force-graph": "^1.48.2",
+    "react-force-graph-2d": "^1.29.1",
+    "react-force-graph-3d": "^1.29.1",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "three": "^0.185.1",
+    "three-spritetext": "^1.10.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.9",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
