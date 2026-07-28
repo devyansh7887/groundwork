@@ -1,0 +1,5840 @@
+{
+  "files": [
+    "docs/conf.py",
+    "examples/aliases/aliases.py",
+    "examples/colors/colors.py",
+    "examples/completion/completion.py",
+    "examples/complex/complex/__init__.py",
+    "examples/complex/complex/cli.py",
+    "examples/complex/complex/commands/__init__.py",
+    "examples/complex/complex/commands/cmd_init.py",
+    "examples/complex/complex/commands/cmd_status.py",
+    "examples/imagepipe/imagepipe.py",
+    "examples/inout/inout.py",
+    "examples/naval/naval.py",
+    "examples/repo/repo.py",
+    "examples/termui/termui.py",
+    "examples/validation/validation.py",
+    "src/click/__init__.py",
+    "src/click/_compat.py",
+    "src/click/_termui_impl.py",
+    "src/click/_textwrap.py",
+    "src/click/_utils.py"
+  ],
+  "nodes": [
+    {
+      "id": "examples/aliases/aliases.py:Config",
+      "type": "class_definition",
+      "name": "Config",
+      "line": 7
+    },
+    {
+      "id": "examples/aliases/aliases.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 10
+    },
+    {
+      "id": "examples/aliases/aliases.py:add_alias",
+      "type": "function_definition",
+      "name": "add_alias",
+      "line": 14
+    },
+    {
+      "id": "examples/aliases/aliases.py:read_config",
+      "type": "function_definition",
+      "name": "read_config",
+      "line": 17
+    },
+    {
+      "id": "examples/aliases/aliases.py:write_config",
+      "type": "function_definition",
+      "name": "write_config",
+      "line": 25
+    },
+    {
+      "id": "examples/aliases/aliases.py:AliasedGroup",
+      "type": "class_definition",
+      "name": "AliasedGroup",
+      "line": 37
+    },
+    {
+      "id": "examples/aliases/aliases.py:get_command",
+      "type": "function_definition",
+      "name": "get_command",
+      "line": 42
+    },
+    {
+      "id": "examples/aliases/aliases.py:resolve_command",
+      "type": "function_definition",
+      "name": "resolve_command",
+      "line": 70
+    },
+    {
+      "id": "examples/aliases/aliases.py:read_config",
+      "type": "function_definition",
+      "name": "read_config",
+      "line": 76
+    },
+    {
+      "id": "examples/aliases/aliases.py:cli",
+      "type": "function_definition",
+      "name": "cli",
+      "line": 97
+    },
+    {
+      "id": "examples/aliases/aliases.py:push",
+      "type": "function_definition",
+      "name": "push",
+      "line": 102
+    },
+    {
+      "id": "examples/aliases/aliases.py:pull",
+      "type": "function_definition",
+      "name": "pull",
+      "line": 108
+    },
+    {
+      "id": "examples/aliases/aliases.py:clone",
+      "type": "function_definition",
+      "name": "clone",
+      "line": 114
+    },
+    {
+      "id": "examples/aliases/aliases.py:commit",
+      "type": "function_definition",
+      "name": "commit",
+      "line": 120
+    },
+    {
+      "id": "examples/aliases/aliases.py:status",
+      "type": "function_definition",
+      "name": "status",
+      "line": 127
+    },
+    {
+      "id": "examples/aliases/aliases.py:alias",
+      "type": "function_definition",
+      "name": "alias",
+      "line": 139
+    },
+    {
+      "id": "examples/colors/colors.py:cli",
+      "type": "function_definition",
+      "name": "cli",
+      "line": 25
+    },
+    {
+      "id": "examples/completion/completion.py:cli",
+      "type": "function_definition",
+      "name": "cli",
+      "line": 8
+    },
+    {
+      "id": "examples/completion/completion.py:ls",
+      "type": "function_definition",
+      "name": "ls",
+      "line": 14
+    },
+    {
+      "id": "examples/completion/completion.py:get_env_vars",
+      "type": "function_definition",
+      "name": "get_env_vars",
+      "line": 18
+    },
+    {
+      "id": "examples/completion/completion.py:show_env",
+      "type": "function_definition",
+      "name": "show_env",
+      "line": 26
+    },
+    {
+      "id": "examples/completion/completion.py:group",
+      "type": "function_definition",
+      "name": "group",
+      "line": 32
+    },
+    {
+      "id": "examples/completion/completion.py:list_users",
+      "type": "function_definition",
+      "name": "list_users",
+      "line": 36
+    },
+    {
+      "id": "examples/completion/completion.py:select_user",
+      "type": "function_definition",
+      "name": "select_user",
+      "line": 52
+    },
+    {
+      "id": "examples/complex/complex/cli.py:Environment",
+      "type": "class_definition",
+      "name": "Environment",
+      "line": 10
+    },
+    {
+      "id": "examples/complex/complex/cli.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 11
+    },
+    {
+      "id": "examples/complex/complex/cli.py:log",
+      "type": "function_definition",
+      "name": "log",
+      "line": 15
+    },
+    {
+      "id": "examples/complex/complex/cli.py:vlog",
+      "type": "function_definition",
+      "name": "vlog",
+      "line": 21
+    },
+    {
+      "id": "examples/complex/complex/cli.py:ComplexCLI",
+      "type": "class_definition",
+      "name": "ComplexCLI",
+      "line": 31
+    },
+    {
+      "id": "examples/complex/complex/cli.py:list_commands",
+      "type": "function_definition",
+      "name": "list_commands",
+      "line": 32
+    },
+    {
+      "id": "examples/complex/complex/cli.py:get_command",
+      "type": "function_definition",
+      "name": "get_command",
+      "line": 40
+    },
+    {
+      "id": "examples/complex/complex/cli.py:cli",
+      "type": "function_definition",
+      "name": "cli",
+      "line": 56
+    },
+    {
+      "id": "examples/complex/complex/commands/cmd_init.py:cli",
+      "type": "function_definition",
+      "name": "cli",
+      "line": 9
+    },
+    {
+      "id": "examples/complex/complex/commands/cmd_status.py:cli",
+      "type": "function_definition",
+      "name": "cli",
+      "line": 8
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:cli",
+      "type": "function_definition",
+      "name": "cli",
+      "line": 11
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:process_commands",
+      "type": "function_definition",
+      "name": "process_commands",
+      "line": 24
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:processor",
+      "type": "function_definition",
+      "name": "processor",
+      "line": 42
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:new_func",
+      "type": "function_definition",
+      "name": "new_func",
+      "line": 47
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:processor",
+      "type": "function_definition",
+      "name": "processor",
+      "line": 48
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:generator",
+      "type": "function_definition",
+      "name": "generator",
+      "line": 56
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:new_func",
+      "type": "function_definition",
+      "name": "new_func",
+      "line": 62
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:copy_filename",
+      "type": "function_definition",
+      "name": "copy_filename",
+      "line": 69
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:open_cmd",
+      "type": "function_definition",
+      "name": "open_cmd",
+      "line": 84
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:save_cmd",
+      "type": "function_definition",
+      "name": "save_cmd",
+      "line": 110
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:display_cmd",
+      "type": "function_definition",
+      "name": "display_cmd",
+      "line": 123
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:resize_cmd",
+      "type": "function_definition",
+      "name": "resize_cmd",
+      "line": 135
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:crop_cmd",
+      "type": "function_definition",
+      "name": "crop_cmd",
+      "line": 151
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:convert_rotation",
+      "type": "function_definition",
+      "name": "convert_rotation",
+      "line": 165
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:convert_flip",
+      "type": "function_definition",
+      "name": "convert_flip",
+      "line": 178
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:transpose_cmd",
+      "type": "function_definition",
+      "name": "transpose_cmd",
+      "line": 195
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:blur_cmd",
+      "type": "function_definition",
+      "name": "blur_cmd",
+      "line": 212
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:smoothen_cmd",
+      "type": "function_definition",
+      "name": "smoothen_cmd",
+      "line": 229
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:emboss_cmd",
+      "type": "function_definition",
+      "name": "emboss_cmd",
+      "line": 243
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:sharpen_cmd",
+      "type": "function_definition",
+      "name": "sharpen_cmd",
+      "line": 255
+    },
+    {
+      "id": "examples/imagepipe/imagepipe.py:paste_cmd",
+      "type": "function_definition",
+      "name": "paste_cmd",
+      "line": 267
+    },
+    {
+      "id": "examples/inout/inout.py:cli",
+      "type": "function_definition",
+      "name": "cli",
+      "line": 7
+    },
+    {
+      "id": "examples/naval/naval.py:cli",
+      "type": "function_definition",
+      "name": "cli",
+      "line": 6
+    },
+    {
+      "id": "examples/naval/naval.py:ship",
+      "type": "function_definition",
+      "name": "ship",
+      "line": 16
+    },
+    {
+      "id": "examples/naval/naval.py:ship_new",
+      "type": "function_definition",
+      "name": "ship_new",
+      "line": 22
+    },
+    {
+      "id": "examples/naval/naval.py:ship_move",
+      "type": "function_definition",
+      "name": "ship_move",
+      "line": 32
+    },
+    {
+      "id": "examples/naval/naval.py:ship_shoot",
+      "type": "function_definition",
+      "name": "ship_shoot",
+      "line": 41
+    },
+    {
+      "id": "examples/naval/naval.py:mine",
+      "type": "function_definition",
+      "name": "mine",
+      "line": 47
+    },
+    {
+      "id": "examples/naval/naval.py:mine_set",
+      "type": "function_definition",
+      "name": "mine_set",
+      "line": 62
+    },
+    {
+      "id": "examples/naval/naval.py:mine_remove",
+      "type": "function_definition",
+      "name": "mine_remove",
+      "line": 70
+    },
+    {
+      "id": "examples/repo/repo.py:Repo",
+      "type": "class_definition",
+      "name": "Repo",
+      "line": 8
+    },
+    {
+      "id": "examples/repo/repo.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 9
+    },
+    {
+      "id": "examples/repo/repo.py:set_config",
+      "type": "function_definition",
+      "name": "set_config",
+      "line": 14
+    },
+    {
+      "id": "examples/repo/repo.py:__repr__",
+      "type": "function_definition",
+      "name": "__repr__",
+      "line": 19
+    },
+    {
+      "id": "examples/repo/repo.py:cli",
+      "type": "function_definition",
+      "name": "cli",
+      "line": 44
+    },
+    {
+      "id": "examples/repo/repo.py:clone",
+      "type": "function_definition",
+      "name": "clone",
+      "line": 72
+    },
+    {
+      "id": "examples/repo/repo.py:delete",
+      "type": "function_definition",
+      "name": "delete",
+      "line": 91
+    },
+    {
+      "id": "examples/repo/repo.py:setuser",
+      "type": "function_definition",
+      "name": "setuser",
+      "line": 105
+    },
+    {
+      "id": "examples/repo/repo.py:commit",
+      "type": "function_definition",
+      "name": "commit",
+      "line": 126
+    },
+    {
+      "id": "examples/repo/repo.py:copy",
+      "type": "function_definition",
+      "name": "copy",
+      "line": 161
+    },
+    {
+      "id": "examples/termui/termui.py:cli",
+      "type": "function_definition",
+      "name": "cli",
+      "line": 9
+    },
+    {
+      "id": "examples/termui/termui.py:colordemo",
+      "type": "function_definition",
+      "name": "colordemo",
+      "line": 15
+    },
+    {
+      "id": "examples/termui/termui.py:pager",
+      "type": "function_definition",
+      "name": "pager",
+      "line": 23
+    },
+    {
+      "id": "examples/termui/termui.py:progress",
+      "type": "function_definition",
+      "name": "progress",
+      "line": 38
+    },
+    {
+      "id": "examples/termui/termui.py:process_slowly",
+      "type": "function_definition",
+      "name": "process_slowly",
+      "line": 42
+    },
+    {
+      "id": "examples/termui/termui.py:filter",
+      "type": "function_definition",
+      "name": "filter",
+      "line": 45
+    },
+    {
+      "id": "examples/termui/termui.py:show_item",
+      "type": "function_definition",
+      "name": "show_item",
+      "line": 56
+    },
+    {
+      "id": "examples/termui/termui.py:open",
+      "type": "function_definition",
+      "name": "open",
+      "line": 105
+    },
+    {
+      "id": "examples/termui/termui.py:locate",
+      "type": "function_definition",
+      "name": "locate",
+      "line": 112
+    },
+    {
+      "id": "examples/termui/termui.py:edit",
+      "type": "function_definition",
+      "name": "edit",
+      "line": 118
+    },
+    {
+      "id": "examples/termui/termui.py:clear",
+      "type": "function_definition",
+      "name": "clear",
+      "line": 133
+    },
+    {
+      "id": "examples/termui/termui.py:pause",
+      "type": "function_definition",
+      "name": "pause",
+      "line": 139
+    },
+    {
+      "id": "examples/termui/termui.py:menu",
+      "type": "function_definition",
+      "name": "menu",
+      "line": 145
+    },
+    {
+      "id": "examples/validation/validation.py:validate_count",
+      "type": "function_definition",
+      "name": "validate_count",
+      "line": 6
+    },
+    {
+      "id": "examples/validation/validation.py:URL",
+      "type": "class_definition",
+      "name": "URL",
+      "line": 12
+    },
+    {
+      "id": "examples/validation/validation.py:convert",
+      "type": "function_definition",
+      "name": "convert",
+      "line": 15
+    },
+    {
+      "id": "examples/validation/validation.py:cli",
+      "type": "function_definition",
+      "name": "cli",
+      "line": 34
+    },
+    {
+      "id": "src/click/__init__.py:__getattr__",
+      "type": "function_definition",
+      "name": "__getattr__",
+      "line": 77
+    },
+    {
+      "id": "src/click/_compat.py:_make_text_stream",
+      "type": "function_definition",
+      "name": "_make_text_stream",
+      "line": 18
+    },
+    {
+      "id": "src/click/_compat.py:is_ascii_encoding",
+      "type": "function_definition",
+      "name": "is_ascii_encoding",
+      "line": 39
+    },
+    {
+      "id": "src/click/_compat.py:get_best_encoding",
+      "type": "function_definition",
+      "name": "get_best_encoding",
+      "line": 47
+    },
+    {
+      "id": "src/click/_compat.py:_NonClosingTextIOWrapper",
+      "type": "class_definition",
+      "name": "_NonClosingTextIOWrapper",
+      "line": 55
+    },
+    {
+      "id": "src/click/_compat.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 56
+    },
+    {
+      "id": "src/click/_compat.py:__del__",
+      "type": "function_definition",
+      "name": "__del__",
+      "line": 70
+    },
+    {
+      "id": "src/click/_compat.py:isatty",
+      "type": "function_definition",
+      "name": "isatty",
+      "line": 76
+    },
+    {
+      "id": "src/click/_compat.py:_FixupStream",
+      "type": "class_definition",
+      "name": "_FixupStream",
+      "line": 81
+    },
+    {
+      "id": "src/click/_compat.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 91
+    },
+    {
+      "id": "src/click/_compat.py:__getattr__",
+      "type": "function_definition",
+      "name": "__getattr__",
+      "line": 101
+    },
+    {
+      "id": "src/click/_compat.py:read1",
+      "type": "function_definition",
+      "name": "read1",
+      "line": 104
+    },
+    {
+      "id": "src/click/_compat.py:readable",
+      "type": "function_definition",
+      "name": "readable",
+      "line": 112
+    },
+    {
+      "id": "src/click/_compat.py:writable",
+      "type": "function_definition",
+      "name": "writable",
+      "line": 124
+    },
+    {
+      "id": "src/click/_compat.py:seekable",
+      "type": "function_definition",
+      "name": "seekable",
+      "line": 139
+    },
+    {
+      "id": "src/click/_compat.py:_is_binary_reader",
+      "type": "function_definition",
+      "name": "_is_binary_reader",
+      "line": 150
+    },
+    {
+      "id": "src/click/_compat.py:_is_binary_writer",
+      "type": "function_definition",
+      "name": "_is_binary_writer",
+      "line": 159
+    },
+    {
+      "id": "src/click/_compat.py:_find_binary_reader",
+      "type": "function_definition",
+      "name": "_find_binary_reader",
+      "line": 172
+    },
+    {
+      "id": "src/click/_compat.py:_find_binary_writer",
+      "type": "function_definition",
+      "name": "_find_binary_writer",
+      "line": 190
+    },
+    {
+      "id": "src/click/_compat.py:_stream_is_misconfigured",
+      "type": "function_definition",
+      "name": "_stream_is_misconfigured",
+      "line": 208
+    },
+    {
+      "id": "src/click/_compat.py:_is_compat_stream_attr",
+      "type": "function_definition",
+      "name": "_is_compat_stream_attr",
+      "line": 217
+    },
+    {
+      "id": "src/click/_compat.py:_is_compatible_text_stream",
+      "type": "function_definition",
+      "name": "_is_compatible_text_stream",
+      "line": 226
+    },
+    {
+      "id": "src/click/_compat.py:_force_correct_text_stream",
+      "type": "function_definition",
+      "name": "_force_correct_text_stream",
+      "line": 237
+    },
+    {
+      "id": "src/click/_compat.py:_force_correct_text_reader",
+      "type": "function_definition",
+      "name": "_force_correct_text_reader",
+      "line": 283
+    },
+    {
+      "id": "src/click/_compat.py:_force_correct_text_writer",
+      "type": "function_definition",
+      "name": "_force_correct_text_writer",
+      "line": 299
+    },
+    {
+      "id": "src/click/_compat.py:get_binary_stdin",
+      "type": "function_definition",
+      "name": "get_binary_stdin",
+      "line": 315
+    },
+    {
+      "id": "src/click/_compat.py:get_binary_stdout",
+      "type": "function_definition",
+      "name": "get_binary_stdout",
+      "line": 322
+    },
+    {
+      "id": "src/click/_compat.py:get_binary_stderr",
+      "type": "function_definition",
+      "name": "get_binary_stderr",
+      "line": 329
+    },
+    {
+      "id": "src/click/_compat.py:get_text_stdin",
+      "type": "function_definition",
+      "name": "get_text_stdin",
+      "line": 336
+    },
+    {
+      "id": "src/click/_compat.py:get_text_stdout",
+      "type": "function_definition",
+      "name": "get_text_stdout",
+      "line": 343
+    },
+    {
+      "id": "src/click/_compat.py:get_text_stderr",
+      "type": "function_definition",
+      "name": "get_text_stderr",
+      "line": 350
+    },
+    {
+      "id": "src/click/_compat.py:_wrap_io_open",
+      "type": "function_definition",
+      "name": "_wrap_io_open",
+      "line": 357
+    },
+    {
+      "id": "src/click/_compat.py:open_stream",
+      "type": "function_definition",
+      "name": "open_stream",
+      "line": 370
+    },
+    {
+      "id": "src/click/_compat.py:_AtomicFile",
+      "type": "class_definition",
+      "name": "_AtomicFile",
+      "line": 451
+    },
+    {
+      "id": "src/click/_compat.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 452
+    },
+    {
+      "id": "src/click/_compat.py:name",
+      "type": "function_definition",
+      "name": "name",
+      "line": 459
+    },
+    {
+      "id": "src/click/_compat.py:close",
+      "type": "function_definition",
+      "name": "close",
+      "line": 462
+    },
+    {
+      "id": "src/click/_compat.py:__getattr__",
+      "type": "function_definition",
+      "name": "__getattr__",
+      "line": 469
+    },
+    {
+      "id": "src/click/_compat.py:__enter__",
+      "type": "function_definition",
+      "name": "__enter__",
+      "line": 472
+    },
+    {
+      "id": "src/click/_compat.py:__exit__",
+      "type": "function_definition",
+      "name": "__exit__",
+      "line": 475
+    },
+    {
+      "id": "src/click/_compat.py:__repr__",
+      "type": "function_definition",
+      "name": "__repr__",
+      "line": 483
+    },
+    {
+      "id": "src/click/_compat.py:strip_ansi",
+      "type": "function_definition",
+      "name": "strip_ansi",
+      "line": 487
+    },
+    {
+      "id": "src/click/_compat.py:_is_jupyter_kernel_output",
+      "type": "function_definition",
+      "name": "_is_jupyter_kernel_output",
+      "line": 491
+    },
+    {
+      "id": "src/click/_compat.py:should_strip_ansi",
+      "type": "function_definition",
+      "name": "should_strip_ansi",
+      "line": 498
+    },
+    {
+      "id": "src/click/_compat.py:_get_argv_encoding",
+      "type": "function_definition",
+      "name": "_get_argv_encoding",
+      "line": 516
+    },
+    {
+      "id": "src/click/_compat.py:_get_argv_encoding",
+      "type": "function_definition",
+      "name": "_get_argv_encoding",
+      "line": 523
+    },
+    {
+      "id": "src/click/_compat.py:_get_windows_console_stream",
+      "type": "function_definition",
+      "name": "_get_windows_console_stream",
+      "line": 526
+    },
+    {
+      "id": "src/click/_compat.py:term_len",
+      "type": "function_definition",
+      "name": "term_len",
+      "line": 532
+    },
+    {
+      "id": "src/click/_compat.py:isatty",
+      "type": "function_definition",
+      "name": "isatty",
+      "line": 536
+    },
+    {
+      "id": "src/click/_compat.py:_make_cached_stream_func",
+      "type": "function_definition",
+      "name": "_make_cached_stream_func",
+      "line": 543
+    },
+    {
+      "id": "src/click/_compat.py:func",
+      "type": "function_definition",
+      "name": "func",
+      "line": 549
+    },
+    {
+      "id": "src/click/_termui_impl.py:_BufferedTextPagerStream",
+      "type": "class_definition",
+      "name": "_BufferedTextPagerStream",
+      "line": 37
+    },
+    {
+      "id": "src/click/_termui_impl.py:_has_binary_buffer",
+      "type": "function_definition",
+      "name": "_has_binary_buffer",
+      "line": 41
+    },
+    {
+      "id": "src/click/_termui_impl.py:ProgressBar",
+      "type": "class_definition",
+      "name": "ProgressBar",
+      "line": 57
+    },
+    {
+      "id": "src/click/_termui_impl.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 58
+    },
+    {
+      "id": "src/click/_termui_impl.py:__enter__",
+      "type": "function_definition",
+      "name": "__enter__",
+      "line": 129
+    },
+    {
+      "id": "src/click/_termui_impl.py:__exit__",
+      "type": "function_definition",
+      "name": "__exit__",
+      "line": 134
+    },
+    {
+      "id": "src/click/_termui_impl.py:__iter__",
+      "type": "function_definition",
+      "name": "__iter__",
+      "line": 142
+    },
+    {
+      "id": "src/click/_termui_impl.py:__next__",
+      "type": "function_definition",
+      "name": "__next__",
+      "line": 148
+    },
+    {
+      "id": "src/click/_termui_impl.py:render_finish",
+      "type": "function_definition",
+      "name": "render_finish",
+      "line": 156
+    },
+    {
+      "id": "src/click/_termui_impl.py:pct",
+      "type": "function_definition",
+      "name": "pct",
+      "line": 163
+    },
+    {
+      "id": "src/click/_termui_impl.py:time_per_iteration",
+      "type": "function_definition",
+      "name": "time_per_iteration",
+      "line": 169
+    },
+    {
+      "id": "src/click/_termui_impl.py:eta",
+      "type": "function_definition",
+      "name": "eta",
+      "line": 175
+    },
+    {
+      "id": "src/click/_termui_impl.py:format_eta",
+      "type": "function_definition",
+      "name": "format_eta",
+      "line": 180
+    },
+    {
+      "id": "src/click/_termui_impl.py:format_pos",
+      "type": "function_definition",
+      "name": "format_pos",
+      "line": 201
+    },
+    {
+      "id": "src/click/_termui_impl.py:format_pct",
+      "type": "function_definition",
+      "name": "format_pct",
+      "line": 207
+    },
+    {
+      "id": "src/click/_termui_impl.py:format_bar",
+      "type": "function_definition",
+      "name": "format_bar",
+      "line": 210
+    },
+    {
+      "id": "src/click/_termui_impl.py:format_progress_line",
+      "type": "function_definition",
+      "name": "format_progress_line",
+      "line": 229
+    },
+    {
+      "id": "src/click/_termui_impl.py:render_progress",
+      "type": "function_definition",
+      "name": "render_progress",
+      "line": 256
+    },
+    {
+      "id": "src/click/_termui_impl.py:make_step",
+      "type": "function_definition",
+      "name": "make_step",
+      "line": 302
+    },
+    {
+      "id": "src/click/_termui_impl.py:update",
+      "type": "function_definition",
+      "name": "update",
+      "line": 324
+    },
+    {
+      "id": "src/click/_termui_impl.py:finish",
+      "type": "function_definition",
+      "name": "finish",
+      "line": 350
+    },
+    {
+      "id": "src/click/_termui_impl.py:generator",
+      "type": "function_definition",
+      "name": "generator",
+      "line": 355
+    },
+    {
+      "id": "src/click/_termui_impl.py:MaybeStripAnsi",
+      "type": "class_definition",
+      "name": "MaybeStripAnsi",
+      "line": 389
+    },
+    {
+      "id": "src/click/_termui_impl.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 390
+    },
+    {
+      "id": "src/click/_termui_impl.py:write",
+      "type": "function_definition",
+      "name": "write",
+      "line": 394
+    },
+    {
+      "id": "src/click/_termui_impl.py:_pager_contextmanager",
+      "type": "function_definition",
+      "name": "_pager_contextmanager",
+      "line": 400
+    },
+    {
+      "id": "src/click/_termui_impl.py:get_pager_file",
+      "type": "function_definition",
+      "name": "get_pager_file",
+      "line": 432
+    },
+    {
+      "id": "src/click/_termui_impl.py:_pipepager",
+      "type": "function_definition",
+      "name": "_pipepager",
+      "line": 470
+    },
+    {
+      "id": "src/click/_termui_impl.py:_tempfilepager",
+      "type": "function_definition",
+      "name": "_tempfilepager",
+      "line": 580
+    },
+    {
+      "id": "src/click/_termui_impl.py:_nullpager",
+      "type": "function_definition",
+      "name": "_nullpager",
+      "line": 637
+    },
+    {
+      "id": "src/click/_termui_impl.py:Editor",
+      "type": "class_definition",
+      "name": "Editor",
+      "line": 656
+    },
+    {
+      "id": "src/click/_termui_impl.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 657
+    },
+    {
+      "id": "src/click/_termui_impl.py:get_editor",
+      "type": "function_definition",
+      "name": "get_editor",
+      "line": 669
+    },
+    {
+      "id": "src/click/_termui_impl.py:edit_files",
+      "type": "function_definition",
+      "name": "edit_files",
+      "line": 686
+    },
+    {
+      "id": "src/click/_termui_impl.py:edit",
+      "type": "function_definition",
+      "name": "edit",
+      "line": 717
+    },
+    {
+      "id": "src/click/_termui_impl.py:edit",
+      "type": "function_definition",
+      "name": "edit",
+      "line": 722
+    },
+    {
+      "id": "src/click/_termui_impl.py:edit",
+      "type": "function_definition",
+      "name": "edit",
+      "line": 724
+    },
+    {
+      "id": "src/click/_termui_impl.py:open_url",
+      "type": "function_definition",
+      "name": "open_url",
+      "line": 772
+    },
+    {
+      "id": "src/click/_termui_impl.py:_unquote_file",
+      "type": "function_definition",
+      "name": "_unquote_file",
+      "line": 775
+    },
+    {
+      "id": "src/click/_termui_impl.py:_translate_ch_to_exc",
+      "type": "function_definition",
+      "name": "_translate_ch_to_exc",
+      "line": 842
+    },
+    {
+      "id": "src/click/_termui_impl.py:raw_terminal",
+      "type": "function_definition",
+      "name": "raw_terminal",
+      "line": 857
+    },
+    {
+      "id": "src/click/_termui_impl.py:getchar",
+      "type": "function_definition",
+      "name": "getchar",
+      "line": 860
+    },
+    {
+      "id": "src/click/_termui_impl.py:raw_terminal",
+      "type": "function_definition",
+      "name": "raw_terminal",
+      "line": 911
+    },
+    {
+      "id": "src/click/_termui_impl.py:getchar",
+      "type": "function_definition",
+      "name": "getchar",
+      "line": 937
+    },
+    {
+      "id": "src/click/_textwrap.py:_truncate_visible",
+      "type": "function_definition",
+      "name": "_truncate_visible",
+      "line": 11
+    },
+    {
+      "id": "src/click/_textwrap.py:TextWrapper",
+      "type": "class_definition",
+      "name": "TextWrapper",
+      "line": 38
+    },
+    {
+      "id": "src/click/_textwrap.py:_handle_long_word",
+      "type": "function_definition",
+      "name": "_handle_long_word",
+      "line": 48
+    },
+    {
+      "id": "src/click/_textwrap.py:_wrap_chunks",
+      "type": "function_definition",
+      "name": "_wrap_chunks",
+      "line": 66
+    },
+    {
+      "id": "src/click/_textwrap.py:extra_indent",
+      "type": "function_definition",
+      "name": "extra_indent",
+      "line": 165
+    },
+    {
+      "id": "src/click/_textwrap.py:indent_only",
+      "type": "function_definition",
+      "name": "indent_only",
+      "line": 177
+    },
+    {
+      "id": "src/click/_utils.py:Sentinel",
+      "type": "class_definition",
+      "name": "Sentinel",
+      "line": 7
+    },
+    {
+      "id": "src/click/_utils.py:__repr__",
+      "type": "function_definition",
+      "name": "__repr__",
+      "line": 18
+    }
+  ],
+  "imports": [
+    {
+      "source": "docs/conf.py",
+      "statement": "from pallets_sphinx_themes import get_version",
+      "line": 1
+    },
+    {
+      "source": "docs/conf.py",
+      "statement": "from pallets_sphinx_themes import ProjectLink",
+      "line": 2
+    },
+    {
+      "source": "examples/aliases/aliases.py",
+      "statement": "import configparser",
+      "line": 1
+    },
+    {
+      "source": "examples/aliases/aliases.py",
+      "statement": "import os",
+      "line": 2
+    },
+    {
+      "source": "examples/aliases/aliases.py",
+      "statement": "import click",
+      "line": 4
+    },
+    {
+      "source": "examples/colors/colors.py",
+      "statement": "import click",
+      "line": 1
+    },
+    {
+      "source": "examples/completion/completion.py",
+      "statement": "import os",
+      "line": 1
+    },
+    {
+      "source": "examples/completion/completion.py",
+      "statement": "import click",
+      "line": 3
+    },
+    {
+      "source": "examples/completion/completion.py",
+      "statement": "from click.shell_completion import CompletionItem",
+      "line": 4
+    },
+    {
+      "source": "examples/complex/complex/cli.py",
+      "statement": "import os",
+      "line": 1
+    },
+    {
+      "source": "examples/complex/complex/cli.py",
+      "statement": "import sys",
+      "line": 2
+    },
+    {
+      "source": "examples/complex/complex/cli.py",
+      "statement": "import click",
+      "line": 4
+    },
+    {
+      "source": "examples/complex/complex/commands/cmd_init.py",
+      "statement": "from complex.cli import pass_environment",
+      "line": 1
+    },
+    {
+      "source": "examples/complex/complex/commands/cmd_init.py",
+      "statement": "import click",
+      "line": 3
+    },
+    {
+      "source": "examples/complex/complex/commands/cmd_status.py",
+      "statement": "from complex.cli import pass_environment",
+      "line": 1
+    },
+    {
+      "source": "examples/complex/complex/commands/cmd_status.py",
+      "statement": "import click",
+      "line": 3
+    },
+    {
+      "source": "examples/imagepipe/imagepipe.py",
+      "statement": "from functools import update_wrapper",
+      "line": 1
+    },
+    {
+      "source": "examples/imagepipe/imagepipe.py",
+      "statement": "from PIL import Image",
+      "line": 3
+    },
+    {
+      "source": "examples/imagepipe/imagepipe.py",
+      "statement": "from PIL import ImageEnhance",
+      "line": 4
+    },
+    {
+      "source": "examples/imagepipe/imagepipe.py",
+      "statement": "from PIL import ImageFilter",
+      "line": 5
+    },
+    {
+      "source": "examples/imagepipe/imagepipe.py",
+      "statement": "import click",
+      "line": 7
+    },
+    {
+      "source": "examples/inout/inout.py",
+      "statement": "import click",
+      "line": 1
+    },
+    {
+      "source": "examples/naval/naval.py",
+      "statement": "import click",
+      "line": 1
+    },
+    {
+      "source": "examples/repo/repo.py",
+      "statement": "import os",
+      "line": 1
+    },
+    {
+      "source": "examples/repo/repo.py",
+      "statement": "import posixpath",
+      "line": 2
+    },
+    {
+      "source": "examples/repo/repo.py",
+      "statement": "import sys",
+      "line": 3
+    },
+    {
+      "source": "examples/repo/repo.py",
+      "statement": "import click",
+      "line": 5
+    },
+    {
+      "source": "examples/termui/termui.py",
+      "statement": "import math",
+      "line": 1
+    },
+    {
+      "source": "examples/termui/termui.py",
+      "statement": "import random",
+      "line": 2
+    },
+    {
+      "source": "examples/termui/termui.py",
+      "statement": "import time",
+      "line": 3
+    },
+    {
+      "source": "examples/termui/termui.py",
+      "statement": "import click",
+      "line": 5
+    },
+    {
+      "source": "examples/validation/validation.py",
+      "statement": "from urllib import parse as urlparse",
+      "line": 1
+    },
+    {
+      "source": "examples/validation/validation.py",
+      "statement": "import click",
+      "line": 3
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .core import Argument as Argument",
+      "line": 10
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .core import Command as Command",
+      "line": 11
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .core import CommandCollection as CommandCollection",
+      "line": 12
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .core import Context as Context",
+      "line": 13
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .core import Group as Group",
+      "line": 14
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .core import Option as Option",
+      "line": 15
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .core import Parameter as Parameter",
+      "line": 16
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .core import ParameterSource as ParameterSource",
+      "line": 17
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .decorators import argument as argument",
+      "line": 18
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .decorators import command as command",
+      "line": 19
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .decorators import confirmation_option as confirmation_option",
+      "line": 20
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .decorators import group as group",
+      "line": 21
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .decorators import help_option as help_option",
+      "line": 22
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .decorators import make_pass_decorator as make_pass_decorator",
+      "line": 23
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .decorators import option as option",
+      "line": 24
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .decorators import pass_context as pass_context",
+      "line": 25
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .decorators import pass_obj as pass_obj",
+      "line": 26
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .decorators import password_option as password_option",
+      "line": 27
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .decorators import version_option as version_option",
+      "line": 28
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .exceptions import Abort as Abort",
+      "line": 29
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .exceptions import BadArgumentUsage as BadArgumentUsage",
+      "line": 30
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .exceptions import BadOptionUsage as BadOptionUsage",
+      "line": 31
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .exceptions import BadParameter as BadParameter",
+      "line": 32
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .exceptions import ClickException as ClickException",
+      "line": 33
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .exceptions import FileError as FileError",
+      "line": 34
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .exceptions import MissingParameter as MissingParameter",
+      "line": 35
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .exceptions import NoSuchCommand as NoSuchCommand",
+      "line": 36
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .exceptions import NoSuchOption as NoSuchOption",
+      "line": 37
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .exceptions import UsageError as UsageError",
+      "line": 38
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .formatting import HelpFormatter as HelpFormatter",
+      "line": 39
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .formatting import wrap_text as wrap_text",
+      "line": 40
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .globals import get_current_context as get_current_context",
+      "line": 41
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .termui import clear as clear",
+      "line": 42
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .termui import confirm as confirm",
+      "line": 43
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .termui import echo_via_pager as echo_via_pager",
+      "line": 44
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .termui import edit as edit",
+      "line": 45
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .termui import get_pager_file as get_pager_file",
+      "line": 46
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .termui import getchar as getchar",
+      "line": 47
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .termui import launch as launch",
+      "line": 48
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .termui import pause as pause",
+      "line": 49
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .termui import progressbar as progressbar",
+      "line": 50
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .termui import prompt as prompt",
+      "line": 51
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .termui import secho as secho",
+      "line": 52
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .termui import style as style",
+      "line": 53
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .termui import unstyle as unstyle",
+      "line": 54
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .types import BOOL as BOOL",
+      "line": 55
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .types import Choice as Choice",
+      "line": 56
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .types import DateTime as DateTime",
+      "line": 57
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .types import File as File",
+      "line": 58
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .types import FLOAT as FLOAT",
+      "line": 59
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .types import FloatRange as FloatRange",
+      "line": 60
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .types import INT as INT",
+      "line": 61
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .types import IntRange as IntRange",
+      "line": 62
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .types import ParamType as ParamType",
+      "line": 63
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .types import Path as Path",
+      "line": 64
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .types import STRING as STRING",
+      "line": 65
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .types import Tuple as Tuple",
+      "line": 66
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .types import UNPROCESSED as UNPROCESSED",
+      "line": 67
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .types import UUID as UUID",
+      "line": 68
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .utils import echo as echo",
+      "line": 69
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .utils import format_filename as format_filename",
+      "line": 70
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .utils import get_app_dir as get_app_dir",
+      "line": 71
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .utils import get_binary_stream as get_binary_stream",
+      "line": 72
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .utils import get_text_stream as get_text_stream",
+      "line": 73
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .utils import open_file as open_file",
+      "line": 74
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "import warnings",
+      "line": 78
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .core import _BaseCommand",
+      "line": 81
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .core import _MultiCommand",
+      "line": 92
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "from .parser import _OptionParser",
+      "line": 103
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "import importlib.metadata",
+      "line": 114
+    },
+    {
+      "source": "src/click/__init__.py",
+      "statement": "import warnings",
+      "line": 115
+    },
+    {
+      "source": "src/click/_compat.py",
+      "statement": "import codecs",
+      "line": 3
+    },
+    {
+      "source": "src/click/_compat.py",
+      "statement": "import collections.abc as cabc",
+      "line": 4
+    },
+    {
+      "source": "src/click/_compat.py",
+      "statement": "import io",
+      "line": 5
+    },
+    {
+      "source": "src/click/_compat.py",
+      "statement": "import os",
+      "line": 6
+    },
+    {
+      "source": "src/click/_compat.py",
+      "statement": "import re",
+      "line": 7
+    },
+    {
+      "source": "src/click/_compat.py",
+      "statement": "import sys",
+      "line": 8
+    },
+    {
+      "source": "src/click/_compat.py",
+      "statement": "import typing as t",
+      "line": 9
+    },
+    {
+      "source": "src/click/_compat.py",
+      "statement": "from types import TracebackType",
+      "line": 10
+    },
+    {
+      "source": "src/click/_compat.py",
+      "statement": "from weakref import WeakKeyDictionary",
+      "line": 11
+    },
+    {
+      "source": "src/click/_compat.py",
+      "statement": "import errno",
+      "line": 412
+    },
+    {
+      "source": "src/click/_compat.py",
+      "statement": "import random",
+      "line": 413
+    },
+    {
+      "source": "src/click/_compat.py",
+      "statement": "from ._winconsole import _get_windows_console_stream",
+      "line": 514
+    },
+    {
+      "source": "src/click/_compat.py",
+      "statement": "import locale",
+      "line": 517
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import collections.abc as cabc",
+      "line": 9
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import contextlib",
+      "line": 10
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import io",
+      "line": 11
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import math",
+      "line": 12
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import os",
+      "line": 13
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import shlex",
+      "line": 14
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import sys",
+      "line": 15
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import time",
+      "line": 16
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import typing as t",
+      "line": 17
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "from gettext import gettext as _",
+      "line": 18
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "from io import StringIO",
+      "line": 19
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "from pathlib import Path",
+      "line": 20
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "from types import TracebackType",
+      "line": 21
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "from ._compat import _default_text_stdout",
+      "line": 23
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "from ._compat import CYGWIN",
+      "line": 24
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "from ._compat import get_best_encoding",
+      "line": 25
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "from ._compat import isatty",
+      "line": 26
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "from ._compat import strip_ansi",
+      "line": 27
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "from ._compat import term_len",
+      "line": 28
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "from ._compat import WIN",
+      "line": 29
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "from .exceptions import ClickException",
+      "line": 30
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "from .utils import echo",
+      "line": 31
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "from .utils import KeepOpenFile",
+      "line": 32
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "from operator import length_hint",
+      "line": 104
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import shutil",
+      "line": 270
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import shutil",
+      "line": 493
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import subprocess",
+      "line": 513
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import shutil",
+      "line": 599
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import subprocess",
+      "line": 600
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import tempfile",
+      "line": 618
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "from shutil import which",
+      "line": 679
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import shlex",
+      "line": 688
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import subprocess",
+      "line": 689
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import tempfile",
+      "line": 725
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import subprocess",
+      "line": 773
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "from urllib.parse import unquote",
+      "line": 776
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import webbrowser",
+      "line": 835
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import msvcrt",
+      "line": 854
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import termios",
+      "line": 907
+    },
+    {
+      "source": "src/click/_termui_impl.py",
+      "statement": "import tty",
+      "line": 908
+    },
+    {
+      "source": "src/click/_textwrap.py",
+      "statement": "import collections.abc as cabc",
+      "line": 3
+    },
+    {
+      "source": "src/click/_textwrap.py",
+      "statement": "import textwrap",
+      "line": 4
+    },
+    {
+      "source": "src/click/_textwrap.py",
+      "statement": "from contextlib import contextmanager",
+      "line": 5
+    },
+    {
+      "source": "src/click/_textwrap.py",
+      "statement": "from ._compat import _ansi_re",
+      "line": 7
+    },
+    {
+      "source": "src/click/_textwrap.py",
+      "statement": "from ._compat import term_len",
+      "line": 8
+    },
+    {
+      "source": "src/click/_utils.py",
+      "statement": "import enum",
+      "line": 3
+    },
+    {
+      "source": "src/click/_utils.py",
+      "statement": "import typing as t",
+      "line": 4
+    }
+  ],
+  "calls": [
+    {
+      "caller_file": "docs/conf.py",
+      "callee": "get_version",
+      "line": 9
+    },
+    {
+      "caller_file": "docs/conf.py",
+      "callee": "ProjectLink",
+      "line": 43
+    },
+    {
+      "caller_file": "docs/conf.py",
+      "callee": "ProjectLink",
+      "line": 44
+    },
+    {
+      "caller_file": "docs/conf.py",
+      "callee": "ProjectLink",
+      "line": 45
+    },
+    {
+      "caller_file": "docs/conf.py",
+      "callee": "ProjectLink",
+      "line": 46
+    },
+    {
+      "caller_file": "docs/conf.py",
+      "callee": "ProjectLink",
+      "line": 47
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "os.getcwd",
+      "line": 11
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "self.aliases.update",
+      "line": 15
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "configparser.RawConfigParser",
+      "line": 18
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "parser.read",
+      "line": 19
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "self.aliases.update",
+      "line": 21
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "parser.items",
+      "line": 21
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "configparser.RawConfigParser",
+      "line": 26
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "parser.add_section",
+      "line": 27
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "self.aliases.items",
+      "line": 28
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "parser.set",
+      "line": 29
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "open",
+      "line": 30
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "parser.write",
+      "line": 31
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "click.make_pass_decorator",
+      "line": 34
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "click.Group.get_command",
+      "line": 44
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "ctx.ensure_object",
+      "line": 50
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "click.Group.get_command",
+      "line": 55
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "self.list_commands",
+      "line": 62
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "x.lower().startswith",
+      "line": 62
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "x.lower",
+      "line": 62
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "cmd_name.lower",
+      "line": 62
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "len",
+      "line": 66
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "click.Group.get_command",
+      "line": 67
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "ctx.fail",
+      "line": 68
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "', '.join",
+      "line": 68
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "sorted",
+      "line": 68
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "super().resolve_command",
+      "line": 72
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "super",
+      "line": 72
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "ctx.ensure_object",
+      "line": 82
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "os.path.join",
+      "line": 84
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "os.path.dirname",
+      "line": 84
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "cfg.read_config",
+      "line": 85
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "click.command",
+      "line": 89
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "click.option",
+      "line": 90
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "click.Path",
+      "line": 92
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "cli.command",
+      "line": 101
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "click.echo",
+      "line": 104
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "cli.command",
+      "line": 107
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "click.echo",
+      "line": 110
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "cli.command",
+      "line": 113
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "click.echo",
+      "line": 116
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "cli.command",
+      "line": 119
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "click.echo",
+      "line": 122
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "cli.command",
+      "line": 125
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "click.echo",
+      "line": 129
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "cli.command",
+      "line": 132
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "click.argument",
+      "line": 134
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "click.argument",
+      "line": 135
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "click.option",
+      "line": 136
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "click.Path",
+      "line": 137
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "config.add_alias",
+      "line": 141
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "config.write_config",
+      "line": 142
+    },
+    {
+      "caller_file": "examples/aliases/aliases.py",
+      "callee": "click.echo",
+      "line": 143
+    },
+    {
+      "caller_file": "examples/colors/colors.py",
+      "callee": "click.command",
+      "line": 24
+    },
+    {
+      "caller_file": "examples/colors/colors.py",
+      "callee": "click.echo",
+      "line": 32
+    },
+    {
+      "caller_file": "examples/colors/colors.py",
+      "callee": "click.style",
+      "line": 32
+    },
+    {
+      "caller_file": "examples/colors/colors.py",
+      "callee": "click.echo",
+      "line": 34
+    },
+    {
+      "caller_file": "examples/colors/colors.py",
+      "callee": "click.style",
+      "line": 34
+    },
+    {
+      "caller_file": "examples/colors/colors.py",
+      "callee": "click.echo",
+      "line": 36
+    },
+    {
+      "caller_file": "examples/colors/colors.py",
+      "callee": "click.style",
+      "line": 36
+    },
+    {
+      "caller_file": "examples/colors/colors.py",
+      "callee": "click.echo",
+      "line": 38
+    },
+    {
+      "caller_file": "examples/colors/colors.py",
+      "callee": "click.style",
+      "line": 38
+    },
+    {
+      "caller_file": "examples/colors/colors.py",
+      "callee": "click.echo",
+      "line": 39
+    },
+    {
+      "caller_file": "examples/colors/colors.py",
+      "callee": "click.style",
+      "line": 39
+    },
+    {
+      "caller_file": "examples/completion/completion.py",
+      "callee": "click.group",
+      "line": 7
+    },
+    {
+      "caller_file": "examples/completion/completion.py",
+      "callee": "cli.command",
+      "line": 12
+    },
+    {
+      "caller_file": "examples/completion/completion.py",
+      "callee": "click.option",
+      "line": 13
+    },
+    {
+      "caller_file": "examples/completion/completion.py",
+      "callee": "click.Path",
+      "line": 13
+    },
+    {
+      "caller_file": "examples/completion/completion.py",
+      "callee": "click.echo",
+      "line": 15
+    },
+    {
+      "caller_file": "examples/completion/completion.py",
+      "callee": "\"\\n\".join",
+      "line": 15
+    },
+    {
+      "caller_file": "examples/completion/completion.py",
+      "callee": "os.listdir",
+      "line": 15
+    },
+    {
+      "caller_file": "examples/completion/completion.py",
+      "callee": "cli.command",
+      "line": 24
+    },
+    {
+      "caller_file": "examples/completion/completion.py",
+      "callee": "click.argument",
+      "line": 25
+    },
+    {
+      "caller_file": "examples/completion/completion.py",
+      "callee": "click.echo",
+      "line": 27
+    },
+    {
+      "caller_file": "examples/completion/completion.py",
+      "callee": "click.echo",
+      "line": 28
+    },
+    {
+      "caller_file": "examples/completion/completion.py",
+      "callee": "cli.group",
+      "line": 31
+    },
+    {
+      "caller_file": "examples/completion/completion.py",
+      "callee": "out.append",
+      "line": 45
+    },
+    {
+      "caller_file": "examples/completion/completion.py",
+      "callee": "CompletionItem",
+      "line": 45
+    },
+    {
+      "caller_file": "examples/completion/completion.py",
+      "callee": "group.command",
+      "line": 50
+    },
+    {
+      "caller_file": "examples/completion/completion.py",
+      "callee": "click.argument",
+      "line": 51
+    },
+    {
+      "caller_file": "examples/completion/completion.py",
+      "callee": "click.echo",
+      "line": 53
+    },
+    {
+      "caller_file": "examples/completion/completion.py",
+      "callee": "cli.add_command",
+      "line": 56
+    },
+    {
+      "caller_file": "examples/complex/complex/cli.py",
+      "callee": "dict",
+      "line": 7
+    },
+    {
+      "caller_file": "examples/complex/complex/cli.py",
+      "callee": "os.getcwd",
+      "line": 13
+    },
+    {
+      "caller_file": "examples/complex/complex/cli.py",
+      "callee": "click.echo",
+      "line": 19
+    },
+    {
+      "caller_file": "examples/complex/complex/cli.py",
+      "callee": "self.log",
+      "line": 24
+    },
+    {
+      "caller_file": "examples/complex/complex/cli.py",
+      "callee": "click.make_pass_decorator",
+      "line": 27
+    },
+    {
+      "caller_file": "examples/complex/complex/cli.py",
+      "callee": "os.path.abspath",
+      "line": 28
+    },
+    {
+      "caller_file": "examples/complex/complex/cli.py",
+      "callee": "os.path.join",
+      "line": 28
+    },
+    {
+      "caller_file": "examples/complex/complex/cli.py",
+      "callee": "os.path.dirname",
+      "line": 28
+    },
+    {
+      "caller_file": "examples/complex/complex/cli.py",
+      "callee": "os.listdir",
+      "line": 34
+    },
+    {
+      "caller_file": "examples/complex/complex/cli.py",
+      "callee": "filename.endswith",
+      "line": 35
+    },
+    {
+      "caller_file": "examples/complex/complex/cli.py",
+      "callee": "filename.startswith",
+      "line": 35
+    },
+    {
+      "caller_file": "examples/complex/complex/cli.py",
+      "callee": "rv.append",
+      "line": 36
+    },
+    {
+      "caller_file": "examples/complex/complex/cli.py",
+      "callee": "rv.sort",
+      "line": 37
+    },
+    {
+      "caller_file": "examples/complex/complex/cli.py",
+      "callee": "__import__",
+      "line": 42
+    },
+    {
+      "caller_file": "examples/complex/complex/cli.py",
+      "callee": "click.command",
+      "line": 48
+    },
+    {
+      "caller_file": "examples/complex/complex/cli.py",
+      "callee": "click.option",
+      "line": 49
+    },
+    {
+      "caller_file": "examples/complex/complex/cli.py",
+      "callee": "click.Path",
+      "line": 51
+    },
+    {
+      "caller_file": "examples/complex/complex/cli.py",
+      "callee": "click.option",
+      "line": 54
+    },
+    {
+      "caller_file": "examples/complex/complex/commands/cmd_init.py",
+      "callee": "click.command",
+      "line": 6
+    },
+    {
+      "caller_file": "examples/complex/complex/commands/cmd_init.py",
+      "callee": "click.argument",
+      "line": 7
+    },
+    {
+      "caller_file": "examples/complex/complex/commands/cmd_init.py",
+      "callee": "click.Path",
+      "line": 7
+    },
+    {
+      "caller_file": "examples/complex/complex/commands/cmd_init.py",
+      "callee": "ctx.log",
+      "line": 13
+    },
+    {
+      "caller_file": "examples/complex/complex/commands/cmd_init.py",
+      "callee": "click.format_filename",
+      "line": 13
+    },
+    {
+      "caller_file": "examples/complex/complex/commands/cmd_status.py",
+      "callee": "click.command",
+      "line": 6
+    },
+    {
+      "caller_file": "examples/complex/complex/commands/cmd_status.py",
+      "callee": "ctx.log",
+      "line": 10
+    },
+    {
+      "caller_file": "examples/complex/complex/commands/cmd_status.py",
+      "callee": "ctx.vlog",
+      "line": 11
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.group",
+      "line": 10
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "cli.result_callback",
+      "line": 23
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "processor",
+      "line": 35
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "f",
+      "line": 49
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "update_wrapper",
+      "line": 53
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "f",
+      "line": 64
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "update_wrapper",
+      "line": 66
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "cli.command",
+      "line": 74
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.option",
+      "line": 75
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.Path",
+      "line": 79
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.echo",
+      "line": 90
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "Image.open",
+      "line": 92
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.get_binary_stdin",
+      "line": 92
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "Image.open",
+      "line": 95
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.echo",
+      "line": 98
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "cli.command",
+      "line": 101
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.option",
+      "line": 102
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.Path",
+      "line": 105
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "enumerate",
+      "line": 112
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "filename.format",
+      "line": 114
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.echo",
+      "line": 115
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "image.save",
+      "line": 116
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.echo",
+      "line": 118
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "cli.command",
+      "line": 121
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.echo",
+      "line": 126
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "image.show",
+      "line": 127
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "cli.command",
+      "line": 131
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.option",
+      "line": 132
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.option",
+      "line": 133
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.echo",
+      "line": 141
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "image.thumbnail",
+      "line": 142
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "cli.command",
+      "line": 146
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.option",
+      "line": 147
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "enumerate",
+      "line": 157
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "max",
+      "line": 158
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.echo",
+      "line": 159
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "copy_filename",
+      "line": 160
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "image.crop",
+      "line": 160
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "value.lower",
+      "line": 168
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.BadParameter",
+      "line": 175
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "value.lower",
+      "line": 181
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.BadParameter",
+      "line": 186
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "cli.command",
+      "line": 189
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.option",
+      "line": 190
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.option",
+      "line": 193
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.echo",
+      "line": 200
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "copy_filename",
+      "line": 201
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "image.transpose",
+      "line": 201
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.echo",
+      "line": 204
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "copy_filename",
+      "line": 205
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "image.transpose",
+      "line": 205
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "cli.command",
+      "line": 209
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.option",
+      "line": 210
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "ImageFilter.GaussianBlur",
+      "line": 214
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.echo",
+      "line": 216
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "copy_filename",
+      "line": 217
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "image.filter",
+      "line": 217
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "cli.command",
+      "line": 220
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.option",
+      "line": 221
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.echo",
+      "line": 232
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "range",
+      "line": 236
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "copy_filename",
+      "line": 237
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "image.filter",
+      "line": 237
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "cli.command",
+      "line": 241
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.echo",
+      "line": 246
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "copy_filename",
+      "line": 247
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "image.filter",
+      "line": 247
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "cli.command",
+      "line": 250
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.option",
+      "line": 251
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.echo",
+      "line": 258
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "ImageEnhance.Sharpness",
+      "line": 259
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "copy_filename",
+      "line": 260
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "enhancer.enhance",
+      "line": 260
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "max",
+      "line": 260
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "cli.command",
+      "line": 263
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.option",
+      "line": 264
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.option",
+      "line": 265
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "iter",
+      "line": 271
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "next",
+      "line": 272
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "next",
+      "line": 273
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "click.echo",
+      "line": 280
+    },
+    {
+      "caller_file": "examples/imagepipe/imagepipe.py",
+      "callee": "image.paste",
+      "line": 284
+    },
+    {
+      "caller_file": "examples/inout/inout.py",
+      "callee": "click.command",
+      "line": 4
+    },
+    {
+      "caller_file": "examples/inout/inout.py",
+      "callee": "click.argument",
+      "line": 5
+    },
+    {
+      "caller_file": "examples/inout/inout.py",
+      "callee": "click.File",
+      "line": 5
+    },
+    {
+      "caller_file": "examples/inout/inout.py",
+      "callee": "click.argument",
+      "line": 6
+    },
+    {
+      "caller_file": "examples/inout/inout.py",
+      "callee": "click.File",
+      "line": 6
+    },
+    {
+      "caller_file": "examples/inout/inout.py",
+      "callee": "f.read",
+      "line": 26
+    },
+    {
+      "caller_file": "examples/inout/inout.py",
+      "callee": "output.write",
+      "line": 29
+    },
+    {
+      "caller_file": "examples/inout/inout.py",
+      "callee": "output.flush",
+      "line": 30
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.group",
+      "line": 4
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.version_option",
+      "line": 5
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "cli.group",
+      "line": 15
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "ship.command",
+      "line": 20
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.argument",
+      "line": 21
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.echo",
+      "line": 24
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "ship.command",
+      "line": 27
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.argument",
+      "line": 28
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.argument",
+      "line": 29
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.argument",
+      "line": 30
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.option",
+      "line": 31
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.echo",
+      "line": 34
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "ship.command",
+      "line": 37
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.argument",
+      "line": 38
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.argument",
+      "line": 39
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.argument",
+      "line": 40
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.echo",
+      "line": 43
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "cli.group",
+      "line": 46
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "mine.command",
+      "line": 51
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.argument",
+      "line": 52
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.argument",
+      "line": 53
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.option",
+      "line": 54
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.option",
+      "line": 61
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.echo",
+      "line": 64
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "mine.command",
+      "line": 67
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.argument",
+      "line": 68
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.argument",
+      "line": 69
+    },
+    {
+      "caller_file": "examples/naval/naval.py",
+      "callee": "click.echo",
+      "line": 72
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.echo",
+      "line": 17
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.make_pass_decorator",
+      "line": 23
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.group",
+      "line": 26
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.option",
+      "line": 27
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.option",
+      "line": 34
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.option",
+      "line": 41
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.version_option",
+      "line": 42
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "Repo",
+      "line": 54
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "os.path.abspath",
+      "line": 54
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "ctx.obj.set_config",
+      "line": 57
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "cli.command",
+      "line": 60
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.argument",
+      "line": 61
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.argument",
+      "line": 62
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.option",
+      "line": 63
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.option",
+      "line": 68
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "posixpath.split",
+      "line": 80
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.echo",
+      "line": 81
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "os.path.basename",
+      "line": 81
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.echo",
+      "line": 84
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.echo",
+      "line": 85
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "cli.command",
+      "line": 88
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.confirmation_option",
+      "line": 89
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.echo",
+      "line": 96
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.echo",
+      "line": 97
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "cli.command",
+      "line": 100
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.option",
+      "line": 101
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.option",
+      "line": 102
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.password_option",
+      "line": 103
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "repo.set_config",
+      "line": 110
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "repo.set_config",
+      "line": 111
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "repo.set_config",
+      "line": 112
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "len",
+      "line": 112
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.echo",
+      "line": 113
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "cli.command",
+      "line": 116
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.option",
+      "line": 117
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.argument",
+      "line": 124
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.Path",
+      "line": 124
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "hint.append",
+      "line": 139
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.edit",
+      "line": 140
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "\"\\n\".join",
+      "line": 140
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.echo",
+      "line": 142
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "message.split(marker)[0].rstrip",
+      "line": 144
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "message.split",
+      "line": 144
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.echo",
+      "line": 146
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "\"\\n\".join",
+      "line": 149
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.echo",
+      "line": 150
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.echo",
+      "line": 151
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "cli.command",
+      "line": 154
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.option",
+      "line": 155
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.argument",
+      "line": 158
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.Path",
+      "line": 158
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.argument",
+      "line": 159
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.Path",
+      "line": 159
+    },
+    {
+      "caller_file": "examples/repo/repo.py",
+      "callee": "click.echo",
+      "line": 166
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.group",
+      "line": 8
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "cli.command",
+      "line": 14
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.echo",
+      "line": 18
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.style",
+      "line": 18
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.echo",
+      "line": 19
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.style",
+      "line": 19
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "cli.command",
+      "line": 22
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "range",
+      "line": 26
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "lines.append",
+      "line": 27
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.style",
+      "line": 27
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "str",
+      "line": 27
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.echo_via_pager",
+      "line": 28
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "\"\\n\".join",
+      "line": 28
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "cli.command",
+      "line": 31
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.option",
+      "line": 32
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.IntRange",
+      "line": 35
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "range",
+      "line": 40
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "time.sleep",
+      "line": 43
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "random.random",
+      "line": 43
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "random.random",
+      "line": 47
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.progressbar",
+      "line": 50
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.style",
+      "line": 51
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "process_slowly",
+      "line": 54
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.progressbar",
+      "line": 60
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "filter",
+      "line": 61
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.style",
+      "line": 63
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "process_slowly",
+      "line": 67
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.progressbar",
+      "line": 69
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.style",
+      "line": 73
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "process_slowly",
+      "line": 77
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.progressbar",
+      "line": 79
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.style",
+      "line": 84
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "process_slowly",
+      "line": 87
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "math.exp",
+      "line": 90
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "range",
+      "line": 90
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "int",
+      "line": 91
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "sum",
+      "line": 91
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.progressbar",
+      "line": 92
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.style",
+      "line": 96
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "time.sleep",
+      "line": 99
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "bar.update",
+      "line": 100
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "cli.command",
+      "line": 103
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.argument",
+      "line": 104
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.launch",
+      "line": 107
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "cli.command",
+      "line": 110
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.argument",
+      "line": 111
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.launch",
+      "line": 114
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "cli.command",
+      "line": 117
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.edit",
+      "line": 121
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "message.split(MARKER, 1)[0].rstrip",
+      "line": 123
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "message.split",
+      "line": 123
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.echo",
+      "line": 125
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.echo",
+      "line": 127
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.echo",
+      "line": 129
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "cli.command",
+      "line": 132
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.clear",
+      "line": 135
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "cli.command",
+      "line": 138
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.pause",
+      "line": 141
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "cli.command",
+      "line": 144
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.echo",
+      "line": 150
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.echo",
+      "line": 151
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.echo",
+      "line": 152
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.getchar",
+      "line": 153
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.echo",
+      "line": 159
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.echo",
+      "line": 161
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.echo",
+      "line": 162
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.getchar",
+      "line": 163
+    },
+    {
+      "caller_file": "examples/termui/termui.py",
+      "callee": "click.echo",
+      "line": 167
+    },
+    {
+      "caller_file": "examples/validation/validation.py",
+      "callee": "click.BadParameter",
+      "line": 8
+    },
+    {
+      "caller_file": "examples/validation/validation.py",
+      "callee": "isinstance",
+      "line": 16
+    },
+    {
+      "caller_file": "examples/validation/validation.py",
+      "callee": "urlparse.urlparse",
+      "line": 17
+    },
+    {
+      "caller_file": "examples/validation/validation.py",
+      "callee": "self.fail",
+      "line": 19
+    },
+    {
+      "caller_file": "examples/validation/validation.py",
+      "callee": "click.command",
+      "line": 27
+    },
+    {
+      "caller_file": "examples/validation/validation.py",
+      "callee": "click.option",
+      "line": 28
+    },
+    {
+      "caller_file": "examples/validation/validation.py",
+      "callee": "click.option",
+      "line": 31
+    },
+    {
+      "caller_file": "examples/validation/validation.py",
+      "callee": "click.option",
+      "line": 32
+    },
+    {
+      "caller_file": "examples/validation/validation.py",
+      "callee": "URL",
+      "line": 32
+    },
+    {
+      "caller_file": "examples/validation/validation.py",
+      "callee": "click.version_option",
+      "line": 33
+    },
+    {
+      "caller_file": "examples/validation/validation.py",
+      "callee": "click.BadParameter",
+      "line": 42
+    },
+    {
+      "caller_file": "examples/validation/validation.py",
+      "callee": "click.echo",
+      "line": 46
+    },
+    {
+      "caller_file": "examples/validation/validation.py",
+      "callee": "click.echo",
+      "line": 47
+    },
+    {
+      "caller_file": "examples/validation/validation.py",
+      "callee": "click.echo",
+      "line": 48
+    },
+    {
+      "caller_file": "src/click/__init__.py",
+      "callee": "warnings.warn",
+      "line": 83
+    },
+    {
+      "caller_file": "src/click/__init__.py",
+      "callee": "warnings.warn",
+      "line": 94
+    },
+    {
+      "caller_file": "src/click/__init__.py",
+      "callee": "warnings.warn",
+      "line": 105
+    },
+    {
+      "caller_file": "src/click/__init__.py",
+      "callee": "warnings.warn",
+      "line": 117
+    },
+    {
+      "caller_file": "src/click/__init__.py",
+      "callee": "importlib.metadata.version",
+      "line": 124
+    },
+    {
+      "caller_file": "src/click/__init__.py",
+      "callee": "AttributeError",
+      "line": 126
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "sys.platform.startswith",
+      "line": 13
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "sys.platform.startswith",
+      "line": 14
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "re.compile",
+      "line": 15
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "get_best_encoding",
+      "line": 26
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_NonClosingTextIOWrapper",
+      "line": 29
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "codecs.lookup",
+      "line": 42
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "getattr",
+      "line": 49
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "sys.getdefaultencoding",
+      "line": 49
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "is_ascii_encoding",
+      "line": 50
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "t.cast",
+      "line": 65
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_FixupStream",
+      "line": 66
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "super().__init__",
+      "line": 68
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "super",
+      "line": 68
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "self.detach",
+      "line": 72
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "self._stream.isatty",
+      "line": 78
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "getattr",
+      "line": 102
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "getattr",
+      "line": 105
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "t.cast",
+      "line": 108
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "f",
+      "line": 108
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "self._stream.read",
+      "line": 110
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "getattr",
+      "line": 115
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "t.cast",
+      "line": 117
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "x",
+      "line": 117
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "self._stream.read",
+      "line": 119
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "getattr",
+      "line": 127
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "t.cast",
+      "line": 129
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "x",
+      "line": 129
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "self._stream.write",
+      "line": 131
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "self._stream.write",
+      "line": 134
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "getattr",
+      "line": 140
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "t.cast",
+      "line": 142
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "x",
+      "line": 142
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "self._stream.seek",
+      "line": 144
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "self._stream.tell",
+      "line": 144
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "isinstance",
+      "line": 152
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "stream.read",
+      "line": 152
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "stream.write",
+      "line": 161
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "stream.write",
+      "line": 164
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_is_binary_reader",
+      "line": 177
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "t.cast",
+      "line": 178
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "getattr",
+      "line": 180
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_is_binary_reader",
+      "line": 184
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "t.cast",
+      "line": 185
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_is_binary_writer",
+      "line": 195
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "t.cast",
+      "line": 196
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "getattr",
+      "line": 198
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_is_binary_writer",
+      "line": 202
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "t.cast",
+      "line": 203
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "is_ascii_encoding",
+      "line": 214
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "getattr",
+      "line": 214
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "getattr",
+      "line": 222
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_is_compat_stream_attr",
+      "line": 232
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_is_compat_stream_attr",
+      "line": 234
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "is_binary",
+      "line": 246
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "t.cast",
+      "line": 247
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "t.cast",
+      "line": 249
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_is_compatible_text_stream",
+      "line": 252
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_stream_is_misconfigured",
+      "line": 253
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "find_binary",
+      "line": 258
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_make_text_stream",
+      "line": 274
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_force_correct_text_stream",
+      "line": 289
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_force_correct_text_stream",
+      "line": 305
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_find_binary_reader",
+      "line": 316
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "RuntimeError",
+      "line": 318
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_find_binary_writer",
+      "line": 323
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "RuntimeError",
+      "line": 325
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_find_binary_writer",
+      "line": 330
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "RuntimeError",
+      "line": 332
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_get_windows_console_stream",
+      "line": 337
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_force_correct_text_reader",
+      "line": 340
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_get_windows_console_stream",
+      "line": 344
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_force_correct_text_writer",
+      "line": 347
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_get_windows_console_stream",
+      "line": 351
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_force_correct_text_writer",
+      "line": 354
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "open",
+      "line": 365
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "open",
+      "line": 367
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "os.fspath",
+      "line": 378
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "os.fsdecode",
+      "line": 382
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "any",
+      "line": 383
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "get_binary_stdout",
+      "line": 385
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "get_text_stdout",
+      "line": 386
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "get_binary_stdin",
+      "line": 388
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "get_text_stdin",
+      "line": 389
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_wrap_io_open",
+      "line": 393
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "ValueError",
+      "line": 397
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "ValueError",
+      "line": 404
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "ValueError",
+      "line": 406
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "os.stat",
+      "line": 416
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "getattr",
+      "line": 423
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "os.path.join",
+      "line": 426
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "os.path.dirname",
+      "line": 427
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "random.randrange",
+      "line": 428
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "os.open",
+      "line": 431
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "os.path.isdir",
+      "line": 437
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "os.access",
+      "line": 438
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "os.chmod",
+      "line": 444
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_wrap_io_open",
+      "line": 446
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_AtomicFile",
+      "line": 447
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "os.path.realpath",
+      "line": 447
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "t.cast",
+      "line": 448
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "self._f.close",
+      "line": 465
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "os.replace",
+      "line": 466
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "getattr",
+      "line": 470
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "self.close",
+      "line": 481
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "repr",
+      "line": 484
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_ansi_re.sub",
+      "line": 488
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "isinstance",
+      "line": 492
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "stream.__class__.__module__.startswith",
+      "line": 495
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "hasattr",
+      "line": 504
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "isatty",
+      "line": 508
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_is_jupyter_kernel_output",
+      "line": 508
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "sys.platform.startswith",
+      "line": 513
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "locale.getpreferredencoding",
+      "line": 519
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "getattr",
+      "line": 524
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "sys.getfilesystemencoding",
+      "line": 524
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "len",
+      "line": 533
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "strip_ansi",
+      "line": 533
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "stream.isatty",
+      "line": 538
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "WeakKeyDictionary",
+      "line": 547
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "src_func",
+      "line": 550
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "cache.get",
+      "line": 556
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "wrapper_func",
+      "line": 561
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_make_cached_stream_func",
+      "line": 571
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_make_cached_stream_func",
+      "line": 572
+    },
+    {
+      "caller_file": "src/click/_compat.py",
+      "callee": "_make_cached_stream_func",
+      "line": 573
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "t.TypeVar",
+      "line": 34
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "getattr",
+      "line": 46
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_default_text_stdout",
+      "line": 89
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "StringIO",
+      "line": 94
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "length_hint",
+      "line": 106
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "TypeError",
+      "line": 112
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "t.cast",
+      "line": 113
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "range",
+      "line": 113
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "iter",
+      "line": 114
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "time.time",
+      "line": 120
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "isatty",
+      "line": 126
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.render_progress",
+      "line": 131
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.render_finish",
+      "line": 140
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "RuntimeError",
+      "line": 144
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.render_progress",
+      "line": 145
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.generator",
+      "line": 146
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "next",
+      "line": 154
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "iter",
+      "line": 154
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.file.write",
+      "line": 159
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.file.flush",
+      "line": 160
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "min",
+      "line": 166
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "float",
+      "line": 166
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "sum",
+      "line": 172
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "float",
+      "line": 172
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "len",
+      "line": 172
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "int",
+      "line": 182
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "\"{d}{day_label} {h:02}:{m:02}:{s:02}\".format",
+      "line": 190
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_",
+      "line": 192
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "str",
+      "line": 202
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "int",
+      "line": 208
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "int",
+      "line": 212
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "list",
+      "line": 218
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "int",
+      "line": 221
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "math.cos",
+      "line": 222
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "\"\".join",
+      "line": 226
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "info_bits.append",
+      "line": 237
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.format_pos",
+      "line": 237
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "info_bits.append",
+      "line": 239
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.format_pct",
+      "line": 239
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "info_bits.append",
+      "line": 241
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.format_eta",
+      "line": 241
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.item_show_func",
+      "line": 243
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "info_bits.append",
+      "line": 245
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "(\n            self.bar_template\n            % {\n                \"label\": self.label,\n                \"bar\": self.format_bar(),\n                \"info\": self.info_sep.join(info_bits),\n            }\n        ).rstrip",
+      "line": 247
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.format_bar",
+      "line": 251
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.info_sep.join",
+      "line": 252
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "echo",
+      "line": 264
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "term_len",
+      "line": 274
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.format_progress_line",
+      "line": 274
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "max",
+      "line": 275
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "shutil.get_terminal_size",
+      "line": 275
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "buf.append",
+      "line": 277
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "buf.append",
+      "line": 278
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "buf.append",
+      "line": 286
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.format_progress_line",
+      "line": 287
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "term_len",
+      "line": 288
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "buf.append",
+      "line": 292
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "buf.append",
+      "line": 293
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "\"\".join",
+      "line": 294
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "echo",
+      "line": 299
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.file.flush",
+      "line": 300
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "time.time",
+      "line": 307
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "time.time",
+      "line": 310
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "time.time",
+      "line": 316
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "time.time",
+      "line": 318
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.make_step",
+      "line": 346
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.render_progress",
+      "line": 347
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "RuntimeError",
+      "line": 368
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.render_progress",
+      "line": 380
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.update",
+      "line": 383
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.finish",
+      "line": 385
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.render_progress",
+      "line": 386
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "super().__init__",
+      "line": 391
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "super",
+      "line": 391
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "strip_ansi",
+      "line": 396
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "super().write",
+      "line": 397
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "super",
+      "line": 397
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_default_text_stdout",
+      "line": 404
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "StringIO",
+      "line": 409
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "isatty",
+      "line": 411
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "isatty",
+      "line": 411
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_nullpager",
+      "line": 412
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "shlex.split",
+      "line": 418
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "os.environ.get",
+      "line": 418
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_tempfilepager",
+      "line": 421
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_pipepager",
+      "line": 422
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "os.environ.get",
+      "line": 424
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_nullpager",
+      "line": 425
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "sys.platform.startswith",
+      "line": 426
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_tempfilepager",
+      "line": 427
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_pipepager",
+      "line": 428
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_pager_contextmanager",
+      "line": 442
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_has_binary_buffer",
+      "line": 447
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "MaybeStripAnsi",
+      "line": 449
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "t.cast",
+      "line": 454
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "stream.flush",
+      "line": 457
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "wrapper.detach",
+      "line": 466
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_default_text_stdout",
+      "line": 488
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "StringIO",
+      "line": 488
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_nullpager",
+      "line": 489
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "shutil.which",
+      "line": 498
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_default_text_stdout",
+      "line": 502
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "StringIO",
+      "line": 502
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_nullpager",
+      "line": 503
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "Path(cmd_filepath).absolute",
+      "line": 510
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "Path",
+      "line": 510
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "dict",
+      "line": 516
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "os.environ.get",
+      "line": 521
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "' '.join",
+      "line": 521
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "subprocess.Popen",
+      "line": 531
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "str",
+      "line": 532
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "t.cast",
+      "line": 539
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "get_best_encoding",
+      "line": 540
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "c.terminate",
+      "line": 551
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "stdin.close",
+      "line": 556
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "c.wait",
+      "line": 572
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_default_text_stdout",
+      "line": 594
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "StringIO",
+      "line": 594
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_nullpager",
+      "line": 595
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "shutil.which",
+      "line": 604
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_default_text_stdout",
+      "line": 608
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "StringIO",
+      "line": 608
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_nullpager",
+      "line": 609
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "Path(cmd_filepath).absolute",
+      "line": 616
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "Path",
+      "line": 616
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "get_best_encoding",
+      "line": 620
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "tempfile.NamedTemporaryFile",
+      "line": 626
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "t.cast",
+      "line": 628
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "f.flush",
+      "line": 629
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "f.close",
+      "line": 630
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "subprocess.call",
+      "line": 631
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "str",
+      "line": 631
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "os.unlink",
+      "line": 633
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "get_best_encoding",
+      "line": 648
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "KeepOpenFile",
+      "line": 653
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "os.environ.get",
+      "line": 673
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "which",
+      "line": 682
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.get_editor",
+      "line": 691
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "os.environ.copy",
+      "line": 695
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "environ.update",
+      "line": 696
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "subprocess.Popen",
+      "line": 702
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "shlex.split",
+      "line": 703
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "list",
+      "line": 703
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "c.wait",
+      "line": 706
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "ClickException",
+      "line": 708
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_(\"{editor}: Editing failed\").format",
+      "line": 709
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_",
+      "line": 709
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "ClickException",
+      "line": 712
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_(\"{editor}: Editing failed: {e}\").format",
+      "line": 713
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_",
+      "line": 713
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "isinstance",
+      "line": 729
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "text.endswith",
+      "line": 732
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "text.replace(\"\\n\", \"\\r\\n\").encode",
+      "line": 736
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "text.replace",
+      "line": 736
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "text.encode",
+      "line": 738
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "tempfile.mkstemp",
+      "line": 740
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "os.fdopen",
+      "line": 744
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "f.write",
+      "line": 745
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "os.utime",
+      "line": 751
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "os.path.getatime",
+      "line": 751
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "os.path.getmtime",
+      "line": 751
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "os.path.getmtime",
+      "line": 754
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "self.edit_files",
+      "line": 756
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "os.path.getmtime",
+      "line": 758
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "open",
+      "line": 761
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "f.read",
+      "line": 762
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "isinstance",
+      "line": 764
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "rv.decode(\"utf-8-sig\").replace",
+      "line": 767
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "rv.decode",
+      "line": 767
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "os.unlink",
+      "line": 769
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "url.startswith",
+      "line": 778
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "unquote",
+      "line": 779
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "args.append",
+      "line": 786
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "args.append",
+      "line": 788
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "args.append",
+      "line": 789
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_unquote_file",
+      "line": 789
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "open",
+      "line": 790
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "subprocess.Popen(args, stderr=null).wait",
+      "line": 792
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "subprocess.Popen",
+      "line": 792
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "null.close",
+      "line": 794
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_unquote_file",
+      "line": 797
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "subprocess.call",
+      "line": 800
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "os.startfile",
+      "line": 805
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_unquote_file",
+      "line": 811
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "os.path.dirname",
+      "line": 812
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "args.append",
+      "line": 816
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "args.append",
+      "line": 817
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "subprocess.call",
+      "line": 819
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "os.path.dirname",
+      "line": 826
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_unquote_file",
+      "line": 826
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_unquote_file",
+      "line": 828
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "subprocess.Popen",
+      "line": 829
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "c.wait",
+      "line": 831
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "url.startswith",
+      "line": 834
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "webbrowser.open",
+      "line": 837
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "KeyboardInterrupt",
+      "line": 844
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "EOFError",
+      "line": 847
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "EOFError",
+      "line": 850
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "t.cast",
+      "line": 892
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "t.cast",
+      "line": 894
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "func",
+      "line": 896
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "func",
+      "line": 901
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_translate_ch_to_exc",
+      "line": 903
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "isatty",
+      "line": 915
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "open",
+      "line": 916
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "f.fileno",
+      "line": 917
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "sys.stdin.fileno",
+      "line": 919
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "termios.tcgetattr",
+      "line": 923
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "tty.setraw",
+      "line": 926
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "termios.tcsetattr",
+      "line": 929
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "sys.stdout.flush",
+      "line": 930
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "f.close",
+      "line": 933
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "raw_terminal",
+      "line": 938
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "os.read(fd, 32).decode",
+      "line": 939
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "os.read",
+      "line": 939
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "get_best_encoding",
+      "line": 939
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "isatty",
+      "line": 941
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "sys.stdout.write",
+      "line": 942
+    },
+    {
+      "caller_file": "src/click/_termui_impl.py",
+      "callee": "_translate_ch_to_exc",
+      "line": 944
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "len",
+      "line": 24
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "_ansi_re.match",
+      "line": 26
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "m.end",
+      "line": 28
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "max",
+      "line": 55
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "_truncate_visible",
+      "line": 59
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "len",
+      "line": 60
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "cur_line.append",
+      "line": 61
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "cur_line.append",
+      "line": 64
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "reversed_chunks.pop",
+      "line": 64
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "ValueError",
+      "line": 83
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "term_len",
+      "line": 89
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "term_len",
+      "line": 89
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "self.placeholder.lstrip",
+      "line": 89
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "ValueError",
+      "line": 90
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "chunks.reverse",
+      "line": 92
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "term_len",
+      "line": 103
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "chunks[-1].strip",
+      "line": 105
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "term_len",
+      "line": 109
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "cur_line.append",
+      "line": 112
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "chunks.pop",
+      "line": 112
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "term_len",
+      "line": 118
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "self._handle_long_word",
+      "line": 119
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "sum",
+      "line": 120
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "map",
+      "line": 120
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "cur_line[-1].strip",
+      "line": 122
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "term_len",
+      "line": 123
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "len",
+      "line": 129
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "len",
+      "line": 133
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "chunks[0].strip",
+      "line": 134
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "lines.append",
+      "line": 138
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "\"\".join",
+      "line": 138
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "cur_line[-1].strip",
+      "line": 142
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "term_len",
+      "line": 143
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "cur_line.append",
+      "line": 145
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "lines.append",
+      "line": 146
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "\"\".join",
+      "line": 146
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "term_len",
+      "line": 148
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "lines[-1].rstrip",
+      "line": 152
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "term_len",
+      "line": 154
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "term_len",
+      "line": 154
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "lines.append",
+      "line": 159
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "self.placeholder.lstrip",
+      "line": 159
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "enumerate",
+      "line": 180
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "text.splitlines",
+      "line": 180
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "rv.append",
+      "line": 186
+    },
+    {
+      "caller_file": "src/click/_textwrap.py",
+      "callee": "\"\\n\".join",
+      "line": 188
+    },
+    {
+      "caller_file": "src/click/_utils.py",
+      "callee": "object",
+      "line": 15
+    },
+    {
+      "caller_file": "src/click/_utils.py",
+      "callee": "object",
+      "line": 16
+    }
+  ],
+  "entry_points": []
+}
