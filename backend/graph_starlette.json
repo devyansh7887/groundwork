@@ -1,0 +1,6070 @@
+{
+  "files": [
+    "starlette/__init__.py",
+    "starlette/_exception_handler.py",
+    "starlette/_utils.py",
+    "starlette/applications.py",
+    "starlette/authentication.py",
+    "starlette/background.py",
+    "starlette/concurrency.py",
+    "starlette/config.py",
+    "starlette/convertors.py",
+    "starlette/datastructures.py",
+    "starlette/endpoints.py",
+    "starlette/exceptions.py",
+    "starlette/formparsers.py",
+    "starlette/middleware/__init__.py",
+    "starlette/middleware/authentication.py",
+    "starlette/middleware/base.py",
+    "starlette/middleware/cors.py",
+    "starlette/middleware/errors.py",
+    "starlette/middleware/exceptions.py",
+    "starlette/middleware/gzip.py"
+  ],
+  "nodes": [
+    {
+      "id": "starlette/_exception_handler.py:_lookup_exception_handler",
+      "type": "function_definition",
+      "name": "_lookup_exception_handler",
+      "line": 16
+    },
+    {
+      "id": "starlette/_exception_handler.py:wrap_app_handling_exceptions",
+      "type": "function_definition",
+      "name": "wrap_app_handling_exceptions",
+      "line": 23
+    },
+    {
+      "id": "starlette/_exception_handler.py:wrapped_app",
+      "type": "function_definition",
+      "name": "wrapped_app",
+      "line": 31
+    },
+    {
+      "id": "starlette/_exception_handler.py:sender",
+      "type": "function_definition",
+      "name": "sender",
+      "line": 34
+    },
+    {
+      "id": "starlette/_utils.py:BaseExceptionGroup",
+      "type": "class_definition",
+      "name": "BaseExceptionGroup",
+      "line": 26
+    },
+    {
+      "id": "starlette/_utils.py:is_async_callable",
+      "type": "function_definition",
+      "name": "is_async_callable",
+      "line": 35
+    },
+    {
+      "id": "starlette/_utils.py:is_async_callable",
+      "type": "function_definition",
+      "name": "is_async_callable",
+      "line": 39
+    },
+    {
+      "id": "starlette/_utils.py:is_async_callable",
+      "type": "function_definition",
+      "name": "is_async_callable",
+      "line": 42
+    },
+    {
+      "id": "starlette/_utils.py:AwaitableOrContextManager",
+      "type": "class_definition",
+      "name": "AwaitableOrContextManager",
+      "line": 52
+    },
+    {
+      "id": "starlette/_utils.py:SupportsAsyncClose",
+      "type": "class_definition",
+      "name": "SupportsAsyncClose",
+      "line": 57
+    },
+    {
+      "id": "starlette/_utils.py:close",
+      "type": "function_definition",
+      "name": "close",
+      "line": 58
+    },
+    {
+      "id": "starlette/_utils.py:AwaitableOrContextManagerWrapper",
+      "type": "class_definition",
+      "name": "AwaitableOrContextManagerWrapper",
+      "line": 64
+    },
+    {
+      "id": "starlette/_utils.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 67
+    },
+    {
+      "id": "starlette/_utils.py:__await__",
+      "type": "function_definition",
+      "name": "__await__",
+      "line": 70
+    },
+    {
+      "id": "starlette/_utils.py:__aenter__",
+      "type": "function_definition",
+      "name": "__aenter__",
+      "line": 73
+    },
+    {
+      "id": "starlette/_utils.py:__aexit__",
+      "type": "function_definition",
+      "name": "__aexit__",
+      "line": 77
+    },
+    {
+      "id": "starlette/_utils.py:create_collapsing_task_group",
+      "type": "function_definition",
+      "name": "create_collapsing_task_group",
+      "line": 83
+    },
+    {
+      "id": "starlette/_utils.py:get_route_path",
+      "type": "function_definition",
+      "name": "get_route_path",
+      "line": 96
+    },
+    {
+      "id": "starlette/applications.py:Starlette",
+      "type": "class_definition",
+      "name": "Starlette",
+      "line": 19
+    },
+    {
+      "id": "starlette/applications.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 22
+    },
+    {
+      "id": "starlette/applications.py:build_middleware_stack",
+      "type": "function_definition",
+      "name": "build_middleware_stack",
+      "line": 57
+    },
+    {
+      "id": "starlette/applications.py:routes",
+      "type": "function_definition",
+      "name": "routes",
+      "line": 80
+    },
+    {
+      "id": "starlette/applications.py:url_path_for",
+      "type": "function_definition",
+      "name": "url_path_for",
+      "line": 83
+    },
+    {
+      "id": "starlette/applications.py:__call__",
+      "type": "function_definition",
+      "name": "__call__",
+      "line": 86
+    },
+    {
+      "id": "starlette/applications.py:mount",
+      "type": "function_definition",
+      "name": "mount",
+      "line": 92
+    },
+    {
+      "id": "starlette/applications.py:host",
+      "type": "function_definition",
+      "name": "host",
+      "line": 95
+    },
+    {
+      "id": "starlette/applications.py:add_middleware",
+      "type": "function_definition",
+      "name": "add_middleware",
+      "line": 98
+    },
+    {
+      "id": "starlette/applications.py:add_exception_handler",
+      "type": "function_definition",
+      "name": "add_exception_handler",
+      "line": 103
+    },
+    {
+      "id": "starlette/applications.py:add_route",
+      "type": "function_definition",
+      "name": "add_route",
+      "line": 110
+    },
+    {
+      "id": "starlette/authentication.py:has_required_scope",
+      "type": "function_definition",
+      "name": "has_required_scope",
+      "line": 18
+    },
+    {
+      "id": "starlette/authentication.py:requires",
+      "type": "function_definition",
+      "name": "requires",
+      "line": 25
+    },
+    {
+      "id": "starlette/authentication.py:decorator",
+      "type": "function_definition",
+      "name": "decorator",
+      "line": 32
+    },
+    {
+      "id": "starlette/authentication.py:websocket_wrapper",
+      "type": "function_definition",
+      "name": "websocket_wrapper",
+      "line": 46
+    },
+    {
+      "id": "starlette/authentication.py:async_wrapper",
+      "type": "function_definition",
+      "name": "async_wrapper",
+      "line": 63
+    },
+    {
+      "id": "starlette/authentication.py:sync_wrapper",
+      "type": "function_definition",
+      "name": "sync_wrapper",
+      "line": 82
+    },
+    {
+      "id": "starlette/authentication.py:AuthenticationError",
+      "type": "class_definition",
+      "name": "AuthenticationError",
+      "line": 101
+    },
+    {
+      "id": "starlette/authentication.py:AuthenticationBackend",
+      "type": "class_definition",
+      "name": "AuthenticationBackend",
+      "line": 105
+    },
+    {
+      "id": "starlette/authentication.py:authenticate",
+      "type": "function_definition",
+      "name": "authenticate",
+      "line": 106
+    },
+    {
+      "id": "starlette/authentication.py:AuthCredentials",
+      "type": "class_definition",
+      "name": "AuthCredentials",
+      "line": 110
+    },
+    {
+      "id": "starlette/authentication.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 111
+    },
+    {
+      "id": "starlette/authentication.py:BaseUser",
+      "type": "class_definition",
+      "name": "BaseUser",
+      "line": 115
+    },
+    {
+      "id": "starlette/authentication.py:is_authenticated",
+      "type": "function_definition",
+      "name": "is_authenticated",
+      "line": 117
+    },
+    {
+      "id": "starlette/authentication.py:display_name",
+      "type": "function_definition",
+      "name": "display_name",
+      "line": 121
+    },
+    {
+      "id": "starlette/authentication.py:identity",
+      "type": "function_definition",
+      "name": "identity",
+      "line": 125
+    },
+    {
+      "id": "starlette/authentication.py:SimpleUser",
+      "type": "class_definition",
+      "name": "SimpleUser",
+      "line": 129
+    },
+    {
+      "id": "starlette/authentication.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 130
+    },
+    {
+      "id": "starlette/authentication.py:is_authenticated",
+      "type": "function_definition",
+      "name": "is_authenticated",
+      "line": 134
+    },
+    {
+      "id": "starlette/authentication.py:display_name",
+      "type": "function_definition",
+      "name": "display_name",
+      "line": 138
+    },
+    {
+      "id": "starlette/authentication.py:UnauthenticatedUser",
+      "type": "class_definition",
+      "name": "UnauthenticatedUser",
+      "line": 142
+    },
+    {
+      "id": "starlette/authentication.py:is_authenticated",
+      "type": "function_definition",
+      "name": "is_authenticated",
+      "line": 144
+    },
+    {
+      "id": "starlette/authentication.py:display_name",
+      "type": "function_definition",
+      "name": "display_name",
+      "line": 148
+    },
+    {
+      "id": "starlette/background.py:BackgroundTask",
+      "type": "class_definition",
+      "name": "BackgroundTask",
+      "line": 12
+    },
+    {
+      "id": "starlette/background.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 13
+    },
+    {
+      "id": "starlette/background.py:__call__",
+      "type": "function_definition",
+      "name": "__call__",
+      "line": 19
+    },
+    {
+      "id": "starlette/background.py:BackgroundTasks",
+      "type": "class_definition",
+      "name": "BackgroundTasks",
+      "line": 26
+    },
+    {
+      "id": "starlette/background.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 27
+    },
+    {
+      "id": "starlette/background.py:add_task",
+      "type": "function_definition",
+      "name": "add_task",
+      "line": 30
+    },
+    {
+      "id": "starlette/background.py:__call__",
+      "type": "function_definition",
+      "name": "__call__",
+      "line": 34
+    },
+    {
+      "id": "starlette/concurrency.py:run_until_first_complete",
+      "type": "function_definition",
+      "name": "run_until_first_complete",
+      "line": 16
+    },
+    {
+      "id": "starlette/concurrency.py:run",
+      "type": "function_definition",
+      "name": "run",
+      "line": 24
+    },
+    {
+      "id": "starlette/concurrency.py:run_in_threadpool",
+      "type": "function_definition",
+      "name": "run_in_threadpool",
+      "line": 32
+    },
+    {
+      "id": "starlette/concurrency.py:_StopIteration",
+      "type": "class_definition",
+      "name": "_StopIteration",
+      "line": 37
+    },
+    {
+      "id": "starlette/concurrency.py:_next",
+      "type": "function_definition",
+      "name": "_next",
+      "line": 41
+    },
+    {
+      "id": "starlette/concurrency.py:iterate_in_threadpool",
+      "type": "function_definition",
+      "name": "iterate_in_threadpool",
+      "line": 51
+    },
+    {
+      "id": "starlette/config.py:undefined",
+      "type": "class_definition",
+      "name": "undefined",
+      "line": 10
+    },
+    {
+      "id": "starlette/config.py:EnvironError",
+      "type": "class_definition",
+      "name": "EnvironError",
+      "line": 14
+    },
+    {
+      "id": "starlette/config.py:Environ",
+      "type": "class_definition",
+      "name": "Environ",
+      "line": 18
+    },
+    {
+      "id": "starlette/config.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 19
+    },
+    {
+      "id": "starlette/config.py:__getitem__",
+      "type": "function_definition",
+      "name": "__getitem__",
+      "line": 23
+    },
+    {
+      "id": "starlette/config.py:__setitem__",
+      "type": "function_definition",
+      "name": "__setitem__",
+      "line": 27
+    },
+    {
+      "id": "starlette/config.py:__delitem__",
+      "type": "function_definition",
+      "name": "__delitem__",
+      "line": 32
+    },
+    {
+      "id": "starlette/config.py:__iter__",
+      "type": "function_definition",
+      "name": "__iter__",
+      "line": 37
+    },
+    {
+      "id": "starlette/config.py:__len__",
+      "type": "function_definition",
+      "name": "__len__",
+      "line": 40
+    },
+    {
+      "id": "starlette/config.py:Config",
+      "type": "class_definition",
+      "name": "Config",
+      "line": 49
+    },
+    {
+      "id": "starlette/config.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 50
+    },
+    {
+      "id": "starlette/config.py:__call__",
+      "type": "function_definition",
+      "name": "__call__",
+      "line": 67
+    },
+    {
+      "id": "starlette/config.py:__call__",
+      "type": "function_definition",
+      "name": "__call__",
+      "line": 70
+    },
+    {
+      "id": "starlette/config.py:__call__",
+      "type": "function_definition",
+      "name": "__call__",
+      "line": 73
+    },
+    {
+      "id": "starlette/config.py:__call__",
+      "type": "function_definition",
+      "name": "__call__",
+      "line": 76
+    },
+    {
+      "id": "starlette/config.py:__call__",
+      "type": "function_definition",
+      "name": "__call__",
+      "line": 84
+    },
+    {
+      "id": "starlette/config.py:__call__",
+      "type": "function_definition",
+      "name": "__call__",
+      "line": 86
+    },
+    {
+      "id": "starlette/config.py:get",
+      "type": "function_definition",
+      "name": "get",
+      "line": 94
+    },
+    {
+      "id": "starlette/config.py:_read_file",
+      "type": "function_definition",
+      "name": "_read_file",
+      "line": 111
+    },
+    {
+      "id": "starlette/config.py:_perform_cast",
+      "type": "function_definition",
+      "name": "_perform_cast",
+      "line": 123
+    },
+    {
+      "id": "starlette/convertors.py:Convertor",
+      "type": "class_definition",
+      "name": "Convertor",
+      "line": 10
+    },
+    {
+      "id": "starlette/convertors.py:convert",
+      "type": "function_definition",
+      "name": "convert",
+      "line": 13
+    },
+    {
+      "id": "starlette/convertors.py:to_string",
+      "type": "function_definition",
+      "name": "to_string",
+      "line": 16
+    },
+    {
+      "id": "starlette/convertors.py:StringConvertor",
+      "type": "class_definition",
+      "name": "StringConvertor",
+      "line": 20
+    },
+    {
+      "id": "starlette/convertors.py:convert",
+      "type": "function_definition",
+      "name": "convert",
+      "line": 23
+    },
+    {
+      "id": "starlette/convertors.py:to_string",
+      "type": "function_definition",
+      "name": "to_string",
+      "line": 26
+    },
+    {
+      "id": "starlette/convertors.py:PathConvertor",
+      "type": "class_definition",
+      "name": "PathConvertor",
+      "line": 33
+    },
+    {
+      "id": "starlette/convertors.py:convert",
+      "type": "function_definition",
+      "name": "convert",
+      "line": 36
+    },
+    {
+      "id": "starlette/convertors.py:to_string",
+      "type": "function_definition",
+      "name": "to_string",
+      "line": 39
+    },
+    {
+      "id": "starlette/convertors.py:IntegerConvertor",
+      "type": "class_definition",
+      "name": "IntegerConvertor",
+      "line": 43
+    },
+    {
+      "id": "starlette/convertors.py:convert",
+      "type": "function_definition",
+      "name": "convert",
+      "line": 46
+    },
+    {
+      "id": "starlette/convertors.py:to_string",
+      "type": "function_definition",
+      "name": "to_string",
+      "line": 49
+    },
+    {
+      "id": "starlette/convertors.py:FloatConvertor",
+      "type": "class_definition",
+      "name": "FloatConvertor",
+      "line": 55
+    },
+    {
+      "id": "starlette/convertors.py:convert",
+      "type": "function_definition",
+      "name": "convert",
+      "line": 58
+    },
+    {
+      "id": "starlette/convertors.py:to_string",
+      "type": "function_definition",
+      "name": "to_string",
+      "line": 61
+    },
+    {
+      "id": "starlette/convertors.py:UUIDConvertor",
+      "type": "class_definition",
+      "name": "UUIDConvertor",
+      "line": 69
+    },
+    {
+      "id": "starlette/convertors.py:convert",
+      "type": "function_definition",
+      "name": "convert",
+      "line": 72
+    },
+    {
+      "id": "starlette/convertors.py:to_string",
+      "type": "function_definition",
+      "name": "to_string",
+      "line": 75
+    },
+    {
+      "id": "starlette/convertors.py:register_url_convertor",
+      "type": "function_definition",
+      "name": "register_url_convertor",
+      "line": 88
+    },
+    {
+      "id": "starlette/datastructures.py:Address",
+      "type": "class_definition",
+      "name": "Address",
+      "line": 13
+    },
+    {
+      "id": "starlette/datastructures.py:URL",
+      "type": "class_definition",
+      "name": "URL",
+      "line": 28
+    },
+    {
+      "id": "starlette/datastructures.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 29
+    },
+    {
+      "id": "starlette/datastructures.py:components",
+      "type": "function_definition",
+      "name": "components",
+      "line": 70
+    },
+    {
+      "id": "starlette/datastructures.py:scheme",
+      "type": "function_definition",
+      "name": "scheme",
+      "line": 76
+    },
+    {
+      "id": "starlette/datastructures.py:netloc",
+      "type": "function_definition",
+      "name": "netloc",
+      "line": 80
+    },
+    {
+      "id": "starlette/datastructures.py:path",
+      "type": "function_definition",
+      "name": "path",
+      "line": 84
+    },
+    {
+      "id": "starlette/datastructures.py:query",
+      "type": "function_definition",
+      "name": "query",
+      "line": 88
+    },
+    {
+      "id": "starlette/datastructures.py:fragment",
+      "type": "function_definition",
+      "name": "fragment",
+      "line": 92
+    },
+    {
+      "id": "starlette/datastructures.py:username",
+      "type": "function_definition",
+      "name": "username",
+      "line": 96
+    },
+    {
+      "id": "starlette/datastructures.py:password",
+      "type": "function_definition",
+      "name": "password",
+      "line": 100
+    },
+    {
+      "id": "starlette/datastructures.py:hostname",
+      "type": "function_definition",
+      "name": "hostname",
+      "line": 104
+    },
+    {
+      "id": "starlette/datastructures.py:port",
+      "type": "function_definition",
+      "name": "port",
+      "line": 108
+    },
+    {
+      "id": "starlette/datastructures.py:is_secure",
+      "type": "function_definition",
+      "name": "is_secure",
+      "line": 112
+    },
+    {
+      "id": "starlette/datastructures.py:replace",
+      "type": "function_definition",
+      "name": "replace",
+      "line": 115
+    },
+    {
+      "id": "starlette/datastructures.py:include_query_params",
+      "type": "function_definition",
+      "name": "include_query_params",
+      "line": 143
+    },
+    {
+      "id": "starlette/datastructures.py:replace_query_params",
+      "type": "function_definition",
+      "name": "replace_query_params",
+      "line": 149
+    },
+    {
+      "id": "starlette/datastructures.py:remove_query_params",
+      "type": "function_definition",
+      "name": "remove_query_params",
+      "line": 153
+    },
+    {
+      "id": "starlette/datastructures.py:__eq__",
+      "type": "function_definition",
+      "name": "__eq__",
+      "line": 162
+    },
+    {
+      "id": "starlette/datastructures.py:__str__",
+      "type": "function_definition",
+      "name": "__str__",
+      "line": 165
+    },
+    {
+      "id": "starlette/datastructures.py:__repr__",
+      "type": "function_definition",
+      "name": "__repr__",
+      "line": 168
+    },
+    {
+      "id": "starlette/datastructures.py:URLPath",
+      "type": "class_definition",
+      "name": "URLPath",
+      "line": 175
+    },
+    {
+      "id": "starlette/datastructures.py:__new__",
+      "type": "function_definition",
+      "name": "__new__",
+      "line": 181
+    },
+    {
+      "id": "starlette/datastructures.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 185
+    },
+    {
+      "id": "starlette/datastructures.py:make_absolute_url",
+      "type": "function_definition",
+      "name": "make_absolute_url",
+      "line": 189
+    },
+    {
+      "id": "starlette/datastructures.py:Secret",
+      "type": "class_definition",
+      "name": "Secret",
+      "line": 205
+    },
+    {
+      "id": "starlette/datastructures.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 211
+    },
+    {
+      "id": "starlette/datastructures.py:__repr__",
+      "type": "function_definition",
+      "name": "__repr__",
+      "line": 214
+    },
+    {
+      "id": "starlette/datastructures.py:__str__",
+      "type": "function_definition",
+      "name": "__str__",
+      "line": 218
+    },
+    {
+      "id": "starlette/datastructures.py:__bool__",
+      "type": "function_definition",
+      "name": "__bool__",
+      "line": 221
+    },
+    {
+      "id": "starlette/datastructures.py:CommaSeparatedStrings",
+      "type": "class_definition",
+      "name": "CommaSeparatedStrings",
+      "line": 225
+    },
+    {
+      "id": "starlette/datastructures.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 226
+    },
+    {
+      "id": "starlette/datastructures.py:__len__",
+      "type": "function_definition",
+      "name": "__len__",
+      "line": 235
+    },
+    {
+      "id": "starlette/datastructures.py:__getitem__",
+      "type": "function_definition",
+      "name": "__getitem__",
+      "line": 238
+    },
+    {
+      "id": "starlette/datastructures.py:__iter__",
+      "type": "function_definition",
+      "name": "__iter__",
+      "line": 241
+    },
+    {
+      "id": "starlette/datastructures.py:__repr__",
+      "type": "function_definition",
+      "name": "__repr__",
+      "line": 244
+    },
+    {
+      "id": "starlette/datastructures.py:__str__",
+      "type": "function_definition",
+      "name": "__str__",
+      "line": 249
+    },
+    {
+      "id": "starlette/datastructures.py:ImmutableMultiDict",
+      "type": "class_definition",
+      "name": "ImmutableMultiDict",
+      "line": 253
+    },
+    {
+      "id": "starlette/datastructures.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 256
+    },
+    {
+      "id": "starlette/datastructures.py:getlist",
+      "type": "function_definition",
+      "name": "getlist",
+      "line": 284
+    },
+    {
+      "id": "starlette/datastructures.py:keys",
+      "type": "function_definition",
+      "name": "keys",
+      "line": 287
+    },
+    {
+      "id": "starlette/datastructures.py:values",
+      "type": "function_definition",
+      "name": "values",
+      "line": 290
+    },
+    {
+      "id": "starlette/datastructures.py:items",
+      "type": "function_definition",
+      "name": "items",
+      "line": 293
+    },
+    {
+      "id": "starlette/datastructures.py:multi_items",
+      "type": "function_definition",
+      "name": "multi_items",
+      "line": 296
+    },
+    {
+      "id": "starlette/datastructures.py:__getitem__",
+      "type": "function_definition",
+      "name": "__getitem__",
+      "line": 299
+    },
+    {
+      "id": "starlette/datastructures.py:__contains__",
+      "type": "function_definition",
+      "name": "__contains__",
+      "line": 302
+    },
+    {
+      "id": "starlette/datastructures.py:__iter__",
+      "type": "function_definition",
+      "name": "__iter__",
+      "line": 305
+    },
+    {
+      "id": "starlette/datastructures.py:__len__",
+      "type": "function_definition",
+      "name": "__len__",
+      "line": 308
+    },
+    {
+      "id": "starlette/datastructures.py:__eq__",
+      "type": "function_definition",
+      "name": "__eq__",
+      "line": 311
+    },
+    {
+      "id": "starlette/datastructures.py:__repr__",
+      "type": "function_definition",
+      "name": "__repr__",
+      "line": 316
+    },
+    {
+      "id": "starlette/datastructures.py:MultiDict",
+      "type": "class_definition",
+      "name": "MultiDict",
+      "line": 322
+    },
+    {
+      "id": "starlette/datastructures.py:__setitem__",
+      "type": "function_definition",
+      "name": "__setitem__",
+      "line": 323
+    },
+    {
+      "id": "starlette/datastructures.py:__delitem__",
+      "type": "function_definition",
+      "name": "__delitem__",
+      "line": 326
+    },
+    {
+      "id": "starlette/datastructures.py:pop",
+      "type": "function_definition",
+      "name": "pop",
+      "line": 330
+    },
+    {
+      "id": "starlette/datastructures.py:popitem",
+      "type": "function_definition",
+      "name": "popitem",
+      "line": 334
+    },
+    {
+      "id": "starlette/datastructures.py:poplist",
+      "type": "function_definition",
+      "name": "poplist",
+      "line": 339
+    },
+    {
+      "id": "starlette/datastructures.py:clear",
+      "type": "function_definition",
+      "name": "clear",
+      "line": 344
+    },
+    {
+      "id": "starlette/datastructures.py:setdefault",
+      "type": "function_definition",
+      "name": "setdefault",
+      "line": 348
+    },
+    {
+      "id": "starlette/datastructures.py:setlist",
+      "type": "function_definition",
+      "name": "setlist",
+      "line": 355
+    },
+    {
+      "id": "starlette/datastructures.py:append",
+      "type": "function_definition",
+      "name": "append",
+      "line": 363
+    },
+    {
+      "id": "starlette/datastructures.py:update",
+      "type": "function_definition",
+      "name": "update",
+      "line": 367
+    },
+    {
+      "id": "starlette/datastructures.py:QueryParams",
+      "type": "class_definition",
+      "name": "QueryParams",
+      "line": 378
+    },
+    {
+      "id": "starlette/datastructures.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 383
+    },
+    {
+      "id": "starlette/datastructures.py:__str__",
+      "type": "function_definition",
+      "name": "__str__",
+      "line": 401
+    },
+    {
+      "id": "starlette/datastructures.py:__repr__",
+      "type": "function_definition",
+      "name": "__repr__",
+      "line": 404
+    },
+    {
+      "id": "starlette/datastructures.py:UploadFile",
+      "type": "class_definition",
+      "name": "UploadFile",
+      "line": 410
+    },
+    {
+      "id": "starlette/datastructures.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 415
+    },
+    {
+      "id": "starlette/datastructures.py:content_type",
+      "type": "function_definition",
+      "name": "content_type",
+      "line": 433
+    },
+    {
+      "id": "starlette/datastructures.py:_in_memory",
+      "type": "function_definition",
+      "name": "_in_memory",
+      "line": 437
+    },
+    {
+      "id": "starlette/datastructures.py:_will_roll",
+      "type": "function_definition",
+      "name": "_will_roll",
+      "line": 442
+    },
+    {
+      "id": "starlette/datastructures.py:write",
+      "type": "function_definition",
+      "name": "write",
+      "line": 451
+    },
+    {
+      "id": "starlette/datastructures.py:read",
+      "type": "function_definition",
+      "name": "read",
+      "line": 461
+    },
+    {
+      "id": "starlette/datastructures.py:seek",
+      "type": "function_definition",
+      "name": "seek",
+      "line": 466
+    },
+    {
+      "id": "starlette/datastructures.py:close",
+      "type": "function_definition",
+      "name": "close",
+      "line": 472
+    },
+    {
+      "id": "starlette/datastructures.py:__repr__",
+      "type": "function_definition",
+      "name": "__repr__",
+      "line": 478
+    },
+    {
+      "id": "starlette/datastructures.py:FormData",
+      "type": "class_definition",
+      "name": "FormData",
+      "line": 482
+    },
+    {
+      "id": "starlette/datastructures.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 487
+    },
+    {
+      "id": "starlette/datastructures.py:close",
+      "type": "function_definition",
+      "name": "close",
+      "line": 494
+    },
+    {
+      "id": "starlette/datastructures.py:Headers",
+      "type": "class_definition",
+      "name": "Headers",
+      "line": 500
+    },
+    {
+      "id": "starlette/datastructures.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 505
+    },
+    {
+      "id": "starlette/datastructures.py:raw",
+      "type": "function_definition",
+      "name": "raw",
+      "line": 525
+    },
+    {
+      "id": "starlette/datastructures.py:keys",
+      "type": "function_definition",
+      "name": "keys",
+      "line": 528
+    },
+    {
+      "id": "starlette/datastructures.py:values",
+      "type": "function_definition",
+      "name": "values",
+      "line": 531
+    },
+    {
+      "id": "starlette/datastructures.py:items",
+      "type": "function_definition",
+      "name": "items",
+      "line": 534
+    },
+    {
+      "id": "starlette/datastructures.py:getlist",
+      "type": "function_definition",
+      "name": "getlist",
+      "line": 537
+    },
+    {
+      "id": "starlette/datastructures.py:mutablecopy",
+      "type": "function_definition",
+      "name": "mutablecopy",
+      "line": 541
+    },
+    {
+      "id": "starlette/datastructures.py:__getitem__",
+      "type": "function_definition",
+      "name": "__getitem__",
+      "line": 544
+    },
+    {
+      "id": "starlette/datastructures.py:__contains__",
+      "type": "function_definition",
+      "name": "__contains__",
+      "line": 551
+    },
+    {
+      "id": "starlette/datastructures.py:__iter__",
+      "type": "function_definition",
+      "name": "__iter__",
+      "line": 558
+    },
+    {
+      "id": "starlette/datastructures.py:__len__",
+      "type": "function_definition",
+      "name": "__len__",
+      "line": 561
+    },
+    {
+      "id": "starlette/datastructures.py:__eq__",
+      "type": "function_definition",
+      "name": "__eq__",
+      "line": 564
+    },
+    {
+      "id": "starlette/datastructures.py:__repr__",
+      "type": "function_definition",
+      "name": "__repr__",
+      "line": 569
+    },
+    {
+      "id": "starlette/datastructures.py:MutableHeaders",
+      "type": "class_definition",
+      "name": "MutableHeaders",
+      "line": 577
+    },
+    {
+      "id": "starlette/datastructures.py:__setitem__",
+      "type": "function_definition",
+      "name": "__setitem__",
+      "line": 578
+    },
+    {
+      "id": "starlette/datastructures.py:__delitem__",
+      "type": "function_definition",
+      "name": "__delitem__",
+      "line": 600
+    },
+    {
+      "id": "starlette/datastructures.py:__ior__",
+      "type": "function_definition",
+      "name": "__ior__",
+      "line": 614
+    },
+    {
+      "id": "starlette/datastructures.py:__or__",
+      "type": "function_definition",
+      "name": "__or__",
+      "line": 620
+    },
+    {
+      "id": "starlette/datastructures.py:raw",
+      "type": "function_definition",
+      "name": "raw",
+      "line": 628
+    },
+    {
+      "id": "starlette/datastructures.py:setdefault",
+      "type": "function_definition",
+      "name": "setdefault",
+      "line": 631
+    },
+    {
+      "id": "starlette/datastructures.py:update",
+      "type": "function_definition",
+      "name": "update",
+      "line": 645
+    },
+    {
+      "id": "starlette/datastructures.py:append",
+      "type": "function_definition",
+      "name": "append",
+      "line": 649
+    },
+    {
+      "id": "starlette/datastructures.py:add_vary_header",
+      "type": "function_definition",
+      "name": "add_vary_header",
+      "line": 657
+    },
+    {
+      "id": "starlette/datastructures.py:State",
+      "type": "class_definition",
+      "name": "State",
+      "line": 664
+    },
+    {
+      "id": "starlette/datastructures.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 673
+    },
+    {
+      "id": "starlette/datastructures.py:__setattr__",
+      "type": "function_definition",
+      "name": "__setattr__",
+      "line": 678
+    },
+    {
+      "id": "starlette/datastructures.py:__getattr__",
+      "type": "function_definition",
+      "name": "__getattr__",
+      "line": 681
+    },
+    {
+      "id": "starlette/datastructures.py:__delattr__",
+      "type": "function_definition",
+      "name": "__delattr__",
+      "line": 688
+    },
+    {
+      "id": "starlette/datastructures.py:__getitem__",
+      "type": "function_definition",
+      "name": "__getitem__",
+      "line": 691
+    },
+    {
+      "id": "starlette/datastructures.py:__setitem__",
+      "type": "function_definition",
+      "name": "__setitem__",
+      "line": 694
+    },
+    {
+      "id": "starlette/datastructures.py:__delitem__",
+      "type": "function_definition",
+      "name": "__delitem__",
+      "line": 697
+    },
+    {
+      "id": "starlette/datastructures.py:__iter__",
+      "type": "function_definition",
+      "name": "__iter__",
+      "line": 700
+    },
+    {
+      "id": "starlette/datastructures.py:__len__",
+      "type": "function_definition",
+      "name": "__len__",
+      "line": 703
+    },
+    {
+      "id": "starlette/endpoints.py:HTTPEndpoint",
+      "type": "class_definition",
+      "name": "HTTPEndpoint",
+      "line": 17
+    },
+    {
+      "id": "starlette/endpoints.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 18
+    },
+    {
+      "id": "starlette/endpoints.py:__await__",
+      "type": "function_definition",
+      "name": "__await__",
+      "line": 29
+    },
+    {
+      "id": "starlette/endpoints.py:dispatch",
+      "type": "function_definition",
+      "name": "dispatch",
+      "line": 32
+    },
+    {
+      "id": "starlette/endpoints.py:method_not_allowed",
+      "type": "function_definition",
+      "name": "method_not_allowed",
+      "line": 48
+    },
+    {
+      "id": "starlette/endpoints.py:WebSocketEndpoint",
+      "type": "class_definition",
+      "name": "WebSocketEndpoint",
+      "line": 58
+    },
+    {
+      "id": "starlette/endpoints.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 61
+    },
+    {
+      "id": "starlette/endpoints.py:__await__",
+      "type": "function_definition",
+      "name": "__await__",
+      "line": 67
+    },
+    {
+      "id": "starlette/endpoints.py:dispatch",
+      "type": "function_definition",
+      "name": "dispatch",
+      "line": 70
+    },
+    {
+      "id": "starlette/endpoints.py:decode",
+      "type": "function_definition",
+      "name": "decode",
+      "line": 91
+    },
+    {
+      "id": "starlette/endpoints.py:on_connect",
+      "type": "function_definition",
+      "name": "on_connect",
+      "line": 119
+    },
+    {
+      "id": "starlette/endpoints.py:on_receive",
+      "type": "function_definition",
+      "name": "on_receive",
+      "line": 123
+    },
+    {
+      "id": "starlette/endpoints.py:on_disconnect",
+      "type": "function_definition",
+      "name": "on_disconnect",
+      "line": 126
+    },
+    {
+      "id": "starlette/exceptions.py:HTTPException",
+      "type": "class_definition",
+      "name": "HTTPException",
+      "line": 7
+    },
+    {
+      "id": "starlette/exceptions.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 8
+    },
+    {
+      "id": "starlette/exceptions.py:__str__",
+      "type": "function_definition",
+      "name": "__str__",
+      "line": 15
+    },
+    {
+      "id": "starlette/exceptions.py:__repr__",
+      "type": "function_definition",
+      "name": "__repr__",
+      "line": 18
+    },
+    {
+      "id": "starlette/exceptions.py:WebSocketException",
+      "type": "class_definition",
+      "name": "WebSocketException",
+      "line": 23
+    },
+    {
+      "id": "starlette/exceptions.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 24
+    },
+    {
+      "id": "starlette/exceptions.py:__str__",
+      "type": "function_definition",
+      "name": "__str__",
+      "line": 28
+    },
+    {
+      "id": "starlette/exceptions.py:__repr__",
+      "type": "function_definition",
+      "name": "__repr__",
+      "line": 31
+    },
+    {
+      "id": "starlette/exceptions.py:StarletteDeprecationWarning",
+      "type": "class_definition",
+      "name": "StarletteDeprecationWarning",
+      "line": 36
+    },
+    {
+      "id": "starlette/formparsers.py:FormMessage",
+      "type": "class_definition",
+      "name": "FormMessage",
+      "line": 28
+    },
+    {
+      "id": "starlette/formparsers.py:MultipartPart",
+      "type": "class_definition",
+      "name": "MultipartPart",
+      "line": 37
+    },
+    {
+      "id": "starlette/formparsers.py:_user_safe_decode",
+      "type": "function_definition",
+      "name": "_user_safe_decode",
+      "line": 45
+    },
+    {
+      "id": "starlette/formparsers.py:MultiPartException",
+      "type": "class_definition",
+      "name": "MultiPartException",
+      "line": 52
+    },
+    {
+      "id": "starlette/formparsers.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 53
+    },
+    {
+      "id": "starlette/formparsers.py:FormParser",
+      "type": "class_definition",
+      "name": "FormParser",
+      "line": 57
+    },
+    {
+      "id": "starlette/formparsers.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 58
+    },
+    {
+      "id": "starlette/formparsers.py:on_field_start",
+      "type": "function_definition",
+      "name": "on_field_start",
+      "line": 75
+    },
+    {
+      "id": "starlette/formparsers.py:on_field_name",
+      "type": "function_definition",
+      "name": "on_field_name",
+      "line": 80
+    },
+    {
+      "id": "starlette/formparsers.py:on_field_data",
+      "type": "function_definition",
+      "name": "on_field_data",
+      "line": 87
+    },
+    {
+      "id": "starlette/formparsers.py:on_field_end",
+      "type": "function_definition",
+      "name": "on_field_end",
+      "line": 94
+    },
+    {
+      "id": "starlette/formparsers.py:on_end",
+      "type": "function_definition",
+      "name": "on_end",
+      "line": 101
+    },
+    {
+      "id": "starlette/formparsers.py:parse",
+      "type": "function_definition",
+      "name": "parse",
+      "line": 105
+    },
+    {
+      "id": "starlette/formparsers.py:MultiPartParser",
+      "type": "class_definition",
+      "name": "MultiPartParser",
+      "line": 146
+    },
+    {
+      "id": "starlette/formparsers.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 152
+    },
+    {
+      "id": "starlette/formparsers.py:on_part_begin",
+      "type": "function_definition",
+      "name": "on_part_begin",
+      "line": 178
+    },
+    {
+      "id": "starlette/formparsers.py:on_part_data",
+      "type": "function_definition",
+      "name": "on_part_data",
+      "line": 181
+    },
+    {
+      "id": "starlette/formparsers.py:on_part_end",
+      "type": "function_definition",
+      "name": "on_part_end",
+      "line": 190
+    },
+    {
+      "id": "starlette/formparsers.py:on_header_field",
+      "type": "function_definition",
+      "name": "on_header_field",
+      "line": 205
+    },
+    {
+      "id": "starlette/formparsers.py:on_header_value",
+      "type": "function_definition",
+      "name": "on_header_value",
+      "line": 208
+    },
+    {
+      "id": "starlette/formparsers.py:on_header_end",
+      "type": "function_definition",
+      "name": "on_header_end",
+      "line": 211
+    },
+    {
+      "id": "starlette/formparsers.py:on_headers_finished",
+      "type": "function_definition",
+      "name": "on_headers_finished",
+      "line": 219
+    },
+    {
+      "id": "starlette/formparsers.py:on_end",
+      "type": "function_definition",
+      "name": "on_end",
+      "line": 244
+    },
+    {
+      "id": "starlette/formparsers.py:parse",
+      "type": "function_definition",
+      "name": "parse",
+      "line": 247
+    },
+    {
+      "id": "starlette/middleware/__init__.py:_MiddlewareFactory",
+      "type": "class_definition",
+      "name": "_MiddlewareFactory",
+      "line": 17
+    },
+    {
+      "id": "starlette/middleware/__init__.py:__call__",
+      "type": "function_definition",
+      "name": "__call__",
+      "line": 18
+    },
+    {
+      "id": "starlette/middleware/__init__.py:Middleware",
+      "type": "class_definition",
+      "name": "Middleware",
+      "line": 21
+    },
+    {
+      "id": "starlette/middleware/__init__.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 22
+    },
+    {
+      "id": "starlette/middleware/__init__.py:__iter__",
+      "type": "function_definition",
+      "name": "__iter__",
+      "line": 27
+    },
+    {
+      "id": "starlette/middleware/__init__.py:__repr__",
+      "type": "function_definition",
+      "name": "__repr__",
+      "line": 31
+    },
+    {
+      "id": "starlette/middleware/authentication.py:AuthenticationMiddleware",
+      "type": "class_definition",
+      "name": "AuthenticationMiddleware",
+      "line": 16
+    },
+    {
+      "id": "starlette/middleware/authentication.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 17
+    },
+    {
+      "id": "starlette/middleware/authentication.py:__call__",
+      "type": "function_definition",
+      "name": "__call__",
+      "line": 29
+    },
+    {
+      "id": "starlette/middleware/authentication.py:default_on_error",
+      "type": "function_definition",
+      "name": "default_on_error",
+      "line": 51
+    },
+    {
+      "id": "starlette/middleware/base.py:_CachedRequest",
+      "type": "class_definition",
+      "name": "_CachedRequest",
+      "line": 20
+    },
+    {
+      "id": "starlette/middleware/base.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 28
+    },
+    {
+      "id": "starlette/middleware/base.py:wrapped_receive",
+      "type": "function_definition",
+      "name": "wrapped_receive",
+      "line": 34
+    },
+    {
+      "id": "starlette/middleware/base.py:BaseHTTPMiddleware",
+      "type": "class_definition",
+      "name": "BaseHTTPMiddleware",
+      "line": 96
+    },
+    {
+      "id": "starlette/middleware/base.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 97
+    },
+    {
+      "id": "starlette/middleware/base.py:__call__",
+      "type": "function_definition",
+      "name": "__call__",
+      "line": 101
+    },
+    {
+      "id": "starlette/middleware/base.py:call_next",
+      "type": "function_definition",
+      "name": "call_next",
+      "line": 112
+    },
+    {
+      "id": "starlette/middleware/base.py:receive_or_disconnect",
+      "type": "function_definition",
+      "name": "receive_or_disconnect",
+      "line": 113
+    },
+    {
+      "id": "starlette/middleware/base.py:wrap",
+      "type": "function_definition",
+      "name": "wrap",
+      "line": 119
+    },
+    {
+      "id": "starlette/middleware/base.py:send_no_error",
+      "type": "function_definition",
+      "name": "send_no_error",
+      "line": 132
+    },
+    {
+      "id": "starlette/middleware/base.py:coro",
+      "type": "function_definition",
+      "name": "coro",
+      "line": 139
+    },
+    {
+      "id": "starlette/middleware/base.py:body_stream",
+      "type": "function_definition",
+      "name": "body_stream",
+      "line": 173
+    },
+    {
+      "id": "starlette/middleware/base.py:dispatch",
+      "type": "function_definition",
+      "name": "dispatch",
+      "line": 200
+    },
+    {
+      "id": "starlette/middleware/base.py:_StreamingResponse",
+      "type": "class_definition",
+      "name": "_StreamingResponse",
+      "line": 204
+    },
+    {
+      "id": "starlette/middleware/base.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 205
+    },
+    {
+      "id": "starlette/middleware/base.py:__call__",
+      "type": "function_definition",
+      "name": "__call__",
+      "line": 220
+    },
+    {
+      "id": "starlette/middleware/cors.py:CORSMiddleware",
+      "type": "class_definition",
+      "name": "CORSMiddleware",
+      "line": 15
+    },
+    {
+      "id": "starlette/middleware/cors.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 16
+    },
+    {
+      "id": "starlette/middleware/cors.py:__call__",
+      "type": "function_definition",
+      "name": "__call__",
+      "line": 78
+    },
+    {
+      "id": "starlette/middleware/cors.py:is_allowed_origin",
+      "type": "function_definition",
+      "name": "is_allowed_origin",
+      "line": 98
+    },
+    {
+      "id": "starlette/middleware/cors.py:preflight_response",
+      "type": "function_definition",
+      "name": "preflight_response",
+      "line": 107
+    },
+    {
+      "id": "starlette/middleware/cors.py:simple_response",
+      "type": "function_definition",
+      "name": "simple_response",
+      "line": 152
+    },
+    {
+      "id": "starlette/middleware/cors.py:send",
+      "type": "function_definition",
+      "name": "send",
+      "line": 156
+    },
+    {
+      "id": "starlette/middleware/cors.py:allow_explicit_origin",
+      "type": "function_definition",
+      "name": "allow_explicit_origin",
+      "line": 177
+    },
+    {
+      "id": "starlette/middleware/errors.py:ServerErrorMiddleware",
+      "type": "class_definition",
+      "name": "ServerErrorMiddleware",
+      "line": 127
+    },
+    {
+      "id": "starlette/middleware/errors.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 139
+    },
+    {
+      "id": "starlette/middleware/errors.py:__call__",
+      "type": "function_definition",
+      "name": "__call__",
+      "line": 149
+    },
+    {
+      "id": "starlette/middleware/errors.py:_send",
+      "type": "function_definition",
+      "name": "_send",
+      "line": 156
+    },
+    {
+      "id": "starlette/middleware/errors.py:format_line",
+      "type": "function_definition",
+      "name": "format_line",
+      "line": 188
+    },
+    {
+      "id": "starlette/middleware/errors.py:generate_frame_html",
+      "type": "function_definition",
+      "name": "generate_frame_html",
+      "line": 199
+    },
+    {
+      "id": "starlette/middleware/errors.py:generate_html",
+      "type": "function_definition",
+      "name": "generate_html",
+      "line": 224
+    },
+    {
+      "id": "starlette/middleware/errors.py:generate_plain_text",
+      "type": "function_definition",
+      "name": "generate_plain_text",
+      "line": 246
+    },
+    {
+      "id": "starlette/middleware/errors.py:debug_response",
+      "type": "function_definition",
+      "name": "debug_response",
+      "line": 249
+    },
+    {
+      "id": "starlette/middleware/errors.py:error_response",
+      "type": "function_definition",
+      "name": "error_response",
+      "line": 258
+    },
+    {
+      "id": "starlette/middleware/exceptions.py:ExceptionMiddleware",
+      "type": "class_definition",
+      "name": "ExceptionMiddleware",
+      "line": 18
+    },
+    {
+      "id": "starlette/middleware/exceptions.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 19
+    },
+    {
+      "id": "starlette/middleware/exceptions.py:add_exception_handler",
+      "type": "function_definition",
+      "name": "add_exception_handler",
+      "line": 36
+    },
+    {
+      "id": "starlette/middleware/exceptions.py:__call__",
+      "type": "function_definition",
+      "name": "__call__",
+      "line": 47
+    },
+    {
+      "id": "starlette/middleware/exceptions.py:http_exception",
+      "type": "function_definition",
+      "name": "http_exception",
+      "line": 65
+    },
+    {
+      "id": "starlette/middleware/exceptions.py:websocket_exception",
+      "type": "function_definition",
+      "name": "websocket_exception",
+      "line": 71
+    },
+    {
+      "id": "starlette/middleware/gzip.py:GZipMiddleware",
+      "type": "class_definition",
+      "name": "GZipMiddleware",
+      "line": 11
+    },
+    {
+      "id": "starlette/middleware/gzip.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 12
+    },
+    {
+      "id": "starlette/middleware/gzip.py:__call__",
+      "type": "function_definition",
+      "name": "__call__",
+      "line": 17
+    },
+    {
+      "id": "starlette/middleware/gzip.py:IdentityResponder",
+      "type": "class_definition",
+      "name": "IdentityResponder",
+      "line": 32
+    },
+    {
+      "id": "starlette/middleware/gzip.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 35
+    },
+    {
+      "id": "starlette/middleware/gzip.py:__call__",
+      "type": "function_definition",
+      "name": "__call__",
+      "line": 44
+    },
+    {
+      "id": "starlette/middleware/gzip.py:send_with_compression",
+      "type": "function_definition",
+      "name": "send_with_compression",
+      "line": 48
+    },
+    {
+      "id": "starlette/middleware/gzip.py:apply_compression",
+      "type": "function_definition",
+      "name": "apply_compression",
+      "line": 109
+    },
+    {
+      "id": "starlette/middleware/gzip.py:GZipResponder",
+      "type": "class_definition",
+      "name": "GZipResponder",
+      "line": 119
+    },
+    {
+      "id": "starlette/middleware/gzip.py:__init__",
+      "type": "function_definition",
+      "name": "__init__",
+      "line": 122
+    },
+    {
+      "id": "starlette/middleware/gzip.py:__call__",
+      "type": "function_definition",
+      "name": "__call__",
+      "line": 128
+    },
+    {
+      "id": "starlette/middleware/gzip.py:apply_compression",
+      "type": "function_definition",
+      "name": "apply_compression",
+      "line": 132
+    },
+    {
+      "id": "starlette/middleware/gzip.py:unattached_send",
+      "type": "function_definition",
+      "name": "unattached_send",
+      "line": 144
+    }
+  ],
+  "imports": [
+    {
+      "source": "starlette/_exception_handler.py",
+      "statement": "from typing import Any",
+      "line": 3
+    },
+    {
+      "source": "starlette/_exception_handler.py",
+      "statement": "from starlette._utils import is_async_callable",
+      "line": 5
+    },
+    {
+      "source": "starlette/_exception_handler.py",
+      "statement": "from starlette.concurrency import run_in_threadpool",
+      "line": 6
+    },
+    {
+      "source": "starlette/_exception_handler.py",
+      "statement": "from starlette.exceptions import HTTPException",
+      "line": 7
+    },
+    {
+      "source": "starlette/_exception_handler.py",
+      "statement": "from starlette.requests import Request",
+      "line": 8
+    },
+    {
+      "source": "starlette/_exception_handler.py",
+      "statement": "from starlette.types import ASGIApp, ExceptionHandler, Message, Receive, Scope, Send",
+      "line": 9
+    },
+    {
+      "source": "starlette/_exception_handler.py",
+      "statement": "from starlette.websockets import WebSocket",
+      "line": 10
+    },
+    {
+      "source": "starlette/_utils.py",
+      "statement": "import functools",
+      "line": 3
+    },
+    {
+      "source": "starlette/_utils.py",
+      "statement": "import sys",
+      "line": 4
+    },
+    {
+      "source": "starlette/_utils.py",
+      "statement": "from collections.abc import AsyncGenerator, Awaitable, Callable, Generator",
+      "line": 5
+    },
+    {
+      "source": "starlette/_utils.py",
+      "statement": "from contextlib import AbstractAsyncContextManager, asynccontextmanager",
+      "line": 6
+    },
+    {
+      "source": "starlette/_utils.py",
+      "statement": "from typing import Any, Generic, Protocol, TypeVar, overload",
+      "line": 7
+    },
+    {
+      "source": "starlette/_utils.py",
+      "statement": "import anyio.abc",
+      "line": 9
+    },
+    {
+      "source": "starlette/_utils.py",
+      "statement": "from starlette.types import Scope",
+      "line": 11
+    },
+    {
+      "source": "starlette/_utils.py",
+      "statement": "from inspect import iscoroutinefunction",
+      "line": 14
+    },
+    {
+      "source": "starlette/_utils.py",
+      "statement": "from typing import TypeIs",
+      "line": 15
+    },
+    {
+      "source": "starlette/_utils.py",
+      "statement": "from asyncio import iscoroutinefunction",
+      "line": 17
+    },
+    {
+      "source": "starlette/_utils.py",
+      "statement": "from typing_extensions import TypeIs",
+      "line": 19
+    },
+    {
+      "source": "starlette/_utils.py",
+      "statement": "from exceptiongroup import BaseExceptionGroup",
+      "line": 23
+    },
+    {
+      "source": "starlette/applications.py",
+      "statement": "from collections.abc import Awaitable, Callable, Mapping, Sequence",
+      "line": 3
+    },
+    {
+      "source": "starlette/applications.py",
+      "statement": "from typing import Any, ParamSpec, TypeVar",
+      "line": 4
+    },
+    {
+      "source": "starlette/applications.py",
+      "statement": "from starlette.datastructures import State, URLPath",
+      "line": 6
+    },
+    {
+      "source": "starlette/applications.py",
+      "statement": "from starlette.middleware import Middleware, _MiddlewareFactory",
+      "line": 7
+    },
+    {
+      "source": "starlette/applications.py",
+      "statement": "from starlette.middleware.errors import ServerErrorMiddleware",
+      "line": 8
+    },
+    {
+      "source": "starlette/applications.py",
+      "statement": "from starlette.middleware.exceptions import ExceptionMiddleware",
+      "line": 9
+    },
+    {
+      "source": "starlette/applications.py",
+      "statement": "from starlette.requests import Request",
+      "line": 10
+    },
+    {
+      "source": "starlette/applications.py",
+      "statement": "from starlette.responses import Response",
+      "line": 11
+    },
+    {
+      "source": "starlette/applications.py",
+      "statement": "from starlette.routing import BaseRoute, Router",
+      "line": 12
+    },
+    {
+      "source": "starlette/applications.py",
+      "statement": "from starlette.types import ASGIApp, ExceptionHandler, Lifespan, Receive, Scope, Send",
+      "line": 13
+    },
+    {
+      "source": "starlette/authentication.py",
+      "statement": "import functools",
+      "line": 3
+    },
+    {
+      "source": "starlette/authentication.py",
+      "statement": "import inspect",
+      "line": 4
+    },
+    {
+      "source": "starlette/authentication.py",
+      "statement": "from collections.abc import Callable, Sequence",
+      "line": 5
+    },
+    {
+      "source": "starlette/authentication.py",
+      "statement": "from typing import Any, ParamSpec",
+      "line": 6
+    },
+    {
+      "source": "starlette/authentication.py",
+      "statement": "from urllib.parse import urlencode",
+      "line": 7
+    },
+    {
+      "source": "starlette/authentication.py",
+      "statement": "from starlette._utils import is_async_callable",
+      "line": 9
+    },
+    {
+      "source": "starlette/authentication.py",
+      "statement": "from starlette.exceptions import HTTPException",
+      "line": 10
+    },
+    {
+      "source": "starlette/authentication.py",
+      "statement": "from starlette.requests import HTTPConnection, Request",
+      "line": 11
+    },
+    {
+      "source": "starlette/authentication.py",
+      "statement": "from starlette.responses import RedirectResponse",
+      "line": 12
+    },
+    {
+      "source": "starlette/authentication.py",
+      "statement": "from starlette.websockets import WebSocket",
+      "line": 13
+    },
+    {
+      "source": "starlette/background.py",
+      "statement": "from collections.abc import Callable, Sequence",
+      "line": 3
+    },
+    {
+      "source": "starlette/background.py",
+      "statement": "from typing import Any, ParamSpec",
+      "line": 4
+    },
+    {
+      "source": "starlette/background.py",
+      "statement": "from starlette._utils import is_async_callable",
+      "line": 6
+    },
+    {
+      "source": "starlette/background.py",
+      "statement": "from starlette.concurrency import run_in_threadpool",
+      "line": 7
+    },
+    {
+      "source": "starlette/concurrency.py",
+      "statement": "import functools",
+      "line": 3
+    },
+    {
+      "source": "starlette/concurrency.py",
+      "statement": "import warnings",
+      "line": 4
+    },
+    {
+      "source": "starlette/concurrency.py",
+      "statement": "from collections.abc import AsyncIterator, Callable, Coroutine, Iterable, Iterator",
+      "line": 5
+    },
+    {
+      "source": "starlette/concurrency.py",
+      "statement": "from typing import ParamSpec, TypeVar",
+      "line": 6
+    },
+    {
+      "source": "starlette/concurrency.py",
+      "statement": "import anyio.to_thread",
+      "line": 8
+    },
+    {
+      "source": "starlette/concurrency.py",
+      "statement": "from starlette.exceptions import StarletteDeprecationWarning",
+      "line": 10
+    },
+    {
+      "source": "starlette/config.py",
+      "statement": "import os",
+      "line": 3
+    },
+    {
+      "source": "starlette/config.py",
+      "statement": "import warnings",
+      "line": 4
+    },
+    {
+      "source": "starlette/config.py",
+      "statement": "from collections.abc import Callable, Iterator, Mapping, MutableMapping",
+      "line": 5
+    },
+    {
+      "source": "starlette/config.py",
+      "statement": "from pathlib import Path",
+      "line": 6
+    },
+    {
+      "source": "starlette/config.py",
+      "statement": "from typing import Any, TypeVar, overload",
+      "line": 7
+    },
+    {
+      "source": "starlette/convertors.py",
+      "statement": "import math",
+      "line": 3
+    },
+    {
+      "source": "starlette/convertors.py",
+      "statement": "import uuid",
+      "line": 4
+    },
+    {
+      "source": "starlette/convertors.py",
+      "statement": "from typing import Any, ClassVar, Generic, TypeVar",
+      "line": 5
+    },
+    {
+      "source": "starlette/datastructures.py",
+      "statement": "import re",
+      "line": 3
+    },
+    {
+      "source": "starlette/datastructures.py",
+      "statement": "from collections.abc import ItemsView, Iterable, Iterator, KeysView, Mapping, MutableMapping, Sequence, ValuesView",
+      "line": 4
+    },
+    {
+      "source": "starlette/datastructures.py",
+      "statement": "from shlex import shlex",
+      "line": 5
+    },
+    {
+      "source": "starlette/datastructures.py",
+      "statement": "from typing import Any, BinaryIO, Literal, NamedTuple, TypeVar, cast",
+      "line": 6
+    },
+    {
+      "source": "starlette/datastructures.py",
+      "statement": "from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit",
+      "line": 7
+    },
+    {
+      "source": "starlette/datastructures.py",
+      "statement": "from starlette.concurrency import run_in_threadpool",
+      "line": 9
+    },
+    {
+      "source": "starlette/datastructures.py",
+      "statement": "from starlette.types import Scope",
+      "line": 10
+    },
+    {
+      "source": "starlette/endpoints.py",
+      "statement": "import json",
+      "line": 3
+    },
+    {
+      "source": "starlette/endpoints.py",
+      "statement": "from collections.abc import Callable, Generator",
+      "line": 4
+    },
+    {
+      "source": "starlette/endpoints.py",
+      "statement": "from typing import Any, Literal",
+      "line": 5
+    },
+    {
+      "source": "starlette/endpoints.py",
+      "statement": "from starlette import status",
+      "line": 7
+    },
+    {
+      "source": "starlette/endpoints.py",
+      "statement": "from starlette._utils import is_async_callable",
+      "line": 8
+    },
+    {
+      "source": "starlette/endpoints.py",
+      "statement": "from starlette.concurrency import run_in_threadpool",
+      "line": 9
+    },
+    {
+      "source": "starlette/endpoints.py",
+      "statement": "from starlette.exceptions import HTTPException",
+      "line": 10
+    },
+    {
+      "source": "starlette/endpoints.py",
+      "statement": "from starlette.requests import Request",
+      "line": 11
+    },
+    {
+      "source": "starlette/endpoints.py",
+      "statement": "from starlette.responses import PlainTextResponse, Response",
+      "line": 12
+    },
+    {
+      "source": "starlette/endpoints.py",
+      "statement": "from starlette.types import Message, Receive, Scope, Send",
+      "line": 13
+    },
+    {
+      "source": "starlette/endpoints.py",
+      "statement": "from starlette.websockets import WebSocket",
+      "line": 14
+    },
+    {
+      "source": "starlette/exceptions.py",
+      "statement": "import http",
+      "line": 3
+    },
+    {
+      "source": "starlette/exceptions.py",
+      "statement": "from collections.abc import Mapping",
+      "line": 4
+    },
+    {
+      "source": "starlette/formparsers.py",
+      "statement": "from collections.abc import AsyncGenerator",
+      "line": 3
+    },
+    {
+      "source": "starlette/formparsers.py",
+      "statement": "from dataclasses import dataclass, field",
+      "line": 4
+    },
+    {
+      "source": "starlette/formparsers.py",
+      "statement": "from enum import Enum",
+      "line": 5
+    },
+    {
+      "source": "starlette/formparsers.py",
+      "statement": "from tempfile import SpooledTemporaryFile",
+      "line": 6
+    },
+    {
+      "source": "starlette/formparsers.py",
+      "statement": "from typing import TYPE_CHECKING",
+      "line": 7
+    },
+    {
+      "source": "starlette/formparsers.py",
+      "statement": "from urllib.parse import unquote_plus",
+      "line": 8
+    },
+    {
+      "source": "starlette/formparsers.py",
+      "statement": "from starlette.datastructures import FormData, Headers, UploadFile",
+      "line": 10
+    },
+    {
+      "source": "starlette/formparsers.py",
+      "statement": "import python_multipart as multipart",
+      "line": 13
+    },
+    {
+      "source": "starlette/formparsers.py",
+      "statement": "from python_multipart.multipart import MultipartCallbacks, QuerystringCallbacks, parse_options_header",
+      "line": 14
+    },
+    {
+      "source": "starlette/formparsers.py",
+      "statement": "import python_multipart as multipart",
+      "line": 18
+    },
+    {
+      "source": "starlette/formparsers.py",
+      "statement": "from python_multipart.multipart import parse_options_header",
+      "line": 19
+    },
+    {
+      "source": "starlette/formparsers.py",
+      "statement": "import multipart",
+      "line": 21
+    },
+    {
+      "source": "starlette/formparsers.py",
+      "statement": "from multipart.multipart import parse_options_header",
+      "line": 22
+    },
+    {
+      "source": "starlette/middleware/__init__.py",
+      "statement": "from collections.abc import Awaitable, Callable, Iterator",
+      "line": 3
+    },
+    {
+      "source": "starlette/middleware/__init__.py",
+      "statement": "from typing import Any, ParamSpec, Protocol",
+      "line": 4
+    },
+    {
+      "source": "starlette/middleware/authentication.py",
+      "statement": "from collections.abc import Callable",
+      "line": 3
+    },
+    {
+      "source": "starlette/middleware/authentication.py",
+      "statement": "from starlette.authentication import (\n    AuthCredentials,\n    AuthenticationBackend,\n    AuthenticationError,\n    UnauthenticatedUser,\n)",
+      "line": 5
+    },
+    {
+      "source": "starlette/middleware/authentication.py",
+      "statement": "from starlette.requests import HTTPConnection",
+      "line": 11
+    },
+    {
+      "source": "starlette/middleware/authentication.py",
+      "statement": "from starlette.responses import PlainTextResponse, Response",
+      "line": 12
+    },
+    {
+      "source": "starlette/middleware/authentication.py",
+      "statement": "from starlette.types import ASGIApp, Receive, Scope, Send",
+      "line": 13
+    },
+    {
+      "source": "starlette/middleware/base.py",
+      "statement": "from collections.abc import AsyncGenerator, AsyncIterable, Awaitable, Callable, Mapping, MutableMapping",
+      "line": 3
+    },
+    {
+      "source": "starlette/middleware/base.py",
+      "statement": "from typing import Any, TypeVar",
+      "line": 4
+    },
+    {
+      "source": "starlette/middleware/base.py",
+      "statement": "import anyio",
+      "line": 6
+    },
+    {
+      "source": "starlette/middleware/base.py",
+      "statement": "from starlette._utils import create_collapsing_task_group",
+      "line": 8
+    },
+    {
+      "source": "starlette/middleware/base.py",
+      "statement": "from starlette.requests import ClientDisconnect, Request",
+      "line": 9
+    },
+    {
+      "source": "starlette/middleware/base.py",
+      "statement": "from starlette.responses import Response",
+      "line": 10
+    },
+    {
+      "source": "starlette/middleware/base.py",
+      "statement": "from starlette.types import ASGIApp, Message, Receive, Scope, Send",
+      "line": 11
+    },
+    {
+      "source": "starlette/middleware/cors.py",
+      "statement": "import functools",
+      "line": 3
+    },
+    {
+      "source": "starlette/middleware/cors.py",
+      "statement": "import re",
+      "line": 4
+    },
+    {
+      "source": "starlette/middleware/cors.py",
+      "statement": "from collections.abc import Sequence",
+      "line": 5
+    },
+    {
+      "source": "starlette/middleware/cors.py",
+      "statement": "from starlette.datastructures import Headers, MutableHeaders",
+      "line": 7
+    },
+    {
+      "source": "starlette/middleware/cors.py",
+      "statement": "from starlette.responses import PlainTextResponse, Response",
+      "line": 8
+    },
+    {
+      "source": "starlette/middleware/cors.py",
+      "statement": "from starlette.types import ASGIApp, Message, Receive, Scope, Send",
+      "line": 9
+    },
+    {
+      "source": "starlette/middleware/errors.py",
+      "statement": "import html",
+      "line": 3
+    },
+    {
+      "source": "starlette/middleware/errors.py",
+      "statement": "import inspect",
+      "line": 4
+    },
+    {
+      "source": "starlette/middleware/errors.py",
+      "statement": "import sys",
+      "line": 5
+    },
+    {
+      "source": "starlette/middleware/errors.py",
+      "statement": "import traceback",
+      "line": 6
+    },
+    {
+      "source": "starlette/middleware/errors.py",
+      "statement": "from starlette._utils import is_async_callable",
+      "line": 8
+    },
+    {
+      "source": "starlette/middleware/errors.py",
+      "statement": "from starlette.concurrency import run_in_threadpool",
+      "line": 9
+    },
+    {
+      "source": "starlette/middleware/errors.py",
+      "statement": "from starlette.requests import Request",
+      "line": 10
+    },
+    {
+      "source": "starlette/middleware/errors.py",
+      "statement": "from starlette.responses import HTMLResponse, PlainTextResponse, Response",
+      "line": 11
+    },
+    {
+      "source": "starlette/middleware/errors.py",
+      "statement": "from starlette.types import ASGIApp, ExceptionHandler, Message, Receive, Scope, Send",
+      "line": 12
+    },
+    {
+      "source": "starlette/middleware/exceptions.py",
+      "statement": "from collections.abc import Mapping",
+      "line": 3
+    },
+    {
+      "source": "starlette/middleware/exceptions.py",
+      "statement": "from typing import Any",
+      "line": 4
+    },
+    {
+      "source": "starlette/middleware/exceptions.py",
+      "statement": "from starlette._exception_handler import (\n    ExceptionHandlers,\n    StatusHandlers,\n    wrap_app_handling_exceptions,\n)",
+      "line": 6
+    },
+    {
+      "source": "starlette/middleware/exceptions.py",
+      "statement": "from starlette.exceptions import HTTPException, WebSocketException",
+      "line": 11
+    },
+    {
+      "source": "starlette/middleware/exceptions.py",
+      "statement": "from starlette.requests import Request",
+      "line": 12
+    },
+    {
+      "source": "starlette/middleware/exceptions.py",
+      "statement": "from starlette.responses import PlainTextResponse, Response",
+      "line": 13
+    },
+    {
+      "source": "starlette/middleware/exceptions.py",
+      "statement": "from starlette.types import ASGIApp, ExceptionHandler, Receive, Scope, Send",
+      "line": 14
+    },
+    {
+      "source": "starlette/middleware/exceptions.py",
+      "statement": "from starlette.websockets import WebSocket",
+      "line": 15
+    },
+    {
+      "source": "starlette/middleware/gzip.py",
+      "statement": "import gzip",
+      "line": 1
+    },
+    {
+      "source": "starlette/middleware/gzip.py",
+      "statement": "import io",
+      "line": 2
+    },
+    {
+      "source": "starlette/middleware/gzip.py",
+      "statement": "from typing import NoReturn",
+      "line": 3
+    },
+    {
+      "source": "starlette/middleware/gzip.py",
+      "statement": "from starlette.datastructures import Headers, MutableHeaders",
+      "line": 5
+    },
+    {
+      "source": "starlette/middleware/gzip.py",
+      "statement": "from starlette.types import ASGIApp, Message, Receive, Scope, Send",
+      "line": 6
+    }
+  ],
+  "calls": [
+    {
+      "caller_file": "starlette/_exception_handler.py",
+      "callee": "type",
+      "line": 17
+    },
+    {
+      "caller_file": "starlette/_exception_handler.py",
+      "callee": "send",
+      "line": 39
+    },
+    {
+      "caller_file": "starlette/_exception_handler.py",
+      "callee": "app",
+      "line": 42
+    },
+    {
+      "caller_file": "starlette/_exception_handler.py",
+      "callee": "isinstance",
+      "line": 46
+    },
+    {
+      "caller_file": "starlette/_exception_handler.py",
+      "callee": "status_handlers.get",
+      "line": 47
+    },
+    {
+      "caller_file": "starlette/_exception_handler.py",
+      "callee": "_lookup_exception_handler",
+      "line": 50
+    },
+    {
+      "caller_file": "starlette/_exception_handler.py",
+      "callee": "RuntimeError",
+      "line": 56
+    },
+    {
+      "caller_file": "starlette/_exception_handler.py",
+      "callee": "is_async_callable",
+      "line": 58
+    },
+    {
+      "caller_file": "starlette/_exception_handler.py",
+      "callee": "handler",
+      "line": 59
+    },
+    {
+      "caller_file": "starlette/_exception_handler.py",
+      "callee": "run_in_threadpool",
+      "line": 61
+    },
+    {
+      "caller_file": "starlette/_exception_handler.py",
+      "callee": "response",
+      "line": 63
+    },
+    {
+      "caller_file": "starlette/_utils.py",
+      "callee": "TypeVar",
+      "line": 30
+    },
+    {
+      "caller_file": "starlette/_utils.py",
+      "callee": "isinstance",
+      "line": 43
+    },
+    {
+      "caller_file": "starlette/_utils.py",
+      "callee": "iscoroutinefunction",
+      "line": 46
+    },
+    {
+      "caller_file": "starlette/_utils.py",
+      "callee": "callable",
+      "line": 46
+    },
+    {
+      "caller_file": "starlette/_utils.py",
+      "callee": "iscoroutinefunction",
+      "line": 46
+    },
+    {
+      "caller_file": "starlette/_utils.py",
+      "callee": "TypeVar",
+      "line": 49
+    },
+    {
+      "caller_file": "starlette/_utils.py",
+      "callee": "TypeVar",
+      "line": 61
+    },
+    {
+      "caller_file": "starlette/_utils.py",
+      "callee": "self.aw.__await__",
+      "line": 71
+    },
+    {
+      "caller_file": "starlette/_utils.py",
+      "callee": "self.entered.close",
+      "line": 78
+    },
+    {
+      "caller_file": "starlette/_utils.py",
+      "callee": "anyio.create_task_group",
+      "line": 85
+    },
+    {
+      "caller_file": "starlette/_utils.py",
+      "callee": "len",
+      "line": 88
+    },
+    {
+      "caller_file": "starlette/_utils.py",
+      "callee": "scope.get",
+      "line": 98
+    },
+    {
+      "caller_file": "starlette/_utils.py",
+      "callee": "path.startswith",
+      "line": 102
+    },
+    {
+      "caller_file": "starlette/_utils.py",
+      "callee": "len",
+      "line": 108
+    },
+    {
+      "caller_file": "starlette/_utils.py",
+      "callee": "len",
+      "line": 109
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "TypeVar",
+      "line": 15
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "ParamSpec",
+      "line": 16
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "State",
+      "line": 51
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "Router",
+      "line": 52
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "dict",
+      "line": 53
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "list",
+      "line": 54
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "self.exception_handlers.items",
+      "line": 62
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "Middleware",
+      "line": 69
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "Middleware",
+      "line": 71
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "reversed",
+      "line": 75
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "cls",
+      "line": 76
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "self.router.url_path_for",
+      "line": 84
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "self.build_middleware_stack",
+      "line": 89
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "self.middleware_stack",
+      "line": 90
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "self.router.mount",
+      "line": 93
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "self.router.host",
+      "line": 96
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "RuntimeError",
+      "line": 100
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "self.user_middleware.insert",
+      "line": 101
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "Middleware",
+      "line": 101
+    },
+    {
+      "caller_file": "starlette/applications.py",
+      "callee": "self.router.add_route",
+      "line": 118
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "ParamSpec",
+      "line": 15
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "isinstance",
+      "line": 30
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "list",
+      "line": 30
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "inspect.signature",
+      "line": 35
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "enumerate",
+      "line": 36
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "sig.parameters.values",
+      "line": 36
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "Exception",
+      "line": 41
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "functools.wraps",
+      "line": 45
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "kwargs.get",
+      "line": 47
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "len",
+      "line": 47
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "isinstance",
+      "line": 48
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "type",
+      "line": 50
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "has_required_scope",
+      "line": 53
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "websocket.close",
+      "line": 54
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "func",
+      "line": 56
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "is_async_callable",
+      "line": 60
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "functools.wraps",
+      "line": 62
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "kwargs.get",
+      "line": 64
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "len",
+      "line": 64
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "isinstance",
+      "line": 65
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "type",
+      "line": 66
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "has_required_scope",
+      "line": 69
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "urlencode",
+      "line": 71
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "str",
+      "line": 71
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "request.url_for",
+      "line": 72
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "RedirectResponse",
+      "line": 73
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "HTTPException",
+      "line": 74
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "func",
+      "line": 75
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "functools.wraps",
+      "line": 81
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "kwargs.get",
+      "line": 83
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "len",
+      "line": 83
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "isinstance",
+      "line": 84
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "type",
+      "line": 85
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "has_required_scope",
+      "line": 88
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "urlencode",
+      "line": 90
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "str",
+      "line": 90
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "request.url_for",
+      "line": 91
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "RedirectResponse",
+      "line": 92
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "HTTPException",
+      "line": 93
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "func",
+      "line": 94
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "NotImplementedError",
+      "line": 107
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "list",
+      "line": 112
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "NotImplementedError",
+      "line": 118
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "NotImplementedError",
+      "line": 122
+    },
+    {
+      "caller_file": "starlette/authentication.py",
+      "callee": "NotImplementedError",
+      "line": 126
+    },
+    {
+      "caller_file": "starlette/background.py",
+      "callee": "ParamSpec",
+      "line": 9
+    },
+    {
+      "caller_file": "starlette/background.py",
+      "callee": "is_async_callable",
+      "line": 17
+    },
+    {
+      "caller_file": "starlette/background.py",
+      "callee": "self.func",
+      "line": 21
+    },
+    {
+      "caller_file": "starlette/background.py",
+      "callee": "run_in_threadpool",
+      "line": 23
+    },
+    {
+      "caller_file": "starlette/background.py",
+      "callee": "list",
+      "line": 28
+    },
+    {
+      "caller_file": "starlette/background.py",
+      "callee": "BackgroundTask",
+      "line": 31
+    },
+    {
+      "caller_file": "starlette/background.py",
+      "callee": "self.tasks.append",
+      "line": 32
+    },
+    {
+      "caller_file": "starlette/background.py",
+      "callee": "task",
+      "line": 36
+    },
+    {
+      "caller_file": "starlette/concurrency.py",
+      "callee": "ParamSpec",
+      "line": 12
+    },
+    {
+      "caller_file": "starlette/concurrency.py",
+      "callee": "TypeVar",
+      "line": 13
+    },
+    {
+      "caller_file": "starlette/concurrency.py",
+      "callee": "warnings.warn",
+      "line": 17
+    },
+    {
+      "caller_file": "starlette/concurrency.py",
+      "callee": "anyio.create_task_group",
+      "line": 22
+    },
+    {
+      "caller_file": "starlette/concurrency.py",
+      "callee": "func",
+      "line": 25
+    },
+    {
+      "caller_file": "starlette/concurrency.py",
+      "callee": "task_group.cancel_scope.cancel",
+      "line": 26
+    },
+    {
+      "caller_file": "starlette/concurrency.py",
+      "callee": "task_group.start_soon",
+      "line": 29
+    },
+    {
+      "caller_file": "starlette/concurrency.py",
+      "callee": "functools.partial",
+      "line": 29
+    },
+    {
+      "caller_file": "starlette/concurrency.py",
+      "callee": "functools.partial",
+      "line": 33
+    },
+    {
+      "caller_file": "starlette/concurrency.py",
+      "callee": "anyio.to_thread.run_sync",
+      "line": 34
+    },
+    {
+      "caller_file": "starlette/concurrency.py",
+      "callee": "next",
+      "line": 46
+    },
+    {
+      "caller_file": "starlette/concurrency.py",
+      "callee": "iter",
+      "line": 54
+    },
+    {
+      "caller_file": "starlette/concurrency.py",
+      "callee": "anyio.to_thread.run_sync",
+      "line": 57
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "set",
+      "line": 21
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "self._has_been_read.add",
+      "line": 24
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "self._environ.__getitem__",
+      "line": 25
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "EnvironError",
+      "line": 29
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "self._environ.__setitem__",
+      "line": 30
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "EnvironError",
+      "line": 34
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "self._environ.__delitem__",
+      "line": 35
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "iter",
+      "line": 38
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "len",
+      "line": 41
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "Environ",
+      "line": 44
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "TypeVar",
+      "line": 46
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "os.path.isfile",
+      "line": 61
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "warnings.warn",
+      "line": 62
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "self._read_file",
+      "line": 64
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "self.get",
+      "line": 92
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "self._perform_cast",
+      "line": 103
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "self._perform_cast",
+      "line": 106
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "self._perform_cast",
+      "line": 108
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "KeyError",
+      "line": 109
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "open",
+      "line": 113
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "input_file.readlines",
+      "line": 114
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "line.strip",
+      "line": 115
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "line.startswith",
+      "line": 116
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "line.split",
+      "line": 117
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "key.strip",
+      "line": 118
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "value.strip().strip",
+      "line": 119
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "value.strip",
+      "line": 119
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "isinstance",
+      "line": 131
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "value.lower",
+      "line": 133
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "ValueError",
+      "line": 135
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "cast",
+      "line": 138
+    },
+    {
+      "caller_file": "starlette/config.py",
+      "callee": "ValueError",
+      "line": 140
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "TypeVar",
+      "line": 7
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "NotImplementedError",
+      "line": 14
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "NotImplementedError",
+      "line": 17
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "str",
+      "line": 27
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "str",
+      "line": 37
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "str",
+      "line": 40
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "int",
+      "line": 47
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "int",
+      "line": 50
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "str",
+      "line": 52
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "float",
+      "line": 59
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "float",
+      "line": 62
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "math.isnan",
+      "line": 64
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "math.isinf",
+      "line": 65
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "(\"%0.20f\" % value).rstrip(\"0\").rstrip",
+      "line": 66
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "(\"%0.20f\" % value).rstrip",
+      "line": 66
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "uuid.UUID",
+      "line": 73
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "str",
+      "line": 76
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "StringConvertor",
+      "line": 80
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "PathConvertor",
+      "line": 81
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "IntegerConvertor",
+      "line": 82
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "FloatConvertor",
+      "line": 83
+    },
+    {
+      "caller_file": "starlette/convertors.py",
+      "callee": "UUIDConvertor",
+      "line": 84
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "TypeVar",
+      "line": 18
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "TypeVar",
+      "line": 22
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "re.compile",
+      "line": 25
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "scope.get",
+      "line": 38
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "scope.get",
+      "line": 39
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "scope.get",
+      "line": 41
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "value.decode",
+      "line": 46
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "_HOST_RE.fullmatch",
+      "line": 49
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "query_string.decode",
+      "line": 58
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "SplitResult(scheme=scheme, netloc=netloc, path=path, query=query, fragment=\"\").geturl",
+      "line": 60
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "SplitResult",
+      "line": 60
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "URL(\"\").replace(**components).components.geturl",
+      "line": 65
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "URL(\"\").replace",
+      "line": 65
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "URL",
+      "line": 65
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "hasattr",
+      "line": 71
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "urlsplit",
+      "line": 72
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "kwargs.pop",
+      "line": 117
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "kwargs.pop",
+      "line": 118
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "kwargs.pop",
+      "line": 119
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "kwargs.pop",
+      "line": 120
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "netloc.rpartition",
+      "line": 124
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "hostname.rsplit",
+      "line": 127
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.components._replace",
+      "line": 140
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.__class__",
+      "line": 141
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "components.geturl",
+      "line": 141
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "MultiDict",
+      "line": 144
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "parse_qsl",
+      "line": 144
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "params.update",
+      "line": 145
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "str",
+      "line": 145
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "str",
+      "line": 145
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "kwargs.items",
+      "line": 145
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "urlencode",
+      "line": 146
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "params.multi_items",
+      "line": 146
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.replace",
+      "line": 147
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "urlencode",
+      "line": 150
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "str",
+      "line": 150
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "str",
+      "line": 150
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "kwargs.items",
+      "line": 150
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.replace",
+      "line": 151
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "isinstance",
+      "line": 154
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "MultiDict",
+      "line": 156
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "parse_qsl",
+      "line": 156
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "params.pop",
+      "line": 158
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "urlencode",
+      "line": 159
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "params.multi_items",
+      "line": 159
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.replace",
+      "line": 160
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "str",
+      "line": 163
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "str",
+      "line": 163
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "str",
+      "line": 169
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "str",
+      "line": 171
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.replace",
+      "line": 171
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "repr",
+      "line": 172
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "str.__new__",
+      "line": 183
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "isinstance",
+      "line": 190
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "URL",
+      "line": 191
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "base_url.path.rstrip",
+      "line": 201
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "str",
+      "line": 201
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "URL",
+      "line": 202
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "bool",
+      "line": 222
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "isinstance",
+      "line": 227
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "shlex",
+      "line": 228
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "item.strip",
+      "line": 231
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "list",
+      "line": 233
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "len",
+      "line": 236
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "iter",
+      "line": 242
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "\", \".join",
+      "line": 250
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "repr",
+      "line": 250
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "len",
+      "line": 263
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "ImmutableMultiDict(value).multi_items",
+      "line": 267
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "ImmutableMultiDict",
+      "line": 267
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "ImmutableMultiDict(kwargs).multi_items",
+      "line": 267
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "ImmutableMultiDict",
+      "line": 267
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "hasattr",
+      "line": 271
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "cast",
+      "line": 272
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "list",
+      "line": 273
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "value.multi_items",
+      "line": 273
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "hasattr",
+      "line": 274
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "cast",
+      "line": 275
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "list",
+      "line": 276
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "value.items",
+      "line": 276
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "cast",
+      "line": 278
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "list",
+      "line": 279
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self._dict.keys",
+      "line": 288
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self._dict.values",
+      "line": 291
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self._dict.items",
+      "line": 294
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "list",
+      "line": 297
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "iter",
+      "line": 306
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.keys",
+      "line": 306
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "len",
+      "line": 309
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "isinstance",
+      "line": 312
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "sorted",
+      "line": 314
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "sorted",
+      "line": 314
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.multi_items",
+      "line": 318
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.setlist",
+      "line": 324
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self._dict.pop",
+      "line": 332
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self._dict.popitem",
+      "line": 335
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.pop",
+      "line": 341
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self._dict.clear",
+      "line": 345
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self._list.clear",
+      "line": 346
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self._list.append",
+      "line": 351
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.pop",
+      "line": 357
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self._list.append",
+      "line": 364
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "MultiDict",
+      "line": 372
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "value.keys",
+      "line": 373
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "value.multi_items",
+      "line": 374
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self._dict.update",
+      "line": 375
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "len",
+      "line": 388
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "isinstance",
+      "line": 392
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "super().__init__",
+      "line": 393
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "super",
+      "line": 393
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "parse_qsl",
+      "line": 393
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "isinstance",
+      "line": 394
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "super().__init__",
+      "line": 395
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "super",
+      "line": 395
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "parse_qsl",
+      "line": 395
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "value.decode",
+      "line": 395
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "super().__init__",
+      "line": 397
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "super",
+      "line": 397
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "str",
+      "line": 398
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "str",
+      "line": 398
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "str",
+      "line": 399
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "str",
+      "line": 399
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self._dict.items",
+      "line": 399
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "urlencode",
+      "line": 402
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "str",
+      "line": 406
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "Headers",
+      "line": 426
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "getattr",
+      "line": 430
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.headers.get",
+      "line": 434
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "getattr",
+      "line": 439
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.file.tell",
+      "line": 448
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "bool",
+      "line": 449
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "len",
+      "line": 452
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self._will_roll",
+      "line": 456
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "run_in_threadpool",
+      "line": 457
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.file.write",
+      "line": 459
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.file.read",
+      "line": 463
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "run_in_threadpool",
+      "line": 464
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.file.seek",
+      "line": 468
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "run_in_threadpool",
+      "line": 470
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.file.close",
+      "line": 474
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "run_in_threadpool",
+      "line": 476
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "super().__init__",
+      "line": 492
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "super",
+      "line": 492
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.multi_items",
+      "line": 495
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "isinstance",
+      "line": 496
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "value.close",
+      "line": 497
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "key.lower().encode",
+      "line": 515
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "key.lower",
+      "line": 515
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "value.encode",
+      "line": 515
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "headers.items",
+      "line": 515
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "list",
+      "line": 522
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "list",
+      "line": 526
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "key.decode",
+      "line": 529
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "value.decode",
+      "line": 532
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "key.decode",
+      "line": 535
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "value.decode",
+      "line": 535
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "key.lower().encode",
+      "line": 538
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "key.lower",
+      "line": 538
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "item_value.decode",
+      "line": 539
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "MutableHeaders",
+      "line": 542
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "key.lower().encode",
+      "line": 545
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "key.lower",
+      "line": 545
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "header_value.decode",
+      "line": 548
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "KeyError",
+      "line": 549
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "key.lower().encode",
+      "line": 552
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "key.lower",
+      "line": 552
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "iter",
+      "line": 559
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.keys",
+      "line": 559
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "len",
+      "line": 562
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "isinstance",
+      "line": 565
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "sorted",
+      "line": 567
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "sorted",
+      "line": 567
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "dict",
+      "line": 571
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.items",
+      "line": 571
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "len",
+      "line": 572
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "len",
+      "line": 572
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "key.lower().encode",
+      "line": 583
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "key.lower",
+      "line": 583
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "value.encode",
+      "line": 584
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "enumerate",
+      "line": 587
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "found_indexes.append",
+      "line": 589
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "reversed",
+      "line": 591
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self._list.append",
+      "line": 598
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "key.lower().encode",
+      "line": 604
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "key.lower",
+      "line": 604
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "enumerate",
+      "line": 607
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "pop_indexes.append",
+      "line": 609
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "reversed",
+      "line": 611
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "isinstance",
+      "line": 615
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "TypeError",
+      "line": 616
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.update",
+      "line": 617
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "isinstance",
+      "line": 621
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "TypeError",
+      "line": 622
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.mutablecopy",
+      "line": 623
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "new.update",
+      "line": 624
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "key.lower().encode",
+      "line": 636
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "key.lower",
+      "line": 636
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "value.encode",
+      "line": 637
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "enumerate",
+      "line": 639
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "item_value.decode",
+      "line": 641
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self._list.append",
+      "line": 642
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "other.items",
+      "line": 646
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "key.lower().encode",
+      "line": 653
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "key.lower",
+      "line": 653
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "value.encode",
+      "line": 654
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self._list.append",
+      "line": 655
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "self.get",
+      "line": 658
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "\", \".join",
+      "line": 660
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "super().__setattr__",
+      "line": 676
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "super",
+      "line": 676
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "AttributeError",
+      "line": 686
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "message.format",
+      "line": 686
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "iter",
+      "line": 701
+    },
+    {
+      "caller_file": "starlette/datastructures.py",
+      "callee": "len",
+      "line": 704
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "getattr",
+      "line": 26
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "method.lower",
+      "line": 26
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "self.dispatch().__await__",
+      "line": 30
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "self.dispatch",
+      "line": 30
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "Request",
+      "line": 33
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "hasattr",
+      "line": 34
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "request.method.lower",
+      "line": 34
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "getattr",
+      "line": 38
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "is_async_callable",
+      "line": 41
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "handler",
+      "line": 43
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "run_in_threadpool",
+      "line": 45
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "response",
+      "line": 46
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "\", \".join",
+      "line": 52
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "HTTPException",
+      "line": 54
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "PlainTextResponse",
+      "line": 55
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "self.dispatch().__await__",
+      "line": 68
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "self.dispatch",
+      "line": 68
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "WebSocket",
+      "line": 71
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "self.on_connect",
+      "line": 72
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "websocket.receive",
+      "line": 78
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "self.decode",
+      "line": 80
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "self.on_receive",
+      "line": 81
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "int",
+      "line": 83
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "message.get",
+      "line": 83
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "self.on_disconnect",
+      "line": 89
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "websocket.close",
+      "line": 94
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "RuntimeError",
+      "line": 95
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "websocket.close",
+      "line": 100
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "RuntimeError",
+      "line": 101
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "message.get",
+      "line": 105
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "message[\"bytes\"].decode",
+      "line": 108
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "json.loads",
+      "line": 111
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "websocket.close",
+      "line": 113
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "RuntimeError",
+      "line": 114
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "message.get",
+      "line": 117
+    },
+    {
+      "caller_file": "starlette/endpoints.py",
+      "callee": "websocket.accept",
+      "line": 121
+    },
+    {
+      "caller_file": "starlette/exceptions.py",
+      "callee": "http.HTTPStatus",
+      "line": 10
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "field",
+      "line": 40
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "field",
+      "line": 42
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "src.decode",
+      "line": 47
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "src.decode",
+      "line": 49
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "self.messages.append",
+      "line": 78
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "MultiPartException",
+      "line": 83
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "int",
+      "line": 83
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "self.messages.append",
+      "line": 85
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "MultiPartException",
+      "line": 90
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "int",
+      "line": 90
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "self.messages.append",
+      "line": 92
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "MultiPartException",
+      "line": 97
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "self.messages.append",
+      "line": 99
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "self.messages.append",
+      "line": 103
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "multipart.QuerystringParser",
+      "line": 116
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "bytearray",
+      "line": 117
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "bytearray",
+      "line": 118
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "parser.write",
+      "line": 125
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "parser.finalize",
+      "line": 127
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "list",
+      "line": 128
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "self.messages.clear",
+      "line": 129
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "bytearray",
+      "line": 132
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "bytearray",
+      "line": 133
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "field_name.extend",
+      "line": 135
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "field_value.extend",
+      "line": 137
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "unquote_plus",
+      "line": 139
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "field_name.decode",
+      "line": 139
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "unquote_plus",
+      "line": 140
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "field_value.decode",
+      "line": 140
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "items.append",
+      "line": 141
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "FormData",
+      "line": 143
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "MultipartPart",
+      "line": 171
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "MultipartPart",
+      "line": 179
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "len",
+      "line": 184
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "len",
+      "line": 184
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "MultiPartException",
+      "line": 185
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "int",
+      "line": 185
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "self._current_part.data.extend",
+      "line": 186
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "self._file_parts_to_write.append",
+      "line": 188
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "self.items.append",
+      "line": 192
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "_user_safe_decode",
+      "line": 195
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "self._file_parts_to_finish.append",
+      "line": 199
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "self.items.append",
+      "line": 203
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "self._current_partial_header_name.lower",
+      "line": 212
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "self._current_part.item_headers.append",
+      "line": 215
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "parse_options_header",
+      "line": 220
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "_user_safe_decode",
+      "line": 222
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "MultiPartException",
+      "line": 224
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "MultiPartException",
+      "line": 228
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "_user_safe_decode",
+      "line": 229
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "SpooledTemporaryFile",
+      "line": 230
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "self._files_to_close_on_error.append",
+      "line": 231
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "UploadFile",
+      "line": 232
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "Headers",
+      "line": 236
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "MultiPartException",
+      "line": 241
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "parse_options_header",
+      "line": 249
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "params.get",
+      "line": 250
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "isinstance",
+      "line": 251
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "charset.decode",
+      "line": 252
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "MultiPartException",
+      "line": 257
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "multipart.MultipartParser",
+      "line": 272
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "parser.write",
+      "line": 276
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "part.file.write",
+      "line": 284
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "part.file.seek",
+      "line": 287
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "self._file_parts_to_write.clear",
+      "line": 288
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "self._file_parts_to_finish.clear",
+      "line": 289
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "parser.finalize",
+      "line": 290
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "file.close",
+      "line": 294
+    },
+    {
+      "caller_file": "starlette/formparsers.py",
+      "callee": "FormData",
+      "line": 297
+    },
+    {
+      "caller_file": "starlette/middleware/__init__.py",
+      "callee": "ParamSpec",
+      "line": 6
+    },
+    {
+      "caller_file": "starlette/middleware/__init__.py",
+      "callee": "iter",
+      "line": 29
+    },
+    {
+      "caller_file": "starlette/middleware/__init__.py",
+      "callee": "self.kwargs.items",
+      "line": 34
+    },
+    {
+      "caller_file": "starlette/middleware/__init__.py",
+      "callee": "getattr",
+      "line": 35
+    },
+    {
+      "caller_file": "starlette/middleware/__init__.py",
+      "callee": "\", \".join",
+      "line": 36
+    },
+    {
+      "caller_file": "starlette/middleware/authentication.py",
+      "callee": "self.app",
+      "line": 31
+    },
+    {
+      "caller_file": "starlette/middleware/authentication.py",
+      "callee": "HTTPConnection",
+      "line": 34
+    },
+    {
+      "caller_file": "starlette/middleware/authentication.py",
+      "callee": "self.backend.authenticate",
+      "line": 36
+    },
+    {
+      "caller_file": "starlette/middleware/authentication.py",
+      "callee": "self.on_error",
+      "line": 38
+    },
+    {
+      "caller_file": "starlette/middleware/authentication.py",
+      "callee": "send",
+      "line": 40
+    },
+    {
+      "caller_file": "starlette/middleware/authentication.py",
+      "callee": "response",
+      "line": 42
+    },
+    {
+      "caller_file": "starlette/middleware/authentication.py",
+      "callee": "AuthCredentials",
+      "line": 46
+    },
+    {
+      "caller_file": "starlette/middleware/authentication.py",
+      "callee": "UnauthenticatedUser",
+      "line": 46
+    },
+    {
+      "caller_file": "starlette/middleware/authentication.py",
+      "callee": "self.app",
+      "line": 48
+    },
+    {
+      "caller_file": "starlette/middleware/authentication.py",
+      "callee": "PlainTextResponse",
+      "line": 52
+    },
+    {
+      "caller_file": "starlette/middleware/authentication.py",
+      "callee": "str",
+      "line": 52
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "TypeVar",
+      "line": 17
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "super().__init__",
+      "line": 29
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "super",
+      "line": 29
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "self.stream",
+      "line": 32
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "self.receive",
+      "line": 53
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "RuntimeError",
+      "line": 57
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "getattr",
+      "line": 62
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "self.stream",
+      "line": 83
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "stream.__anext__",
+      "line": 84
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "self.app",
+      "line": 103
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "_CachedRequest",
+      "line": 106
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "anyio.Event",
+      "line": 108
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "response_sent.is_set",
+      "line": 114
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "anyio.create_task_group",
+      "line": 117
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "func",
+      "line": 120
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "task_group.cancel_scope.cancel",
+      "line": 121
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "task_group.start_soon",
+      "line": 124
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "wrap",
+      "line": 125
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "response_sent.is_set",
+      "line": 127
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "send_stream.send",
+      "line": 134
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "self.app",
+      "line": 144
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "task_group.start_soon",
+      "line": 148
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "recv_stream.receive",
+      "line": 151
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "message.get",
+      "line": 152
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "recv_stream.receive",
+      "line": 154
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "RuntimeError",
+      "line": 169
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "message.get",
+      "line": 179
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "message.get",
+      "line": 182
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "_StreamingResponse",
+      "line": 185
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "body_stream",
+      "line": 185
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "anyio.create_memory_object_stream",
+      "line": 189
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "create_collapsing_task_group",
+      "line": 192
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "self.dispatch_func",
+      "line": 193
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "response",
+      "line": 194
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "response_sent.set",
+      "line": 195
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "recv_stream.close",
+      "line": 196
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "NotImplementedError",
+      "line": 201
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "self.init_headers",
+      "line": 217
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "send",
+      "line": 222
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "send",
+      "line": 223
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "isinstance",
+      "line": 233
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "send",
+      "line": 236
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "send",
+      "line": 238
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "send",
+      "line": 241
+    },
+    {
+      "caller_file": "starlette/middleware/base.py",
+      "callee": "self.background",
+      "line": 244
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "re.compile",
+      "line": 33
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "\", \".join",
+      "line": 45
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "preflight_headers.update",
+      "line": 53
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "\", \".join",
+      "line": 55
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "str",
+      "line": 56
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "sorted",
+      "line": 59
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "set",
+      "line": 59
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "\", \".join",
+      "line": 61
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "h.lower",
+      "line": 68
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "self.app",
+      "line": 80
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "Headers",
+      "line": 84
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "headers.get",
+      "line": 85
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "self.app",
+      "line": 88
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "self.preflight_response",
+      "line": 92
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "response",
+      "line": 93
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "self.simple_response",
+      "line": 96
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "self.allow_origin_regex.fullmatch",
+      "line": 102
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "request_headers.get",
+      "line": 110
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "request_headers.get",
+      "line": 111
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "dict",
+      "line": 113
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "self.is_allowed_origin",
+      "line": 116
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "failures.append",
+      "line": 122
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "failures.append",
+      "line": 125
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "h.lower",
+      "line": 132
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "requested_headers.split",
+      "line": 132
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "header.strip",
+      "line": 133
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "failures.append",
+      "line": 134
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "failures.append",
+      "line": 141
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "\", \".join",
+      "line": 147
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "PlainTextResponse",
+      "line": 148
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "PlainTextResponse",
+      "line": 150
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "functools.partial",
+      "line": 153
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "self.app",
+      "line": 154
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "send",
+      "line": 158
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "message.setdefault",
+      "line": 161
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "MutableHeaders",
+      "line": 162
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "headers.update",
+      "line": 163
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "self.allow_explicit_origin",
+      "line": 168
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "self.is_allowed_origin",
+      "line": 171
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "self.allow_explicit_origin",
+      "line": 172
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "send",
+      "line": 174
+    },
+    {
+      "caller_file": "starlette/middleware/cors.py",
+      "callee": "headers.add_vary_header",
+      "line": 179
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "self.app",
+      "line": 151
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "send",
+      "line": 161
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "self.app",
+      "line": 164
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "Request",
+      "line": 166
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "self.debug_response",
+      "line": 169
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "self.error_response",
+      "line": 172
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "is_async_callable",
+      "line": 175
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "self.handler",
+      "line": 176
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "run_in_threadpool",
+      "line": 178
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "response",
+      "line": 181
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "html.escape(line).replace",
+      "line": 191
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "html.escape",
+      "line": 191
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "LINE.format",
+      "line": 196
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "CENTER_LINE.format",
+      "line": 197
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "\"\".join",
+      "line": 200
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "self.format_line",
+      "line": 201
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "enumerate",
+      "line": 207
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "html.escape",
+      "line": 213
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "html.escape",
+      "line": 217
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "FRAME_TEMPLATE.format",
+      "line": 222
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "traceback.TracebackException.from_exception",
+      "line": 225
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "inspect.getinnerframes",
+      "line": 231
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "reversed",
+      "line": 232
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "self.generate_frame_html",
+      "line": 233
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "html.escape",
+      "line": 242
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "html.escape",
+      "line": 242
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "str",
+      "line": 242
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "TEMPLATE.format",
+      "line": 244
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "\"\".join",
+      "line": 247
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "traceback.format_exception",
+      "line": 247
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "type",
+      "line": 247
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "request.headers.get",
+      "line": 250
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "self.generate_html",
+      "line": 253
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "HTMLResponse",
+      "line": 254
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "self.generate_plain_text",
+      "line": 255
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "PlainTextResponse",
+      "line": 256
+    },
+    {
+      "caller_file": "starlette/middleware/errors.py",
+      "callee": "PlainTextResponse",
+      "line": 259
+    },
+    {
+      "caller_file": "starlette/middleware/exceptions.py",
+      "callee": "handlers.items",
+      "line": 33
+    },
+    {
+      "caller_file": "starlette/middleware/exceptions.py",
+      "callee": "self.add_exception_handler",
+      "line": 34
+    },
+    {
+      "caller_file": "starlette/middleware/exceptions.py",
+      "callee": "isinstance",
+      "line": 41
+    },
+    {
+      "caller_file": "starlette/middleware/exceptions.py",
+      "callee": "issubclass",
+      "line": 44
+    },
+    {
+      "caller_file": "starlette/middleware/exceptions.py",
+      "callee": "self.app",
+      "line": 49
+    },
+    {
+      "caller_file": "starlette/middleware/exceptions.py",
+      "callee": "Request",
+      "line": 59
+    },
+    {
+      "caller_file": "starlette/middleware/exceptions.py",
+      "callee": "WebSocket",
+      "line": 61
+    },
+    {
+      "caller_file": "starlette/middleware/exceptions.py",
+      "callee": "wrap_app_handling_exceptions(self.app, conn)",
+      "line": 63
+    },
+    {
+      "caller_file": "starlette/middleware/exceptions.py",
+      "callee": "wrap_app_handling_exceptions",
+      "line": 63
+    },
+    {
+      "caller_file": "starlette/middleware/exceptions.py",
+      "callee": "isinstance",
+      "line": 66
+    },
+    {
+      "caller_file": "starlette/middleware/exceptions.py",
+      "callee": "Response",
+      "line": 68
+    },
+    {
+      "caller_file": "starlette/middleware/exceptions.py",
+      "callee": "PlainTextResponse",
+      "line": 69
+    },
+    {
+      "caller_file": "starlette/middleware/exceptions.py",
+      "callee": "isinstance",
+      "line": 72
+    },
+    {
+      "caller_file": "starlette/middleware/exceptions.py",
+      "callee": "websocket.close",
+      "line": 73
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.app",
+      "line": 19
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "Headers",
+      "line": 22
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "headers.get",
+      "line": 24
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "GZipResponder",
+      "line": 25
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "IdentityResponder",
+      "line": 27
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "responder",
+      "line": 29
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.app",
+      "line": 46
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "Headers",
+      "line": 54
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "headers.get(\"content-type\", \"\").startswith",
+      "line": 56
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "headers.get",
+      "line": 56
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.send",
+      "line": 60
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.send",
+      "line": 61
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "message.get",
+      "line": 64
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "message.get",
+      "line": 65
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "len",
+      "line": 66
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.send",
+      "line": 68
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.send",
+      "line": 69
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.apply_compression",
+      "line": 72
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "MutableHeaders",
+      "line": 74
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "headers.add_vary_header",
+      "line": 75
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "str",
+      "line": 78
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "len",
+      "line": 78
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.send",
+      "line": 81
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.send",
+      "line": 82
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.apply_compression",
+      "line": 85
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "MutableHeaders",
+      "line": 87
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "headers.add_vary_header",
+      "line": 88
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.send",
+      "line": 94
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.send",
+      "line": 95
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "message.get",
+      "line": 98
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "message.get",
+      "line": 99
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.apply_compression",
+      "line": 101
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.send",
+      "line": 103
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.send",
+      "line": 106
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.send",
+      "line": 107
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "super().__init__",
+      "line": 123
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "super",
+      "line": 123
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "io.BytesIO",
+      "line": 125
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "gzip.GzipFile",
+      "line": 126
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "super().__call__",
+      "line": 130
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "super",
+      "line": 130
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.gzip_file.write",
+      "line": 133
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.gzip_file.close",
+      "line": 135
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.gzip_buffer.getvalue",
+      "line": 137
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.gzip_buffer.seek",
+      "line": 138
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "self.gzip_buffer.truncate",
+      "line": 139
+    },
+    {
+      "caller_file": "starlette/middleware/gzip.py",
+      "callee": "RuntimeError",
+      "line": 145
+    }
+  ],
+  "entry_points": []
+}

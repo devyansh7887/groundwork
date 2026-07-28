@@ -1,0 +1,12 @@
+[
+  {
+    "fact_description": "The authentication middleware is defined here.",
+    "expected_file": "src/middleware/auth.ts",
+    "expected_symbol": "authMiddleware"
+  },
+  {
+    "fact_description": "Main entry point of the backend application.",
+    "expected_file": "app.py",
+    "expected_symbol": "main"
+  }
+]
