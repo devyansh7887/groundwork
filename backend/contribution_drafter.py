@@ -26,7 +26,7 @@ class ContributionDrafter:
         if GITHUB_TOKEN:
             self.headers["Authorization"] = f"Bearer {GITHUB_TOKEN}"
             
-        if GROQ_API_KEY:
+        if GROQ_API_KEY and "dummy" not in GROQ_API_KEY:
             self.llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=GROQ_API_KEY, temperature=0.2, max_retries=10)
         else:
             self.llm = ChatGoogleGenerativeAI(

@@ -22,7 +22,7 @@ class SynthesizerOutput(BaseModel):
 
 class Synthesizer:
     def __init__(self):
-        if GROQ_API_KEY:
+        if GROQ_API_KEY and "dummy" not in GROQ_API_KEY:
             self.llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=GROQ_API_KEY, temperature=0.1, max_retries=2)
         else:
             self.llm = ChatGoogleGenerativeAI(

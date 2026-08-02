@@ -27,7 +27,7 @@ class QAAgent:
         self.chroma_client = chromadb.PersistentClient(path="./chroma_db")
         self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
         
-        if GROQ_API_KEY:
+        if GROQ_API_KEY and "dummy" not in GROQ_API_KEY:
             self.llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=GROQ_API_KEY, temperature=0.0, max_retries=10)
         else:
             self.llm = ChatGoogleGenerativeAI(model="gemini-flash-latest", google_api_key=GEMINI_API_KEY, temperature=0.0)
