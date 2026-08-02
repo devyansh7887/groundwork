@@ -196,7 +196,7 @@ function AnalyzeContent() {
   useEffect(() => {
     const checkHealth = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || \'http://127.0.0.1:8001\'}/api/health`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/health`);
         if (res.ok) {
           setBackendReady(true);
         }
@@ -215,7 +215,7 @@ function AnalyzeContent() {
     
     const checkStatus = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || \'http://127.0.0.1:8001\'}/api/key-status`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/key-status`);
         if (res.ok) {
           const data = await res.json();
           const totalRemaining = data.keys.reduce((acc: number, k: any) => acc + (k.remaining === -1 ? 5000 : k.remaining), 0);
@@ -241,7 +241,7 @@ function AnalyzeContent() {
       setStatus("loading");
       setLogs([`🔄  Switching to ${newMode === 'eli5' ? 'ELI5' : newMode === 'tldr' ? 'TLDR' : 'Technical'} mode...`]);
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || \'http://127.0.0.1:8001\'}/api/resynthesize`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/resynthesize`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ repo_url: repoUrl, mode: newMode })
@@ -285,7 +285,7 @@ function AnalyzeContent() {
     setErrorMsg("");
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || \'http://127.0.0.1:8001\'}/api/analyze`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ repo_url: url, session_token: tokenToUse || sessionToken, mode: modeToUse || mode })
@@ -337,7 +337,7 @@ function AnalyzeContent() {
                    }
                    setStatus("success");
                    // Check for drift after loading
-                   fetch(`${process.env.NEXT_PUBLIC_API_URL || \'http://127.0.0.1:8001\'}/api/drift?repo_url=${encodeURIComponent(url)}`)
+                   fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/drift?repo_url=${encodeURIComponent(url)}`)
                      .then(r => r.ok ? r.json() : null)
                      .then(d => { if (d?.stale) setDriftInfo(d); })
                      .catch(() => {});
@@ -368,7 +368,7 @@ function AnalyzeContent() {
     setAsking(true);
     setQaError("");
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || \'http://127.0.0.1:8001\'}/api/qa`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/qa`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ repo_url: repoUrl, question })
@@ -388,7 +388,7 @@ function AnalyzeContent() {
     setPathLoading(true);
     setPathError("");
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || \'http://127.0.0.1:8001\'}/api/onboard`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/onboard`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ repo_url: repoUrl, role, level })
@@ -405,7 +405,7 @@ function AnalyzeContent() {
     setDraftLoading(true);
     setDraftError("");
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || \'http://127.0.0.1:8001\'}/api/draft`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/draft`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ repo_url: repoUrl })
@@ -638,7 +638,7 @@ function AnalyzeContent() {
                   onDraftRequest={async (act) => {
                     setDraftLoading(true);
                     try {
-                      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || \'http://127.0.0.1:8001\'}/api/draft`, {
+                      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/draft`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ repo_url: repoUrl, action: act })
