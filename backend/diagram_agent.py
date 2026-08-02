@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
-from config import GEMINI_API_KEY, GROQ_API_KEY
+from llm_key_pool import llm_key_pool
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -101,20 +101,7 @@ Aim for 8-15 total components. Every edge needs a label.
 
 class DiagramAgent:
     def __init__(self):
-        if GROQ_API_KEY and "dummy" not in GROQ_API_KEY:
-            self.llm = ChatGroq(
-                model="llama-3.3-70b-versatile",
-                groq_api_key=GROQ_API_KEY,
-                temperature=0.1,
-                max_retries=10
-            )
-        else:
-            self.llm = ChatGoogleGenerativeAI(
-                model="gemini-flash-latest",
-                google_api_key=GEMINI_API_KEY,
-                temperature=0.1
-            )
-        self.structured_llm = self.llm.with_structured_output(ComponentDiagramOutput)
+        pass
 
     def _safe_id(self, s: str) -> str:
         """Convert any string to a safe Mermaid node id."""
@@ -135,7 +122,7 @@ class DiagramAgent:
                 lines.append(f"{source} → imports → {target}")
         return "\n".join(lines) if lines else "No topology data available."
 
-    def generate_diagram(self, graph: Dict[str, Any], narrative: str) -> str:
+    def generate_diagram(self, graph: Dict[str, Any], narrative: str, session_token: str | None = None) -> str:
         """
         Generates a clean, component-level Mermaid flowchart.
         One node = one responsibility. Target 8-15 components max.
@@ -145,7 +132,9 @@ class DiagramAgent:
             ("human", HUMAN_PROMPT),
         ])
 
-        chain = prompt | self.structured_llm
+        llm = llm_key_pool.get_llm(session_token, temperature=0.1)
+        structured_llm = llm.with_structured_output(ComponentDiagramOutput)
+        chain = prompt | structured_llm
 
         # Representative file sample — prioritize non-test, non-config files
         all_files = graph.get("files", [])

@@ -62,9 +62,9 @@ export function RateLimitModal({ isOpen, onClose, onSubmit }: Props) {
             <AlertCircle className="w-5 h-5 text-[#ff7b72]" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-[#c9d1d9]">GitHub API Rate Limit Hit</h2>
+            <h2 className="text-lg font-bold text-[#c9d1d9]">API Rate Limit Hit</h2>
             <p className="text-sm text-[#8b949e] mt-0.5">
-              All pooled tokens are exhausted. You can provide your own PAT to continue immediately.
+              All pooled tokens for this action are exhausted. Provide your own API key to continue immediately.
             </p>
           </div>
         </div>
@@ -109,7 +109,7 @@ export function RateLimitModal({ isOpen, onClose, onSubmit }: Props) {
         {/* BYOK form */}
         <form onSubmit={handleSubmit} className="p-5">
           <label className="block text-sm font-bold text-[#c9d1d9] mb-2">
-            Your GitHub Personal Access Token
+            Your API Key
           </label>
           <div className="relative mb-3">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -120,16 +120,16 @@ export function RateLimitModal({ isOpen, onClose, onSubmit }: Props) {
               value={token}
               onChange={(e) => setToken(e.target.value)}
               className="w-full bg-[#0d1117] border border-[#30363d] rounded-md py-2.5 pl-10 pr-3 text-[#c9d1d9] font-mono text-sm focus:outline-none focus:border-[#58a6ff] focus:ring-1 focus:ring-[#58a6ff]"
-              placeholder="github_pat_..."
+              placeholder="github_pat_..., gsk_..., or AIza..."
               required
             />
           </div>
 
           <div className="text-xs text-[#8b949e] mb-4 bg-[#0d1117] border border-[#30363d] rounded-md p-3 space-y-1">
-            <p className="font-semibold text-[#c9d1d9] mb-1.5">How to create a free read-only token:</p>
-            <p>1. Go to <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noreferrer" className="text-[#58a6ff] hover:underline">GitHub → Settings → Fine-grained Tokens</a></p>
-            <p>2. Click <strong className="text-[#c9d1d9]">Generate new token</strong>, set access to <strong className="text-[#c9d1d9]">Public Repositories</strong></p>
-            <p>3. Paste it above and click <strong className="text-[#c9d1d9]">Continue</strong></p>
+            <p className="font-semibold text-[#c9d1d9] mb-1.5">Which key should I provide?</p>
+            <p>1. If downloading a repo failed: Provide a <strong className="text-[#c9d1d9]">GitHub PAT</strong></p>
+            <p>2. If Mentor or Q&A failed: Provide a <strong className="text-[#c9d1d9]">Groq</strong> or <strong className="text-[#c9d1d9]">Google Gemini</strong> key</p>
+            <p>3. Paste the exact key above and click <strong className="text-[#c9d1d9]">Continue</strong></p>
           </div>
 
           <div className="flex gap-3 justify-end">

@@ -8,7 +8,8 @@ from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from verifier import Verifier
-from config import GEMINI_API_KEY, GROQ_API_KEY
+from config import GEMINI_API_KEY
+from llm_key_pool import llm_key_pool
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -27,12 +28,6 @@ class QAAgent:
         self.chroma_client = chromadb.PersistentClient(path="./chroma_db")
         self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
         
-        if GROQ_API_KEY and "dummy" not in GROQ_API_KEY:
-            self.llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=GROQ_API_KEY, temperature=0.0, max_retries=10)
-        else:
-            self.llm = ChatGoogleGenerativeAI(model="gemini-flash-latest", google_api_key=GEMINI_API_KEY, temperature=0.0)
-            
-        self.structured_llm = self.llm.with_structured_output(QAResponse)
         self.verifier = Verifier()
 
     def index_repository(self, repo_name: str, files: List[Dict[str, str]], generated_docs: str):
@@ -82,7 +77,7 @@ class QAAgent:
             )
         logger.info(f"Indexed {len(docs)} chunks for repo {repo_name}.")
 
-    async def answer_question(self, repo_name: str, question: str, graph: Dict[str, Any], downloaded_files: List[Dict[str, str]]) -> Dict[str, Any]:
+    async def answer_question(self, repo_name: str, question: str, graph: Dict[str, Any], downloaded_files: List[Dict[str, str]], session_token: str | None = None) -> Dict[str, Any]:
         """Answers a question, citing files and verifying the claims."""
         collection_name = repo_name.replace("/", "_").replace(".", "_")
         try:
@@ -116,7 +111,9 @@ Question: {question}
 """)
         ])
         
-        chain = prompt | self.structured_llm
+        llm = llm_key_pool.get_llm(session_token, temperature=0.0)
+        structured_llm = llm.with_structured_output(QAResponse)
+        chain = prompt | structured_llm
         logger.info("Generating Q&A response...")
         qa_res: QAResponse = await chain.ainvoke({"context": context_text, "question": question})
         
@@ -124,7 +121,7 @@ Question: {question}
         claims_dicts = [c.model_dump() for c in qa_res.claims]
         
         # Verify Claims
-        verified_claims = await self.verifier.verify_claims_async(claims_dicts, graph, downloaded_files)
+        verified_claims = await self.verifier.verify_claims_async(claims_dicts, graph, downloaded_files, session_token)
         
         return {
             "answer": qa_res.answer,

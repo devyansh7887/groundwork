@@ -5,7 +5,8 @@ from pydantic import BaseModel, Field
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
-from config import GITHUB_TOKEN, GEMINI_API_KEY, GROQ_API_KEY
+from config import GITHUB_TOKEN
+from llm_key_pool import llm_key_pool
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,16 +26,6 @@ class ContributionDrafter:
         }
         if GITHUB_TOKEN:
             self.headers["Authorization"] = f"Bearer {GITHUB_TOKEN}"
-            
-        if GROQ_API_KEY and "dummy" not in GROQ_API_KEY:
-            self.llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=GROQ_API_KEY, temperature=0.2, max_retries=10)
-        else:
-            self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",
-            google_api_key=GEMINI_API_KEY,
-            temperature=0.2
-        )
-        self.structured_llm = self.llm.with_structured_output(DraftPatch)
 
     async def fetch_issues(self, owner: str, repo: str) -> List[Dict[str, Any]]:
         """Fetches issues labeled 'good first issue' or 'help wanted'."""
@@ -90,7 +81,7 @@ class ContributionDrafter:
         issues.sort(key=score_issue)
         return issues[0]
 
-    def draft_patch(self, issue: Dict[str, Any], graph: Dict[str, Any], downloaded_files: List[Dict[str, str]]) -> DraftPatch:
+    def draft_patch(self, issue: Dict[str, Any], graph: Dict[str, Any], downloaded_files: List[Dict[str, str]], session_token: str | None = None) -> DraftPatch:
         """Drafts a patch using the LLM. NEVER SUBMITS TO GITHUB."""
         logger.info(f"Drafting patch for issue: {issue['title']}")
         
@@ -144,7 +135,9 @@ Draft the patch for the most relevant file using EXACTLY the unified diff format
         for f in downloaded_files[:5]:
             file_snippets += f"\n--- {f['path']} ---\n{f['content'][:1000]}\n"
             
-        chain = prompt | self.structured_llm
+        llm = llm_key_pool.get_llm(session_token, temperature=0.2)
+        structured_llm = llm.with_structured_output(DraftPatch)
+        chain = prompt | structured_llm
         
         result: DraftPatch = chain.invoke({
             "title": issue["title"],

@@ -149,7 +149,8 @@ class Pipeline:
             state["graph"],
             state["downloaded_files"],
             verifier_feedback=feedback,
-            mode=state.get("mode", "technical")
+            mode=state.get("mode", "technical"),
+            session_token=state.get("session_token")
         )
 
         return {
@@ -161,7 +162,7 @@ class Pipeline:
     async def node_verify(self, state: PipelineState):
         n_claims = len(state.get("claims", []))
         logger.info(f"🔬  Verifying {n_claims} architectural claim{'s' if n_claims != 1 else ''} against source code...")
-        verified_claims = await self.verifier.verify_claims_async(state["claims"], state["graph"], state["downloaded_files"])
+        verified_claims = await self.verifier.verify_claims_async(state["claims"], state["graph"], state["downloaded_files"], state.get("session_token"))
         
         feedback = ""
         unverified = [c for c in verified_claims if c["status"] == "Unverified"]
@@ -184,7 +185,7 @@ class Pipeline:
 
     def node_diagram(self, state: PipelineState):
         logger.info("🎨  Drawing the architecture diagram...")
-        mermaid = self.diagram_agent.generate_diagram(state["graph"], state["narrative"])
+        mermaid = self.diagram_agent.generate_diagram(state["graph"], state["narrative"], state.get("session_token"))
         return {"mermaid_diagram": mermaid}
 
     def node_write_readme(self, state: PipelineState):

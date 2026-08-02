@@ -4,8 +4,7 @@ from typing import Dict, Any, List, Optional
 from pydantic import BaseModel, Field
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
-from config import GROQ_API_KEY
-from langchain_groq import ChatGroq
+from llm_key_pool import llm_key_pool
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -19,20 +18,9 @@ class VerifierResult(BaseModel):
 
 class Verifier:
     def __init__(self):
-        if GROQ_API_KEY and "dummy" not in GROQ_API_KEY:
-            self.llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=GROQ_API_KEY, temperature=0.0, max_retries=2)
-        else:
-            from langchain_google_genai import ChatGoogleGenerativeAI
-            from config import GEMINI_API_KEY
-            self.llm = ChatGoogleGenerativeAI(
-                model="gemini-flash-latest",
-                google_api_key=GEMINI_API_KEY,
-                temperature=0.0,
-                max_retries=2
-            )
-        self.structured_llm = self.llm.with_structured_output(VerifierResult)
+        pass
 
-    async def verify_claim_async(self, claim: Dict[str, Any], graph: Dict[str, Any], downloaded_files: List[Dict[str, str]]) -> VerifierResult:
+    async def verify_claim_async(self, claim: Dict[str, Any], graph: Dict[str, Any], downloaded_files: List[Dict[str, str]], session_token: str | None = None) -> VerifierResult:
         cited_file = claim.get("cited_file", "")
         cited_symbol = claim.get("cited_symbol", "")
         claim_text = claim.get("claim", "")
@@ -102,7 +90,9 @@ File Content Snippet (first 1500 chars):
 """)
         ])
 
-        chain = prompt | self.structured_llm
+        llm = llm_key_pool.get_llm(session_token, temperature=0.0)
+        structured_llm = llm.with_structured_output(VerifierResult)
+        chain = prompt | structured_llm
         import asyncio
         try:
             result: VerifierResult = await chain.ainvoke({
@@ -120,13 +110,13 @@ File Content Snippet (first 1500 chars):
                 reasoning=f"LLM unavailable; file exists so marked Inferred."
             )
 
-    async def verify_claims_async(self, claims: List[Dict[str, Any]], graph: Dict[str, Any], downloaded_files: List[Dict[str, str]]) -> List[Dict[str, Any]]:
+    async def verify_claims_async(self, claims: List[Dict[str, Any]], graph: Dict[str, Any], downloaded_files: List[Dict[str, str]], session_token: str | None = None) -> List[Dict[str, Any]]:
         import asyncio
         sem = asyncio.Semaphore(2) # Limit to 2 concurrent requests to avoid instant 429s
         
         async def verify_with_sem(claim):
             async with sem:
-                return await self.verify_claim_async(claim, graph, downloaded_files)
+                return await self.verify_claim_async(claim, graph, downloaded_files, session_token)
 
         tasks = [verify_with_sem(claim) for claim in claims]
         results = await asyncio.gather(*tasks)

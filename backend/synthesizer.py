@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
-from config import GEMINI_API_KEY, GROQ_API_KEY
+from llm_key_pool import llm_key_pool
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -22,16 +22,7 @@ class SynthesizerOutput(BaseModel):
 
 class Synthesizer:
     def __init__(self):
-        if GROQ_API_KEY and "dummy" not in GROQ_API_KEY:
-            self.llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=GROQ_API_KEY, temperature=0.1, max_retries=2)
-        else:
-            self.llm = ChatGoogleGenerativeAI(
-            model="gemini-flash-latest",
-            google_api_key=GEMINI_API_KEY,
-            temperature=0.1,
-            max_retries=2
-        )
-        self.structured_llm = self.llm.with_structured_output(SynthesizerOutput)
+        pass
         
     def _calculate_centrality(self, graph: Dict[str, Any]) -> List[str]:
         """Returns top 5 files by highest centrality (using NetworkX PageRank)."""
@@ -76,7 +67,7 @@ class Synthesizer:
             logger.error(f"PageRank calculation failed: {e}")
             return graph.get("files", [])[:5]
         
-    def synthesize(self, graph: Dict[str, Any], downloaded_files: List[Dict[str, str]], verifier_feedback: str = "", mode: str = "technical") -> Dict[str, Any]:
+    def synthesize(self, graph: Dict[str, Any], downloaded_files: List[Dict[str, str]], verifier_feedback: str = "", mode: str = "technical", session_token: str | None = None) -> Dict[str, Any]:
         """Generates the narrative and claims list from the graph and file contents.
         
         Args:
@@ -206,7 +197,9 @@ verified against the graph and file contents above.""")
             "calls": graph["calls"][:10],
         }
         
-        chain = prompt | self.structured_llm
+        llm = llm_key_pool.get_llm(session_token, temperature=0.1)
+        structured_llm = llm.with_structured_output(SynthesizerOutput)
+        chain = prompt | structured_llm
 
         invoke_kwargs: Dict[str, Any] = {
             "graph_json": json.dumps(simplified_graph, indent=2),
