@@ -101,7 +101,7 @@ Aim for 8-15 total components. Every edge needs a label.
 
 class DiagramAgent:
     def __init__(self):
-        if GROQ_API_KEY:
+        if GROQ_API_KEY and "dummy" not in GROQ_API_KEY:
             self.llm = ChatGroq(
                 model="llama-3.3-70b-versatile",
                 groq_api_key=GROQ_API_KEY,

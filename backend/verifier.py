@@ -19,7 +19,7 @@ class VerifierResult(BaseModel):
 
 class Verifier:
     def __init__(self):
-        if GROQ_API_KEY:
+        if GROQ_API_KEY and "dummy" not in GROQ_API_KEY:
             self.llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=GROQ_API_KEY, temperature=0.0, max_retries=2)
         else:
             from langchain_google_genai import ChatGoogleGenerativeAI

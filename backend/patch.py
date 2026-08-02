@@ -26,7 +26,7 @@ for f in files:
                 temp = temp_match.group(1)
                 
         # Fix indentation dynamically
-        return f'''if GROQ_API_KEY:
+        return f'''if GROQ_API_KEY and "dummy" not in GROQ_API_KEY:
             self.llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=GROQ_API_KEY, temperature={temp}, max_retries=10)
         else:
             self.llm = ChatGoogleGenerativeAI({inner})'''
