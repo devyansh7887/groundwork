@@ -128,7 +128,7 @@ export function RateLimitModal({ isOpen, onClose, onSubmit }: Props) {
           <div className="text-xs text-[#8b949e] mb-4 bg-[#0d1117] border border-[#30363d] rounded-md p-3 space-y-1">
             <p className="font-semibold text-[#c9d1d9] mb-1.5">Which key should I provide?</p>
             <p>1. If downloading a repo failed: Provide a <strong className="text-[#c9d1d9]">GitHub PAT</strong></p>
-            <p>2. If Mentor or Q&A failed: Provide a <strong className="text-[#c9d1d9]">Groq</strong> or <strong className="text-[#c9d1d9]">Google Gemini</strong> key</p>
+            <p>2. If Mentor or Q&A failed: Provide a <strong className="text-[#c9d1d9]">Groq</strong>, <strong className="text-[#c9d1d9]">Gemini</strong>, <strong className="text-[#c9d1d9]">OpenAI</strong>, or <strong className="text-[#c9d1d9]">Anthropic</strong> key</p>
             <p>3. Paste the exact key above and click <strong className="text-[#c9d1d9]">Continue</strong></p>
           </div>
 

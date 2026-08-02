@@ -5,6 +5,8 @@ from typing import Optional, Dict, Any, Tuple
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -44,6 +46,10 @@ class LLMKeyPool:
             return "groq"
         if token.startswith("AIza"):
             return "gemini"
+        if token.startswith("sk-ant-"):
+            return "anthropic"
+        if token.startswith("sk-proj-") or token.startswith("sk-"):
+            return "openai"
         return "unknown"
 
     def get_best_key(self) -> Optional[Dict[str, Any]]:
@@ -67,7 +73,7 @@ class LLMKeyPool:
         token_to_use = None
         key_type = "groq" # Default preference
         
-        if session_token and (session_token.startswith("gsk_") or session_token.startswith("AIza")):
+        if session_token and (session_token.startswith("gsk_") or session_token.startswith("AIza") or session_token.startswith("sk-")):
             token_to_use = session_token
             key_type = self._determine_key_type(token_to_use)
         else:
@@ -93,8 +99,22 @@ class LLMKeyPool:
                 temperature=temperature,
                 max_retries=max_retries
             )
+        elif key_type == "openai":
+            return ChatOpenAI(
+                model="gpt-4o",
+                api_key=token_to_use,
+                temperature=temperature,
+                max_retries=max_retries
+            )
+        elif key_type == "anthropic":
+            return ChatAnthropic(
+                model="claude-3-5-sonnet-20240620",
+                api_key=token_to_use,
+                temperature=temperature,
+                max_retries=max_retries
+            )
         else:
-            raise ValueError("Unsupported LLM key type.")
+            raise ValueError(f"Unsupported LLM key type: {key_type}")
 
     def mark_rate_limit(self, token: str, retry_after: int = 60):
         """Marks a key as exhausted for a certain period."""
