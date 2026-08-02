@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AlertCircle, Key, ArrowRight, RefreshCw } from 'lucide-react';
 
 interface KeyStatus {
-  id: number;
+  id: string | number;
   remaining: number;
   reset_in_seconds: number;
 }
@@ -120,7 +120,7 @@ export function RateLimitModal({ isOpen, onClose, onSubmit }: Props) {
               value={token}
               onChange={(e) => setToken(e.target.value)}
               className="w-full bg-[#0d1117] border border-[#30363d] rounded-md py-2.5 pl-10 pr-3 text-[#c9d1d9] font-mono text-sm focus:outline-none focus:border-[#58a6ff] focus:ring-1 focus:ring-[#58a6ff]"
-              placeholder="github_pat_..., gsk_..., or AIza..."
+              placeholder="github_pat_..., gsk_..., sk-..., sk-ant-..., or AIza..."
               required
             />
           </div>
