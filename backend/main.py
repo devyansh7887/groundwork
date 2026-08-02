@@ -1,6 +1,6 @@
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -114,32 +114,35 @@ async def health_check():
 
 # ─── Models ───────────────────────────────────────────────────────────────────
 
+# ─── Helpers ──────────────────────────────────────────────────────────────────
+
+def extract_token(req: Request) -> str | None:
+    auth = req.headers.get("Authorization")
+    if auth and auth.startswith("Bearer "):
+        return auth[7:]
+    return None
+
 class AnalyzeRequest(BaseModel):
     repo_url: str
-    session_token: str | None = None
     mode: str = "technical"
     force_refresh: bool = False
 
 class ResynthesizeRequest(BaseModel):
     repo_url: str
     mode: str = "technical"
-    session_token: str | None = None
 
 class QARequest(BaseModel):
     repo_url: str
     question: str
-    session_token: str | None = None
 
 class OnboardRequest(BaseModel):
     repo_url: str
     role: str
     level: str
-    session_token: str | None = None
 
 class DraftRequest(BaseModel):
     repo_url: str
     action: dict | None = None
-    session_token: str | None = None
 
 # ─── SSE Logging ──────────────────────────────────────────────────────────────
 
@@ -208,17 +211,21 @@ def health_check():
 def key_status():
     """Returns current rate limit status for all pool keys."""
     from key_pool import key_pool
-    return {"keys": key_pool.get_status()}
+    from llm_key_pool import llm_key_pool
+    keys = key_pool.get_status()
+    keys.extend(llm_key_pool.get_status())
+    return {"keys": keys}
 
 @app.post("/api/analyze")
-async def analyze_repo(req: AnalyzeRequest):
+async def analyze_repo(req: AnalyzeRequest, request: Request):
+    session_token = extract_token(request)
     async def event_generator():
         q = asyncio.Queue()
         log_queue_var.set(q)
 
         q.put_nowait(f"🚀  Starting analysis of {req.repo_url}...")
 
-        task = asyncio.create_task(_run_and_cache(req.repo_url, req.session_token, req.mode, req.force_refresh))
+        task = asyncio.create_task(_run_and_cache(req.repo_url, session_token, req.mode, req.force_refresh))
 
         while not task.done():
             try:
@@ -268,7 +275,8 @@ async def analyze_repo(req: AnalyzeRequest):
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 @app.post("/api/resynthesize")
-async def resynthesize(req: ResynthesizeRequest):
+async def resynthesize(req: ResynthesizeRequest, request: Request):
+    session_token = extract_token(request)
     """Re-run only the synthesis step on a cached graph. Fast — no GitHub calls."""
     if req.repo_url not in repo_cache:
         raise HTTPException(status_code=404, detail="Repository not in cache. Run a full analysis first.")
@@ -281,7 +289,7 @@ async def resynthesize(req: ResynthesizeRequest):
         state["graph"],
         state.get("downloaded_files", []),
         mode=req.mode,
-        session_token=req.session_token
+        session_token=session_token
     )
 
     # Update cached narrative
@@ -318,26 +326,29 @@ async def check_drift(repo_url: str):
         return {"stale": False, "error": str(e)}
 
 @app.post("/api/qa")
-async def ask_question(req: QARequest):
+async def ask_question(req: QARequest, request: Request):
+    session_token = extract_token(request)
     if req.repo_url not in repo_cache:
         raise HTTPException(status_code=400, detail="Repository not analyzed yet.")
     state = repo_cache[req.repo_url]
     repo_name = state["repo_metadata"].get("repo", "")
-    res = await qa_agent.answer_question(repo_name, req.question, state["graph"], state.get("downloaded_files", []), req.session_token)
+    res = await qa_agent.answer_question(repo_name, req.question, state["graph"], state.get("downloaded_files", []), session_token)
     if "error" in res:
         raise HTTPException(status_code=400, detail=res["error"])
     return res
 
 @app.post("/api/onboard")
-async def generate_path(req: OnboardRequest):
+async def generate_path(req: OnboardRequest, request: Request):
+    session_token = extract_token(request)
     if req.repo_url not in repo_cache:
         raise HTTPException(status_code=400, detail="Repository not analyzed yet.")
     state = repo_cache[req.repo_url]
-    path = onboarding_agent.generate_path(req.role, req.level, state["graph"], state.get("narrative", ""), req.session_token)
+    path = onboarding_agent.generate_path(req.role, req.level, state["graph"], state.get("narrative", ""), session_token)
     return path.model_dump()
 
 @app.post("/api/draft")
-async def draft_contribution(req: DraftRequest):
+async def draft_contribution(req: DraftRequest, request: Request):
+    session_token = extract_token(request)
     if req.repo_url not in repo_cache:
         raise HTTPException(status_code=400, detail="Repository not analyzed yet.")
     
@@ -379,7 +390,7 @@ Include:
         }
         
         try:
-            patch = drafter.draft_patch(synthetic_issue, state["graph"], relevant_files + downloaded_files[:5], req.session_token)
+            patch = drafter.draft_patch(synthetic_issue, state["graph"], relevant_files + downloaded_files[:5], session_token)
             return patch.model_dump()
         except Exception as e:
             logger.error(f"LLM draft failed: {e}")
@@ -399,5 +410,5 @@ Include:
         top_issue = drafter.rank_issues(issues, state["graph"])
         if not top_issue:
             return {"message": "No good first issues found."}
-        patch = drafter.draft_patch(top_issue, state["graph"], state.get("downloaded_files", []), req.session_token)
+        patch = drafter.draft_patch(top_issue, state["graph"], state.get("downloaded_files", []), session_token)
         return patch.model_dump()

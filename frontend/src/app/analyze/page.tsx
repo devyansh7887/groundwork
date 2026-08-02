@@ -241,9 +241,11 @@ function AnalyzeContent() {
       setStatus("loading");
       setLogs([`🔄  Switching to ${newMode === 'eli5' ? 'ELI5' : newMode === 'tldr' ? 'TLDR' : 'Technical'} mode...`]);
       try {
+        const headers: any = { "Content-Type": "application/json" };
+        if (sessionToken) headers["Authorization"] = `Bearer ${sessionToken}`;
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/resynthesize`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers,
           body: JSON.stringify({ repo_url: repoUrl, mode: newMode })
         });
         if (!res.ok) {
@@ -285,10 +287,14 @@ function AnalyzeContent() {
     setErrorMsg("");
 
     try {
+      const headers: any = { "Content-Type": "application/json" };
+      const activeToken = tokenToUse || sessionToken;
+      if (activeToken) headers["Authorization"] = `Bearer ${activeToken}`;
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/analyze`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ repo_url: url, session_token: tokenToUse || sessionToken, mode: modeToUse || mode, force_refresh: forceRefresh })
+        headers,
+        body: JSON.stringify({ repo_url: url, mode: modeToUse || mode, force_refresh: forceRefresh })
       });
       
       if (!res.ok) {
@@ -371,10 +377,13 @@ function AnalyzeContent() {
     setAsking(true);
     setQaError("");
     try {
+      const headers: any = { "Content-Type": "application/json" };
+      if (sessionToken) headers["Authorization"] = `Bearer ${sessionToken}`;
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/qa`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ repo_url: repoUrl, question, session_token: sessionToken })
+        headers,
+        body: JSON.stringify({ repo_url: repoUrl, question })
       });
       
       const data = await res.json();
@@ -391,10 +400,13 @@ function AnalyzeContent() {
     setPathLoading(true);
     setPathError("");
     try {
+      const headers: any = { "Content-Type": "application/json" };
+      if (sessionToken) headers["Authorization"] = `Bearer ${sessionToken}`;
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/onboard`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ repo_url: repoUrl, role, level, session_token: sessionToken })
+        headers,
+        body: JSON.stringify({ repo_url: repoUrl, role, level })
       });
       setPath(await res.json());
     } catch (err: unknown) {
@@ -408,10 +420,13 @@ function AnalyzeContent() {
     setDraftLoading(true);
     setDraftError("");
     try {
+      const headers: any = { "Content-Type": "application/json" };
+      if (sessionToken) headers["Authorization"] = `Bearer ${sessionToken}`;
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/draft`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ repo_url: repoUrl, session_token: sessionToken })
+        headers,
+        body: JSON.stringify({ repo_url: repoUrl })
       });
       setDraft(await res.json());
     } catch (err: unknown) {
@@ -641,10 +656,13 @@ function AnalyzeContent() {
                   onDraftRequest={async (act) => {
                     setDraftLoading(true);
                     try {
+                      const headers: any = { "Content-Type": "application/json" };
+                      if (sessionToken) headers["Authorization"] = `Bearer ${sessionToken}`;
+                      
                       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/draft`, {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ repo_url: repoUrl, action: act, session_token: sessionToken })
+                        headers,
+                        body: JSON.stringify({ repo_url: repoUrl, action: act })
                       });
                       if (!res.ok) throw new Error("Failed to draft patch");
                       return await res.json();
