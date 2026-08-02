@@ -92,7 +92,7 @@ export function TreeView({ graph, fileSizes, colorMap, width, height }: Props) {
             d={d3.linkHorizontal()({
               source: [link.source.x, link.source.y] as any,
               target: [link.target.x, link.target.y] as any
-            })}
+            }) || undefined}
             fill="none"
             stroke="#30363d"
             strokeWidth={1}
@@ -137,7 +137,7 @@ export function ClusterView({ graph, fileSizes, colorMap, width, height }: Props
             d={d3.linkHorizontal()({
               source: [link.source.x, link.source.y] as any,
               target: [link.target.x, link.target.y] as any
-            })}
+            }) || undefined}
             fill="none"
             stroke="#30363d"
             strokeWidth={1}
