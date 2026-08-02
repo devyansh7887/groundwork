@@ -270,7 +270,7 @@ function AnalyzeContent() {
     }
   };
 
-  const handleAnalyze = async (url: string, tokenToUse?: string, modeToUse?: string) => {
+  const handleAnalyze = async (url: string, tokenToUse?: string, modeToUse?: string, forceRefresh: boolean = false) => {
     // Reset previous results to avoid stale cached data
     setReadme("");
     setDiagram("");
@@ -288,7 +288,7 @@ function AnalyzeContent() {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ repo_url: url, session_token: tokenToUse || sessionToken, mode: modeToUse || mode })
+        body: JSON.stringify({ repo_url: url, session_token: tokenToUse || sessionToken, mode: modeToUse || mode, force_refresh: forceRefresh })
       });
       
       if (!res.ok) {
@@ -320,9 +320,12 @@ function AnalyzeContent() {
             if (dataStr) {
               try {
                 const parsed = JSON.parse(dataStr);
-                if (parsed.log) {
-                   setLogs(prev => [...prev, parsed.log]);
-                } else if (parsed.result) {
+                    if (parsed.log) {
+                       setLogs(prev => {
+                         if (prev.length > 0 && prev[prev.length - 1] === parsed.log) return prev;
+                         return [...prev, parsed.log];
+                       });
+                    } else if (parsed.result) {
                    const cleanReadme = parsed.result.readme.replace(/```mermaid[\s\S]*?```/g, '');
                    setReadme(cleanReadme);
                    setDiagram(parsed.result.diagram || "");
@@ -523,7 +526,7 @@ function AnalyzeContent() {
             </div>
           </div>
           <button 
-            onClick={() => handleAnalyze(repoUrl, sessionToken, mode)}
+            onClick={() => handleAnalyze(repoUrl, sessionToken, mode, true)}
             className="px-4 py-1.5 bg-[#d29922]/20 hover:bg-[#d29922]/30 border border-[#d29922]/50 text-[#d29922] font-semibold text-xs rounded transition-colors"
           >
             Re-analyze

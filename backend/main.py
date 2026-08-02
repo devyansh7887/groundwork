@@ -118,6 +118,7 @@ class AnalyzeRequest(BaseModel):
     repo_url: str
     session_token: str | None = None
     mode: str = "technical"
+    force_refresh: bool = False
 
 class ResynthesizeRequest(BaseModel):
     repo_url: str
@@ -160,7 +161,7 @@ logging.getLogger().addHandler(queue_handler)
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
-async def _run_and_cache(repo_url: str, session_token: str | None, mode: str) -> dict:
+async def _run_and_cache(repo_url: str, session_token: str | None, mode: str, force_refresh: bool = False) -> dict:
     """Full pipeline run with SHA-based cache check."""
     ingestor = Ingestor(session_token)
     owner, repo_name = ingestor.parse_github_url(repo_url)
@@ -172,7 +173,13 @@ async def _run_and_cache(repo_url: str, session_token: str | None, mode: str) ->
     logger.info(f"🔎  Checking for cached analysis...")
     sha = await ingestor.get_current_sha(owner, repo_name, branch)
 
-    cached = cache_manager.load(owner, repo_name, sha)
+    cached = None
+    if not force_refresh:
+        cached = cache_manager.load(owner, repo_name, sha)
+        if not cached:
+            # Fallback to any cached version for this repo (e.g. for the demo repo if it drifted)
+            cached = cache_manager.find_any_cached(owner, repo_name)
+
     if cached:
         logger.info(f"⚡  Cache hit! Loading previous analysis in milliseconds...")
         repo_cache[repo_url] = cached
@@ -207,7 +214,7 @@ async def analyze_repo(req: AnalyzeRequest):
 
         q.put_nowait(f"🚀  Starting analysis of {req.repo_url}...")
 
-        task = asyncio.create_task(_run_and_cache(req.repo_url, req.session_token, req.mode))
+        task = asyncio.create_task(_run_and_cache(req.repo_url, req.session_token, req.mode, req.force_refresh))
 
         while not task.done():
             try:
