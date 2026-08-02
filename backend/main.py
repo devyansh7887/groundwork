@@ -123,19 +123,23 @@ class AnalyzeRequest(BaseModel):
 class ResynthesizeRequest(BaseModel):
     repo_url: str
     mode: str = "technical"
+    session_token: str | None = None
 
 class QARequest(BaseModel):
     repo_url: str
     question: str
+    session_token: str | None = None
 
 class OnboardRequest(BaseModel):
     repo_url: str
     role: str
     level: str
+    session_token: str | None = None
 
 class DraftRequest(BaseModel):
     repo_url: str
     action: dict | None = None
+    session_token: str | None = None
 
 # ─── SSE Logging ──────────────────────────────────────────────────────────────
 
@@ -276,7 +280,8 @@ async def resynthesize(req: ResynthesizeRequest):
     result = synth.synthesize(
         state["graph"],
         state.get("downloaded_files", []),
-        mode=req.mode
+        mode=req.mode,
+        session_token=req.session_token
     )
 
     # Update cached narrative
@@ -318,7 +323,7 @@ async def ask_question(req: QARequest):
         raise HTTPException(status_code=400, detail="Repository not analyzed yet.")
     state = repo_cache[req.repo_url]
     repo_name = state["repo_metadata"].get("repo", "")
-    res = await qa_agent.answer_question(repo_name, req.question, state["graph"], state.get("downloaded_files", []))
+    res = await qa_agent.answer_question(repo_name, req.question, state["graph"], state.get("downloaded_files", []), req.session_token)
     if "error" in res:
         raise HTTPException(status_code=400, detail=res["error"])
     return res
@@ -328,7 +333,7 @@ async def generate_path(req: OnboardRequest):
     if req.repo_url not in repo_cache:
         raise HTTPException(status_code=400, detail="Repository not analyzed yet.")
     state = repo_cache[req.repo_url]
-    path = onboarding_agent.generate_path(req.role, req.level, state["graph"], state.get("narrative", ""))
+    path = onboarding_agent.generate_path(req.role, req.level, state["graph"], state.get("narrative", ""), req.session_token)
     return path.model_dump()
 
 @app.post("/api/draft")
@@ -374,7 +379,7 @@ Include:
         }
         
         try:
-            patch = drafter.draft_patch(synthetic_issue, state["graph"], relevant_files + downloaded_files[:5])
+            patch = drafter.draft_patch(synthetic_issue, state["graph"], relevant_files + downloaded_files[:5], req.session_token)
             return patch.model_dump()
         except Exception as e:
             logger.error(f"LLM draft failed: {e}")
@@ -394,5 +399,5 @@ Include:
         top_issue = drafter.rank_issues(issues, state["graph"])
         if not top_issue:
             return {"message": "No good first issues found."}
-        patch = drafter.draft_patch(top_issue, state["graph"], state.get("downloaded_files", []))
+        patch = drafter.draft_patch(top_issue, state["graph"], state.get("downloaded_files", []), req.session_token)
         return patch.model_dump()

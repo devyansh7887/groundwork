@@ -374,7 +374,7 @@ function AnalyzeContent() {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/qa`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ repo_url: repoUrl, question })
+        body: JSON.stringify({ repo_url: repoUrl, question, session_token: sessionToken })
       });
       
       const data = await res.json();
@@ -394,7 +394,7 @@ function AnalyzeContent() {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/onboard`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ repo_url: repoUrl, role, level })
+        body: JSON.stringify({ repo_url: repoUrl, role, level, session_token: sessionToken })
       });
       setPath(await res.json());
     } catch (err: unknown) {
@@ -411,7 +411,7 @@ function AnalyzeContent() {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/draft`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ repo_url: repoUrl })
+        body: JSON.stringify({ repo_url: repoUrl, session_token: sessionToken })
       });
       setDraft(await res.json());
     } catch (err: unknown) {
@@ -644,7 +644,7 @@ function AnalyzeContent() {
                       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/draft`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ repo_url: repoUrl, action: act })
+                        body: JSON.stringify({ repo_url: repoUrl, action: act, session_token: sessionToken })
                       });
                       if (!res.ok) throw new Error("Failed to draft patch");
                       return await res.json();

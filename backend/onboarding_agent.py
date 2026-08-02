@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
-from config import GEMINI_API_KEY, GROQ_API_KEY
+from llm_key_pool import llm_key_pool
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -21,17 +21,9 @@ class OnboardingPath(BaseModel):
 
 class OnboardingAgent:
     def __init__(self):
-        if GROQ_API_KEY and "dummy" not in GROQ_API_KEY:
-            self.llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=GROQ_API_KEY, temperature=0.2, max_retries=10)
-        else:
-            self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",
-            google_api_key=GEMINI_API_KEY,
-            temperature=0.2
-        )
-        self.structured_llm = self.llm.with_structured_output(OnboardingPath)
+        pass
 
-    def generate_path(self, role: str, level: str, graph: Dict[str, Any], narrative: str) -> OnboardingPath:
+    def generate_path(self, role: str, level: str, graph: Dict[str, Any], narrative: str, session_token: str | None = None) -> OnboardingPath:
         logger.info(f"Generating onboarding path for {level} {role}...")
         
         prompt = ChatPromptTemplate.from_messages([
@@ -64,7 +56,9 @@ Generate the ordered reading path.
         sorted_files = sorted(counts.items(), key=lambda x: x[1], reverse=True)
         central_files = [f[0] for f in sorted_files[:5]]
         
-        chain = prompt | self.structured_llm
+        llm = llm_key_pool.get_llm(session_token, temperature=0.2)
+        structured_llm = llm.with_structured_output(OnboardingPath)
+        chain = prompt | structured_llm
         
         result: OnboardingPath = chain.invoke({
             "role": role,

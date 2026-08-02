@@ -1,0 +1,109 @@
+import os
+import time
+import logging
+from typing import Optional, Dict, Any, Tuple
+from dotenv import load_dotenv
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
+
+load_dotenv()
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+class LLMKeyPool:
+    def __init__(self):
+        self.keys = []
+        
+        # Load Groq Keys
+        self._load_keys("GROQ_API_KEY", "groq")
+        
+        # Load Gemini Keys
+        self._load_keys("GEMINI_API_KEY", "gemini")
+            
+        if not self.keys:
+            logger.warning("No LLM keys found in environment. AI drafting will be unavailable unless a session token is provided.")
+
+    def _load_keys(self, base_env_name: str, key_type: str):
+        # Check base env (e.g. GROQ_API_KEY)
+        base_val = os.environ.get(base_env_name)
+        if base_val and "your_" not in base_val and "dummy" not in base_val:
+            self.keys.append({"token": base_val, "type": key_type, "reset_time": 0, "remaining": -1})
+            
+        # Check GROQ_API_KEY_1, GROQ_API_KEY_2, etc.
+        i = 1
+        while True:
+            token = os.environ.get(f"{base_env_name}_{i}")
+            if not token:
+                break
+            if "your_" not in token and "dummy" not in token:
+                self.keys.append({"token": token, "type": key_type, "reset_time": 0, "remaining": -1})
+            i += 1
+
+    def _determine_key_type(self, token: str) -> str:
+        if token.startswith("gsk_"):
+            return "groq"
+        if token.startswith("AIza"):
+            return "gemini"
+        return "unknown"
+
+    def get_best_key(self) -> Optional[Dict[str, Any]]:
+        """Returns the healthiest key dictionary from the pool."""
+        now = time.time()
+        
+        available_keys = [k for k in self.keys if (k["remaining"] > 0 or k["remaining"] == -1) and k["reset_time"] < now]
+        
+        if available_keys:
+            # Sort putting -1 (unknown) at the end
+            return sorted(available_keys, key=lambda k: k["remaining"], reverse=True)[0]
+            
+        if self.keys:
+            # All exhausted, return the one resetting soonest
+            return sorted(self.keys, key=lambda k: k["reset_time"])[0]
+            
+        return None
+
+    def get_llm(self, session_token: Optional[str] = None, temperature: float = 0.2, max_retries: int = 2) -> Any:
+        """Instantiates and returns the correct LangChain model based on the available or provided key."""
+        token_to_use = None
+        key_type = "groq" # Default preference
+        
+        if session_token and (session_token.startswith("gsk_") or session_token.startswith("AIza")):
+            token_to_use = session_token
+            key_type = self._determine_key_type(token_to_use)
+        else:
+            best = self.get_best_key()
+            if best:
+                token_to_use = best["token"]
+                key_type = best["type"]
+                
+        if not token_to_use:
+            raise ValueError("No valid LLM API key available in pool and no valid session token provided.")
+            
+        if key_type == "groq":
+            return ChatGroq(
+                model="llama-3.3-70b-versatile",
+                groq_api_key=token_to_use,
+                temperature=temperature,
+                max_retries=max_retries
+            )
+        elif key_type == "gemini":
+            return ChatGoogleGenerativeAI(
+                model="gemini-2.5-flash",
+                google_api_key=token_to_use,
+                temperature=temperature,
+                max_retries=max_retries
+            )
+        else:
+            raise ValueError("Unsupported LLM key type.")
+
+    def mark_rate_limit(self, token: str, retry_after: int = 60):
+        """Marks a key as exhausted for a certain period."""
+        for k in self.keys:
+            if k["token"] == token:
+                k["remaining"] = 0
+                k["reset_time"] = time.time() + retry_after
+                logger.warning(f"LLM Key marked as rate-limited. Resets in {retry_after}s.")
+                break
+
+# Global instance
+llm_key_pool = LLMKeyPool()
