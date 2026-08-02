@@ -74,7 +74,7 @@ function buildForceData(graph: GraphData, fileSizes: Record<string, number>, col
              : folderColor(f, folders),
     folder: f.split("/")[0] ?? "root",
     author: graph.authors?.[f]?.primary_author ?? "Unknown",
-    commits: graph.authors?.[f]?.total_commits ?? 0,
+    commits: Object.values(graph.authors?.[f]?.authors || {}).reduce((a: any, b: any) => a + (b as number), 0),
     functions: graph.nodes ? graph.nodes.filter((n: any) => n.id && n.id.startsWith(f + ":")).length : 0,
     isEntry: graph.entry_points ? graph.entry_points.some((e: any) => e.id.startsWith(f)) : false,
   }));
