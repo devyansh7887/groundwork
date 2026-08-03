@@ -8,6 +8,8 @@ from pipeline import Pipeline
 import contextvars
 import asyncio
 import json
+import os
+import re
 
 try:
     from qa_agent import QAAgent
@@ -60,7 +62,7 @@ app = FastAPI(title="Groundwork API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[os.environ.get("FRONTEND_URL", "http://localhost:3000")],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -71,39 +73,7 @@ qa_agent = QAAgent()
 onboarding_agent = OnboardingAgent()
 drafter = ContributionDrafter()
 
-# In-memory cache (mirrors disk cache for fast access)
-repo_cache: dict = {}
 
-def _hydrate_cache_from_disk():
-    """On startup: scan all disk cache files and populate repo_cache so /api/qa
-    and /api/draft work immediately without re-analyzing after a restart."""
-    from pathlib import Path
-    cache_dir = Path(__file__).parent / "cache"
-    if not cache_dir.exists():
-        return
-    loaded = 0
-    for cache_file in sorted(cache_dir.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True):
-        try:
-            with open(cache_file, "r", encoding="utf-8") as f:
-                state = json.load(f)
-            owner = state.get("owner", "")
-            repo  = state.get("repo", "")
-            if owner and repo:
-                canonical_url = f"https://github.com/{owner}/{repo}"
-                # Only load the most recent cache per repo (sorted newest first)
-                if canonical_url not in repo_cache:
-                    repo_cache[canonical_url] = state
-                    loaded += 1
-        except Exception as e:
-            logger.warning(f"Failed to load cache file {cache_file.name}: {e}")
-    if loaded:
-        logger.info(f"♻️  Hydrated {loaded} repo(s) from disk cache — /api/qa and /api/draft are ready immediately.")
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Run startup tasks before the server starts accepting requests."""
-    _hydrate_cache_from_disk()
-    yield  # Server runs here
 
 # ─── Health Check ─────────────────────────────────────────────────────────────
 
@@ -122,27 +92,59 @@ def extract_token(req: Request) -> str | None:
         return auth[7:]
     return None
 
+from pydantic import BaseModel, field_validator
+
 class AnalyzeRequest(BaseModel):
     repo_url: str
     mode: str = "technical"
     force_refresh: bool = False
 
+    @field_validator("repo_url")
+    def validate_url(cls, v):
+        if not re.match(r"^https://github\.com/[\w.-]+/[\w.-]+/?$", v):
+            raise ValueError("Invalid GitHub repository URL")
+        return v
+
 class ResynthesizeRequest(BaseModel):
     repo_url: str
     mode: str = "technical"
+    
+    @field_validator("repo_url")
+    def validate_url(cls, v):
+        if not re.match(r"^https://github\.com/[\w.-]+/[\w.-]+/?$", v):
+            raise ValueError("Invalid GitHub repository URL")
+        return v
 
 class QARequest(BaseModel):
     repo_url: str
     question: str
+    
+    @field_validator("repo_url")
+    def validate_url(cls, v):
+        if not re.match(r"^https://github\.com/[\w.-]+/[\w.-]+/?$", v):
+            raise ValueError("Invalid GitHub repository URL")
+        return v
 
 class OnboardRequest(BaseModel):
     repo_url: str
     role: str
     level: str
+    
+    @field_validator("repo_url")
+    def validate_url(cls, v):
+        if not re.match(r"^https://github\.com/[\w.-]+/[\w.-]+/?$", v):
+            raise ValueError("Invalid GitHub repository URL")
+        return v
 
 class DraftRequest(BaseModel):
     repo_url: str
     action: dict | None = None
+    
+    @field_validator("repo_url")
+    def validate_url(cls, v):
+        if not re.match(r"^https://github\.com/[\w.-]+/[\w.-]+/?$", v):
+            raise ValueError("Invalid GitHub repository URL")
+        return v
 
 # ─── SSE Logging ──────────────────────────────────────────────────────────────
 
@@ -406,7 +408,7 @@ Include:
         # Generic fallback: find a good first issue on GitHub
         owner = state["repo_metadata"].get("owner", "")
         repo = state["repo_metadata"].get("repo", "")
-        issues = await drafter.fetch_issues(owner, repo)
+        issues = await drafter.fetch_issues(owner, repo, session_token)
         top_issue = drafter.rank_issues(issues, state["graph"])
         if not top_issue:
             return {"message": "No good first issues found."}

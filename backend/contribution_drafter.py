@@ -5,8 +5,8 @@ from pydantic import BaseModel, Field
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
-from config import GITHUB_TOKEN
 from llm_key_pool import llm_key_pool
+from key_pool import key_pool
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -20,20 +20,23 @@ class DraftPatch(BaseModel):
 
 class ContributionDrafter:
     def __init__(self):
-        self.headers = {
-            "Accept": "application/vnd.github.v3+json",
-            "User-Agent": "Groundwork-Agent"
-        }
-        if GITHUB_TOKEN:
-            self.headers["Authorization"] = f"Bearer {GITHUB_TOKEN}"
+        pass
 
-    async def fetch_issues(self, owner: str, repo: str) -> List[Dict[str, Any]]:
+    async def fetch_issues(self, owner: str, repo: str, session_token: str | None = None) -> List[Dict[str, Any]]:
         """Fetches issues labeled 'good first issue' or 'help wanted'."""
         issues = []
         for label in ["good first issue", "help wanted"]:
             url = f"https://api.github.com/repos/{owner}/{repo}/issues?state=open&labels={label.replace(' ', '%20')}"
+            headers = {
+                "Accept": "application/vnd.github.v3+json",
+                "User-Agent": "Groundwork-Agent"
+            }
+            token = session_token or key_pool.get_best_key()
+            if token:
+                headers["Authorization"] = f"Bearer {token}"
+                
             async with httpx.AsyncClient(follow_redirects=True) as client:
-                response = await client.get(url, headers=self.headers)
+                response = await client.get(url, headers=headers)
                 if response.status_code == 200:
                     issues.extend(response.json())
                     
