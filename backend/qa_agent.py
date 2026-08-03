@@ -2,13 +2,11 @@ import logging
 import chromadb
 from typing import Dict, Any, List
 from pydantic import BaseModel, Field
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from verifier import Verifier
-from config import GEMINI_API_KEY
 from llm_key_pool import llm_key_pool
 
 logging.basicConfig(level=logging.INFO)
@@ -26,9 +24,19 @@ class QAResponse(BaseModel):
 class QAAgent:
     def __init__(self):
         self.chroma_client = chromadb.PersistentClient(path="./chroma_db")
-        self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-        
         self.verifier = Verifier()
+
+    def _get_embeddings(self, session_token: str | None = None):
+        # Prefer session token if it's Gemini
+        if session_token and session_token.startswith("AIza"):
+            return GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=session_token)
+        
+        # Fallback to pool
+        gemini_keys = [k["token"] for k in llm_key_pool.keys if k["type"] == "gemini"]
+        if gemini_keys:
+            return GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=gemini_keys[0])
+            
+        raise ValueError("No Gemini key available for embeddings. Please provide a Gemini session token.")
 
     def index_repository(self, repo_name: str, files: List[Dict[str, str]], generated_docs: str):
         """Chunks and indexes the code and generated docs into ChromaDB."""
@@ -62,13 +70,10 @@ class QAAgent:
                 metadatas.append({"source": "generated_docs", "type": "doc"})
                 ids.append(f"doc_chunk_{i}")
                 
-        # We need to compute embeddings using Gemini Embeddings and add them
-        # chromadb uses default embedding function if not provided, but we want Gemini.
-        # So we can compute them directly or wrap Gemini embeddings in Chroma's interface.
-        # For simplicity, we just use Langchain's Chroma wrapper or compute them here.
-        # Langchain's GoogleGenerativeAIEmbeddings:
+        # Compute embeddings using Gemini Embeddings
         if docs:
-            embedded_docs = self.embeddings.embed_documents(docs)
+            embeddings_model = self._get_embeddings()
+            embedded_docs = embeddings_model.embed_documents(docs)
             collection.add(
                 embeddings=embedded_docs,
                 documents=docs,
@@ -86,7 +91,8 @@ class QAAgent:
             return {"error": "Repository not indexed."}
             
         # Retrieve
-        query_embedding = self.embeddings.embed_query(question)
+        embeddings_model = self._get_embeddings(session_token)
+        query_embedding = embeddings_model.embed_query(question)
         results = collection.query(query_embeddings=[query_embedding], n_results=5)
         
         context_chunks = results["documents"][0]

@@ -24,6 +24,12 @@ class LLMKeyPool:
         
         # Load Gemini Keys
         self._load_keys("GEMINI_API_KEY", "gemini")
+        
+        # Load OpenAI Keys
+        self._load_keys("OPENAI_API_KEY", "openai")
+        
+        # Load Anthropic Keys
+        self._load_keys("ANTHROPIC_API_KEY", "anthropic")
             
         if not self.keys:
             logger.warning("No LLM keys found in environment. AI drafting will be unavailable unless a session token is provided.")

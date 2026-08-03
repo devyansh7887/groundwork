@@ -62,9 +62,13 @@ export function ContributionWizard({ repoUrl, action, onClose, onDraftRequest }:
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setCompletedSteps(new Set(parsed.completed));
-        setCurrentStepIdx(parsed.currentIdx ?? 0);
-        setLevel(parsed.level ?? "beginner");
+        if (parsed.timestamp && Date.now() - parsed.timestamp < 24 * 60 * 60 * 1000) {
+          setCompletedSteps(new Set(parsed.completed));
+          setCurrentStepIdx(parsed.currentIdx ?? 0);
+          setLevel(parsed.level ?? "beginner");
+        } else {
+          localStorage.removeItem(`wizard_progress_${repoPath}`);
+        }
       } catch (e) {}
     }
   }, [repoPath]);
@@ -74,7 +78,8 @@ export function ContributionWizard({ repoUrl, action, onClose, onDraftRequest }:
     localStorage.setItem(`wizard_progress_${repoPath}`, JSON.stringify({
       completed: Array.from(completedSteps),
       currentIdx: currentStepIdx,
-      level
+      level,
+      timestamp: Date.now()
     }));
   }, [completedSteps, currentStepIdx, level, repoPath]);
 
