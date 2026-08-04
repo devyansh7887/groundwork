@@ -60,21 +60,10 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Groundwork API", lifespan=lifespan)
 
-_allowed_origins = [
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:3001",
-]
-_frontend_url = os.environ.get("FRONTEND_URL", "")
-if _frontend_url and _frontend_url not in _allowed_origins:
-    _allowed_origins.append(_frontend_url)
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=_allowed_origins,
-    allow_origin_regex=r"https://.*\.vercel\.app",
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

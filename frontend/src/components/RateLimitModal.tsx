@@ -27,7 +27,7 @@ export function RateLimitModal({ isOpen, onClose, onSubmit }: Props) {
 
   const fetchKeyStatus = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/key-status`);
+      const res = await fetch(`/api/key-status`);
       if (res.ok) {
         const data = await res.json();
         setKeyStatuses(data.keys || []);

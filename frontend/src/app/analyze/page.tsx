@@ -196,7 +196,7 @@ function AnalyzeContent() {
   useEffect(() => {
     const checkHealth = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/health`);
+        const res = await fetch(`/api/health`);
         if (res.ok) {
           setBackendReady(true);
         }
@@ -215,7 +215,7 @@ function AnalyzeContent() {
     
     const checkStatus = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/key-status`);
+        const res = await fetch(`/api/key-status`);
         if (res.ok) {
           const data = await res.json();
           const totalRemaining = data.keys.reduce((acc: number, k: any) => acc + (k.remaining === -1 ? 5000 : k.remaining), 0);
@@ -243,7 +243,7 @@ function AnalyzeContent() {
       try {
         const headers: any = { "Content-Type": "application/json" };
         if (sessionToken) headers["Authorization"] = `Bearer ${sessionToken}`;
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/resynthesize`, {
+        const res = await fetch(`/api/resynthesize`, {
           method: "POST",
           headers,
           body: JSON.stringify({ repo_url: repoUrl, mode: newMode })
@@ -291,7 +291,7 @@ function AnalyzeContent() {
       const activeToken = tokenToUse || sessionToken;
       if (activeToken) headers["Authorization"] = `Bearer ${activeToken}`;
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/analyze`, {
+      const res = await fetch(`/api/analyze`, {
         method: "POST",
         headers,
         body: JSON.stringify({ repo_url: url, mode: modeToUse || mode, force_refresh: forceRefresh })
@@ -346,7 +346,7 @@ function AnalyzeContent() {
                    }
                    setStatus("success");
                    // Check for drift after loading
-                   fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/drift?repo_url=${encodeURIComponent(url)}`)
+                   fetch(`/api/drift?repo_url=${encodeURIComponent(url)}`)
                      .then(r => r.ok ? r.json() : null)
                      .then(d => { if (d?.stale) setDriftInfo(d); })
                      .catch(() => {});
@@ -382,7 +382,7 @@ function AnalyzeContent() {
       const headers: any = { "Content-Type": "application/json" };
       if (sessionToken) headers["Authorization"] = `Bearer ${sessionToken}`;
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/qa`, {
+      const res = await fetch(`/api/qa`, {
         method: "POST",
         headers,
         body: JSON.stringify({ repo_url: repoUrl, question })
@@ -405,7 +405,7 @@ function AnalyzeContent() {
       const headers: any = { "Content-Type": "application/json" };
       if (sessionToken) headers["Authorization"] = `Bearer ${sessionToken}`;
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/onboard`, {
+      const res = await fetch(`/api/onboard`, {
         method: "POST",
         headers,
         body: JSON.stringify({ repo_url: repoUrl, role, level })
@@ -425,7 +425,7 @@ function AnalyzeContent() {
       const headers: any = { "Content-Type": "application/json" };
       if (sessionToken) headers["Authorization"] = `Bearer ${sessionToken}`;
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/draft`, {
+      const res = await fetch(`/api/draft`, {
         method: "POST",
         headers,
         body: JSON.stringify({ repo_url: repoUrl })
@@ -661,7 +661,7 @@ function AnalyzeContent() {
                       const headers: any = { "Content-Type": "application/json" };
                       if (sessionToken) headers["Authorization"] = `Bearer ${sessionToken}`;
                       
-                      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'}/api/draft`, {
+                      const res = await fetch(`/api/draft`, {
                         method: "POST",
                         headers,
                         body: JSON.stringify({ repo_url: repoUrl, action: act })
