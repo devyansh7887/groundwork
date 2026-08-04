@@ -186,12 +186,21 @@ async def _run_and_cache(repo_url: str, session_token: str | None, mode: str, fo
     ingestor = Ingestor(session_token)
     owner, repo_name = ingestor.parse_github_url(repo_url)
 
-    # Get metadata to find branch + current SHA
-    metadata = await ingestor.get_repo_metadata(owner, repo_name)
-    branch = metadata["default_branch"]
+    try:
+        # Get metadata to find branch + current SHA
+        metadata = await ingestor.get_repo_metadata(owner, repo_name)
+        branch = metadata["default_branch"]
 
-    logger.info(f"🔎  Checking for cached analysis...")
-    sha = await ingestor.get_current_sha(owner, repo_name, branch)
+        logger.info(f"🔎  Checking for cached analysis...")
+        sha = await ingestor.get_current_sha(owner, repo_name, branch)
+    except Exception as e:
+        logger.warning(f"GitHub API failed: {e}. Attempting to load from cache offline.")
+        cached = cache_manager.find_any_cached(owner, repo_name)
+        if cached:
+            logger.info(f"⚡  Cache hit (offline fallback)! Loading previous analysis...")
+            repo_cache[repo_url] = cached
+            return cached
+        raise e
 
     cached = None
     if not force_refresh:

@@ -354,7 +354,9 @@ function AnalyzeContent() {
                    if (parsed.rate_limit || parsed.error.toLowerCase().includes("rate limit")) {
                      setIsRateLimitModalOpen(true);
                    }
-                   throw new Error(parsed.error);
+                   setStatus("error");
+                   setErrorMsg(parsed.error);
+                   return; // Exit the function entirely
                 }
               } catch (e) {
                 console.error("Failed to parse SSE chunk", e);
