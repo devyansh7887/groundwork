@@ -225,7 +225,7 @@ async def _run_and_cache(repo_url: str, session_token: str | None, mode: str, fo
 
 # ─── Routes ───────────────────────────────────────────────────────────────────
 
-@app.get("/")
+@app.get("/api/health")
 def health_check():
     return {"status": "ok", "message": "Groundwork agents are awake."}
 
