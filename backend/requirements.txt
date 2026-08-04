@@ -1,5 +1,5 @@
 fastapi
-uvicorn
+uvicorn[standard]
 httpx
 tree-sitter
 tree-sitter-python
@@ -10,8 +10,9 @@ networkx
 langchain-core
 langchain-google-genai
 langchain-groq
+langchain-openai
+langchain-anthropic
+langchain-text-splitters
 langgraph
 chromadb
 mcp
-langchain-openai
-langchain-anthropic
