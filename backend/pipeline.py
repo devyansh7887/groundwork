@@ -108,7 +108,8 @@ class Pipeline:
     async def node_cartograph(self, state: PipelineState):
         n_files = len(state["downloaded_files"])
         logger.info(f"🗺️   Mapping {n_files} files — building dependency graph...")
-        graph = self.cartographer.analyze_repo(state["downloaded_files"])
+        # Run CPU-bound task in a thread to prevent blocking the event loop
+        graph = await asyncio.to_thread(self.cartographer.analyze_repo, state["downloaded_files"])
         
         # Feature 7: Author Overlay
         owner = state["repo_metadata"]["owner"]
@@ -123,7 +124,7 @@ class Pipeline:
         n_edges = len(graph.get("calls", []))
         logger.info(f"✅  Graph built — {n_nodes} components, {n_edges} connections found")
         
-        patterns, actions = self.cartographer.pattern_scan(graph, state["downloaded_files"])
+        patterns, actions = await asyncio.to_thread(self.cartographer.pattern_scan, graph, state["downloaded_files"])
         logger.info(f"🛡️  Found {len(patterns)} patterns and {len(actions)} actionable insights")
 
         return {
@@ -133,7 +134,7 @@ class Pipeline:
             "actions": actions
         }
 
-    def node_synthesize(self, state: PipelineState):
+    async def node_synthesize(self, state: PipelineState):
         retry_count = state.get("synthesis_retries", 0)
         if retry_count == 0:
             logger.info("🧠  AI is studying the codebase architecture...")
@@ -145,12 +146,13 @@ class Pipeline:
         # report is injected as a corrective second human turn in the prompt, forcing
         # the model to address every failed claim rather than blindly re-running.
         feedback = state.get("verifier_feedback", "")
-        result = self.synthesizer.synthesize(
+        result = await asyncio.to_thread(
+            self.synthesizer.synthesize,
             state["graph"],
             state["downloaded_files"],
-            verifier_feedback=feedback,
-            mode=state.get("mode", "technical"),
-            session_token=state.get("session_token")
+            feedback,
+            state.get("mode", "technical"),
+            state.get("session_token")
         )
 
         return {
@@ -183,9 +185,14 @@ class Pipeline:
         logger.info("Proceeding to Diagram Agent.")
         return "continue"
 
-    def node_diagram(self, state: PipelineState):
+    async def node_diagram(self, state: PipelineState):
         logger.info("🎨  Drawing the architecture diagram...")
-        mermaid = self.diagram_agent.generate_diagram(state["graph"], state["narrative"], state.get("session_token"))
+        mermaid = await asyncio.to_thread(
+            self.diagram_agent.generate_diagram,
+            state["graph"],
+            state["narrative"],
+            state.get("session_token")
+        )
         return {"mermaid_diagram": mermaid}
 
     def node_write_readme(self, state: PipelineState):
