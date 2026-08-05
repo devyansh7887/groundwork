@@ -127,7 +127,7 @@ class Ingestor:
         # 3. Filter tree
         in_scope_files = self.filter_tree(tree)
         file_count = len(in_scope_files)
-        logger.info(f"📁  {file_count} source files in scope (Python/JS/TS) — fetching contents...")
+        logger.info(f"📁  {file_count} source files in scope — fetching contents...")
         
         # 4. Check scope limits
         if file_count > MAX_FILES:

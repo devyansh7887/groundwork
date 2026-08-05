@@ -85,9 +85,10 @@ function buildForceData(graph: GraphData, fileSizes: Record<string, number>, col
   for (const imp of graph.imports) {
     const src = imp.source;
     const tgtMod = imp.target_module?.replace(/\./g, "/");
-    const match = graph.files.find(f =>
-      f.endsWith(tgtMod + ".py") || f.endsWith(tgtMod + ".ts") || f.endsWith(tgtMod + ".tsx") || f.endsWith(tgtMod + ".js")
-    );
+    const match = graph.files.find(f => {
+      const noExt = f.replace(/\.[^/.]+$/, "");
+      return noExt.endsWith(tgtMod);
+    });
     if (match && match !== src && fileSet.has(src)) {
       const key = `${src}→${match}`;
       if (!linkSet.has(key)) {
@@ -209,16 +210,15 @@ export function DiagramCanvas({ mermaidChart = "", graph, fileSizes, colorBy = "
             linkColor={() => "#30363d"}
             backgroundColor="#0d1117"
             onRenderFramePre={(ctx: CanvasRenderingContext2D, globalScale: number) => {
-              if (colorBy !== "folder") return; // Only draw hulls when colored by folder
-              
-              // Group nodes by folder
+              // Always group nodes by folder to draw hulls, regardless of colorBy
               const groups: Record<string, [number, number][]> = {};
               const colors: Record<string, string> = {};
               for (const node of forceData.nodes as any[]) {
                 if (node.x != null && node.y != null) {
                   if (!groups[node.folder]) groups[node.folder] = [];
                   groups[node.folder].push([node.x, node.y]);
-                  colors[node.folder] = node.color;
+                  // Use dedicated folder color for the hull so it remains consistent
+                  colors[node.folder] = folderColor(node.folder, forceData.folders);
                 }
               }
 

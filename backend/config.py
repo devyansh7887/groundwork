@@ -22,7 +22,20 @@ MAX_LOC = 150000
 SUPPORTED_LANGUAGES = [
     "Python", 
     "JavaScript", 
-    "TypeScript"
+    "TypeScript",
+    "Java",
+    "Kotlin",
+    "Go",
+    "Rust",
+    "C",
+    "C++",
+    "Ruby",
+    "PHP",
+    "Swift",
+    "C#",
+    "HTML",
+    "CSS",
+    "Shell"
 ]
 DEFAULT_BRANCH_ONLY = True
 PUBLIC_REPOS_ONLY = True
@@ -31,5 +44,18 @@ PUBLIC_REPOS_ONLY = True
 LANGUAGE_EXTENSIONS = {
     "Python": [".py"],
     "JavaScript": [".js", ".jsx", ".mjs", ".cjs"],
-    "TypeScript": [".ts", ".tsx"]
+    "TypeScript": [".ts", ".tsx"],
+    "Java": [".java", ".gradle"],
+    "Kotlin": [".kt", ".kts"],
+    "Go": [".go"],
+    "Rust": [".rs"],
+    "C": [".c", ".h"],
+    "C++": [".cpp", ".cc", ".cxx", ".hpp", ".hxx"],
+    "Ruby": [".rb"],
+    "PHP": [".php"],
+    "Swift": [".swift"],
+    "C#": [".cs"],
+    "HTML": [".html", ".htm", ".xml"],
+    "CSS": [".css", ".scss", ".sass"],
+    "Shell": [".sh", ".bash"]
 }
