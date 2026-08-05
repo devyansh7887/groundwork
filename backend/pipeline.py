@@ -100,6 +100,9 @@ class Pipeline:
         tasks = [fetch_file(f) for f in files_to_download]
         results = await asyncio.gather(*tasks)
         downloaded = [r for r in results if r is not None]
+        
+        await ingestor.close()
+        
         n = len(downloaded)
         logger.info(f"📦  Downloaded {n} source file{'s' if n != 1 else ''} — ready for analysis")
             

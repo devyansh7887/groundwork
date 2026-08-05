@@ -12,6 +12,7 @@ class RepoScopeError(Exception):
 class Ingestor:
     def __init__(self, session_token: Optional[str] = None):
         self.session_token = session_token
+        self.client = httpx.AsyncClient(follow_redirects=True, timeout=30.0)
         
     async def _fetch(self, url: str) -> httpx.Response:
         from key_pool import key_pool
@@ -26,24 +27,26 @@ class Ingestor:
             if token:
                 headers["Authorization"] = f"Bearer {token}"
                 
-            async with httpx.AsyncClient(follow_redirects=True, timeout=30.0) as client:
-                response = await client.get(url, headers=headers)
+            response = await self.client.get(url, headers=headers)
+            
+            remaining = int(response.headers.get("x-ratelimit-remaining", -1))
+            reset_time = int(response.headers.get("x-ratelimit-reset", 0))
+            
+            if token and not self.session_token and remaining != -1:
+                key_pool.update_key_status(token, remaining, reset_time)
+            
+            if response.status_code in [403, 429] and remaining == 0:
+                if self.session_token:
+                    raise RepoScopeError("Your provided GitHub token has exceeded its rate limit.")
+                logger.warning(f"Rate limit hit. Rotating key...")
+                continue
                 
-                remaining = int(response.headers.get("x-ratelimit-remaining", -1))
-                reset_time = int(response.headers.get("x-ratelimit-reset", 0))
-                
-                if token and not self.session_token and remaining != -1:
-                    key_pool.update_key_status(token, remaining, reset_time)
-                
-                if response.status_code in [403, 429] and remaining == 0:
-                    if self.session_token:
-                        raise RepoScopeError("Your provided GitHub token has exceeded its rate limit.")
-                    logger.warning(f"Rate limit hit. Rotating key...")
-                    continue
-                    
-                return response
-                
+            return response
+            
         raise RepoScopeError("All GitHub tokens have exhausted their rate limits.")
+        
+    async def close(self):
+        await self.client.aclose()
 
     def parse_github_url(self, url: str) -> tuple[str, str]:
         """Extracts owner and repo from a GitHub URL."""
