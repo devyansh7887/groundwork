@@ -134,6 +134,8 @@ export function DiagramCanvas({ mermaidChart = "", graph, fileSizes, colorBy = "
   const [isMaximized, setIsMaximized] = useState(false);
   const fgRef = useRef<any>(null);
 
+  const forceData = useMemo(() => buildForceData(graph, fileSizes, colorBy), [graph, fileSizes, colorBy]);
+
   // Configure Force Graph physics for large repos
   useEffect(() => {
     if (fgRef.current && activeTab === "Graph") {
@@ -150,7 +152,6 @@ export function DiagramCanvas({ mermaidChart = "", graph, fileSizes, colorBy = "
     return () => window.removeEventListener('keydown', handler);
   }, [isMaximized]);
 
-  const forceData = useMemo(() => buildForceData(graph, fileSizes, colorBy), [graph, fileSizes, colorBy]);
   const nodeCount = graph.files.length;
 
   const colorMap = useMemo(() => {
