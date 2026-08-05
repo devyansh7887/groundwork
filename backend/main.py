@@ -256,7 +256,8 @@ async def analyze_repo(req: AnalyzeRequest, request: Request):
             qa_agent.index_repository(
                 final_state["repo_metadata"].get("repo", ""),
                 final_state.get("downloaded_files", []),
-                final_state.get("readme_content", "")
+                final_state.get("readme_content", ""),
+                session_token
             )
             result = {
                 "readme": final_state.get("readme_content", ""),
