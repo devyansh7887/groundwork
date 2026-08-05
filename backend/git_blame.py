@@ -42,14 +42,10 @@ class GitBlameAnalyzer:
                 key_pool.update_key_status(token, remaining, reset_time)
             
             if response.status_code in [403, 429] and remaining == 0:
-                if not token:
-                    # Unauthenticated IP rate limit hit. Abort completely to save time.
-                    if not self.global_abort:
-                        logger.warning("Unauthenticated rate limit hit. Aborting Git Blame for all remaining files.")
-                    self.global_abort = True
-                    return []
-                logger.warning(f"Rate limit hit during blame. Rotating key...")
-                continue
+                if not self.global_abort:
+                    logger.warning("Rate limit exhausted. Aborting Git Blame for all remaining files.")
+                self.global_abort = True
+                return []
                 
             if response.status_code == 200:
                 try:

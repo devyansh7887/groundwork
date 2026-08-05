@@ -48,12 +48,11 @@ class KeyPool:
                 # Sort by remaining, putting -1 (unknown) at the end, so we prefer known good keys
                 return sorted(available_keys, key=lambda k: k["remaining"], reverse=True)[0]["token"]
                 
-            # 2. All keys exhausted. Return the one resetting soonest (but it will probably fail)
+            # 2. All keys exhausted. Return None so callers can fast-fail.
             if self.keys:
                 best_key = sorted(self.keys, key=lambda k: k["reset_time"])[0]
                 if best_key["reset_time"] > now:
-                    # If we absolutely have to wait, we might as well just return None or raise an exception
-                    pass
+                    return None
                 return best_key["token"]
                 
             return None
