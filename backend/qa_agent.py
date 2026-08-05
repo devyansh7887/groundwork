@@ -38,11 +38,23 @@ class QAAgent:
             
         raise ValueError("No Gemini key available for embeddings. Please provide a Gemini session token.")
 
-    def index_repository(self, repo_name: str, files: List[Dict[str, str]], generated_docs: str):
+    def index_repository(self, repo_name: str, files: List[Dict[str, str]], generated_docs: str, session_token: str | None = None):
         """Chunks and indexes the code and generated docs into ChromaDB."""
         collection_name = repo_name.replace("/", "_").replace(".", "_")
         try:
             self.chroma_client.delete_collection(collection_name)
+        except:
+            pass
+        
+        try:
+            embed_fn = self._get_embeddings(session_token)
+            collection = self.chroma_client.create_collection(
+                name=collection_name, 
+                embedding_function=embed_fn
+            )
+        except ValueError as e:
+            logging.warning(f"Skipping vector DB indexing: {e}")
+            return
         except Exception:
             pass
             
