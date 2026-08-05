@@ -17,7 +17,7 @@ if GROQ_API_KEY and "your_" in GROQ_API_KEY:
     GROQ_API_KEY = None
 
 # Hard Constraints from Spec
-MAX_FILES = 300
+MAX_FILES = 1000
 MAX_LOC = 150000
 SUPPORTED_LANGUAGES = [
     "Python", 
