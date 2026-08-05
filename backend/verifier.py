@@ -116,7 +116,16 @@ File Content Snippet (first 1500 chars):
         
         async def verify_with_sem(claim):
             async with sem:
-                return await self.verify_claim_async(claim, graph, downloaded_files, session_token)
+                try:
+                    return await self.verify_claim_async(claim, graph, downloaded_files, session_token)
+                except Exception as e:
+                    logger.warning(f"Failed to verify claim '{claim.get('claim', '')[:20]}...': {e}")
+                    # Return a fallback result so asyncio.gather doesn't crash the pipeline
+                    from pydantic import BaseModel
+                    class FallbackRes(BaseModel):
+                        status: str = "Unverified"
+                        reasoning: str = f"LLM or system error during verification."
+                    return FallbackRes()
 
         tasks = [verify_with_sem(claim) for claim in claims]
         results = await asyncio.gather(*tasks)

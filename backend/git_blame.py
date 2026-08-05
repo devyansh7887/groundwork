@@ -25,7 +25,12 @@ class GitBlameAnalyzer:
             if token:
                 headers["Authorization"] = f"Bearer {token}"
                 
-            response = await self.client.get(url, headers=headers)
+            try:
+                response = await self.client.get(url, headers=headers)
+            except Exception as e:
+                logger.warning(f"GitBlame HTTP error for {path}: {e}")
+                continue
+                
             remaining = int(response.headers.get("x-ratelimit-remaining", -1))
             reset_time = int(response.headers.get("x-ratelimit-reset", 0))
             
