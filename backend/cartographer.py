@@ -1,6 +1,8 @@
 import os
 import json
 import logging
+import gc
+import logging
 from typing import Dict, Any, List
 from tree_sitter import Language, Parser
 import tree_sitter_python
@@ -218,6 +220,9 @@ class Cartographer:
             
             if i % max(1, total_files // 10) == 0 or i == total_files:
                 logger.info(f"🗺️  [CARTOGRAPHER] Parsing AST: {i}/{total_files}...")
+                
+            # Force garbage collection to prevent tree-sitter AST memory leaks
+            gc.collect()
             
             graph["files"].append(path)
             graph["nodes"].extend(file_data.get("nodes", []))
