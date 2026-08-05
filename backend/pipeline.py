@@ -121,6 +121,7 @@ class Pipeline:
         
         blame_analyzer = GitBlameAnalyzer(state.get("session_token"))
         authors_map = await blame_analyzer.analyze_authors(owner, repo, files)
+        await blame_analyzer.close()
         graph["authors"] = authors_map
         
         n_nodes = len(graph.get("nodes", []))
