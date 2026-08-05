@@ -9,9 +9,13 @@ class GitBlameAnalyzer:
     def __init__(self, session_token: str | None = None):
         self.session_token = session_token
         self.client = httpx.AsyncClient(follow_redirects=True, timeout=10.0)
+        self.global_abort = False
         
     async def fetch_file_commits(self, owner: str, repo: str, path: str) -> List[Dict[str, Any]]:
         """Fetch the commit history for a single file."""
+        if self.global_abort:
+            return []
+            
         from key_pool import key_pool
         url = f"https://api.github.com/repos/{owner}/{repo}/commits?path={path}&per_page=10"
         
@@ -40,7 +44,9 @@ class GitBlameAnalyzer:
             if response.status_code in [403, 429] and remaining == 0:
                 if not token:
                     # Unauthenticated IP rate limit hit. Abort completely to save time.
-                    logger.warning("Unauthenticated rate limit hit. Bypassing blame for this file.")
+                    if not self.global_abort:
+                        logger.warning("Unauthenticated rate limit hit. Aborting Git Blame for all remaining files.")
+                    self.global_abort = True
                     return []
                 logger.warning(f"Rate limit hit during blame. Rotating key...")
                 continue
