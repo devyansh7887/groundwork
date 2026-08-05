@@ -311,9 +311,15 @@ function AnalyzeContent() {
       if (!reader) throw new Error("No response stream");
 
       let buffer = "";
+      let receivedResult = false;
       while (true) {
         const { value, done } = await reader.read();
-        if (done) break;
+        if (done) {
+          if (!receivedResult) {
+            throw new Error("Connection dropped by the server before finishing (this usually means the API timed out or the repository is too large). Please try again or analyze a smaller repository.");
+          }
+          break;
+        }
         buffer += decoder.decode(value, { stream: true });
         
         let boundary = buffer.indexOf('\n\n');
@@ -341,6 +347,7 @@ function AnalyzeContent() {
                    setFileLocs(parsed.result.file_locs || {});
                    setSecurity(parsed.result.security || []);
                    setPatterns(parsed.result.patterns || []);
+                   receivedResult = true;
                    if (parsed.result.from_cache) {
                      setLogs(prev => [...prev, "⚡  Loaded from cache — instant results!"]);
                    }
