@@ -24,38 +24,51 @@ class Cartographer:
     def determine_language(self, file_path: str) -> str:
         if file_path.endswith(".py"):
             return "Python"
-        elif file_path.endswith(".ts") or file_path.endswith(".tsx"):
+        elif file_path.endswith((".ts", ".tsx")):
             return "TypeScript"
-        else:
+        elif file_path.endswith((".js", ".jsx", ".mjs", ".cjs")):
             return "JavaScript"
+        return "Unknown"
 
     def parse_file(self, file_path: str, content: bytes) -> Dict[str, Any]:
         """Parses a file and extracts graph nodes and edges."""
         lang = self.determine_language(file_path)
         parser = self.parsers.get(lang)
-        if not parser:
-            return {}
-
-        tree = parser.parse(content)
         
         nodes = []
         imports = []
         calls = []
         entry_points = []
         
-        # We will use simple tree traversal for Phase 1. 
-        # tree-sitter queries are more robust, but manual traversal works for basics.
-        
-        def traverse(node):
-            if lang == "Python":
-                self._extract_python_features(node, file_path, content, nodes, imports, calls, entry_points)
-            else:
-                self._extract_js_features(node, file_path, content, nodes, imports, calls, entry_points)
-                
-            for child in node.children:
-                traverse(child)
-                
-        traverse(tree.root_node)
+        if parser:
+            try:
+                tree = parser.parse(content)
+                def traverse(node):
+                    if lang == "Python":
+                        self._extract_python_features(node, file_path, content, nodes, imports, calls, entry_points)
+                    else:
+                        self._extract_js_features(node, file_path, content, nodes, imports, calls, entry_points)
+                        
+                    for child in node.children:
+                        traverse(child)
+                        
+                traverse(tree.root_node)
+            except Exception as e:
+                logger.error(f"Tree-sitter failed on {file_path}: {e}")
+        else:
+            # Regex fallback for imports for unsupported languages (Java, Kotlin, Go, C++, etc)
+            text = content.decode('utf8', errors='ignore')
+            for i, line in enumerate(text.splitlines()):
+                line_str = line.strip()
+                if line_str.startswith("import ") or line_str.startswith("#include"):
+                    target = line_str.replace("import ", "").replace("#include ", "").replace(";", "").replace('"', '').replace('<', '').replace('>', '').strip()
+                    if target:
+                        imports.append({
+                            "source": file_path,
+                            "target_module": target,
+                            "statement": line_str,
+                            "line": i + 1
+                        })
         
         return {
             "file": file_path,
