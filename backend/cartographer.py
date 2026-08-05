@@ -42,9 +42,9 @@ class Cartographer:
         calls = []
         entry_points = []
         
-        # Prevent C-level segfaults and infinite hangs on massive/minified files
+        # Prevent C-level segfaults, memory leaks, and CPU hangs on large/minified files
         try:
-            if len(content) > 500 * 1024:
+            if len(content) > 30 * 1024:
                 logger.warning(f"Skipping AST parse for {file_path} (too large: {len(content)//1024}KB)")
                 parser = None
             else:
@@ -229,19 +229,25 @@ class Cartographer:
         for i, f in enumerate(files, 1):
             path = f["path"]
             content = f["content"].encode('utf8')
-            file_data = self.parse_file(path, content)
             
+            # Log every single file so the UI shows exactly which one we are on
+            logger.info(f"🗺️  [CARTOGRAPHER] Parsing AST: {i}/{total_files} ({path[-30:] if len(path) > 30 else path})...")
             if i % max(1, total_files // 10) == 0 or i == total_files:
                 logger.info(f"🗺️  [CARTOGRAPHER] Parsing AST: {i}/{total_files}...")
                 
-            # Force garbage collection to prevent tree-sitter AST memory leaks
-            gc.collect()
-            
+            file_data = self.parse_file(path, content)
+                
             graph["files"].append(path)
             graph["nodes"].extend(file_data.get("nodes", []))
             graph["imports"].extend(file_data.get("imports", []))
             graph["calls"].extend(file_data.get("calls", []))
             graph["entry_points"].extend(file_data.get("entry_points", []))
+
+            # Free up tree-sitter C bindings that leak into Gen 1/2 garbage collection,
+            # but only every 50 files to prevent O(N^2) CPU thrashing.
+            if i % 50 == 0:
+                import gc
+                gc.collect()
 
         graph["security_findings"] = self.security_scan(files)
         patterns, actions = self.pattern_scan(graph, files)
@@ -306,7 +312,7 @@ class Cartographer:
         for imp in graph.get("imports", []):
             tgt_mod = imp.get("target_module", "").replace(".", "/")
             for fpath in graph.get("files", []):
-                if tgt_mod and fpath.endswith(tgt_mod + ".py") or fpath.endswith(tgt_mod + ".ts") or fpath.endswith(tgt_mod + ".tsx"):
+                if tgt_mod and (fpath.endswith(tgt_mod + ".py") or fpath.endswith(tgt_mod + ".ts") or fpath.endswith(tgt_mod + ".tsx")):
                     imported_by[fpath] += 1
                     
         highly_coupled = [f for f, c in imported_by.items() if c > 5]
