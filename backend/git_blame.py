@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 class GitBlameAnalyzer:
     def __init__(self, session_token: str | None = None):
         self.session_token = session_token
+        self.client = httpx.AsyncClient(follow_redirects=True, timeout=10.0)
         
     async def fetch_file_commits(self, owner: str, repo: str, path: str) -> List[Dict[str, Any]]:
         """Fetch the commit history for a single file."""
@@ -24,23 +25,25 @@ class GitBlameAnalyzer:
             if token:
                 headers["Authorization"] = f"Bearer {token}"
                 
-            async with httpx.AsyncClient(follow_redirects=True, timeout=10.0) as client:
-                response = await client.get(url, headers=headers)
-                remaining = int(response.headers.get("x-ratelimit-remaining", -1))
-                reset_time = int(response.headers.get("x-ratelimit-reset", 0))
+            response = await self.client.get(url, headers=headers)
+            remaining = int(response.headers.get("x-ratelimit-remaining", -1))
+            reset_time = int(response.headers.get("x-ratelimit-reset", 0))
+            
+            if token and not self.session_token and remaining != -1:
+                key_pool.update_key_status(token, remaining, reset_time)
+            
+            if response.status_code in [403, 429] and remaining == 0:
+                logger.warning(f"Rate limit hit during blame. Rotating key...")
+                continue
                 
-                if token and not self.session_token and remaining != -1:
-                    key_pool.update_key_status(token, remaining, reset_time)
-                
-                if response.status_code in [403, 429] and remaining == 0:
-                    logger.warning(f"Rate limit hit during blame. Rotating key...")
-                    continue
-                    
-                if response.status_code == 200:
-                    return response.json()
-                return []
+            if response.status_code == 200:
+                return response.json()
+            return []
                 
         return []
+
+    async def close(self):
+        await self.client.aclose()
 
     async def analyze_authors(self, owner: str, repo: str, files: List[str]) -> Dict[str, Dict[str, Any]]:
         """
