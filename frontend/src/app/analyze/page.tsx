@@ -351,14 +351,12 @@ function AnalyzeContent() {
                      .then(d => { if (d?.stale) setDriftInfo(d); })
                      .catch(() => {});
                 } else if (parsed.error) {
-                   if (parsed.rate_limit || parsed.error.toLowerCase().includes("rate limit")) {
-                     setIsRateLimitModalOpen(true);
-                   }
-                   setStatus("error");
-                   setErrorMsg(parsed.error);
-                   return; // Exit the function entirely
+                   throw new Error(parsed.error);
                 }
-              } catch (e) {
+              } catch (e: any) {
+                if (e.message && e.message !== "Unexpected end of JSON input" && !e.message.includes("JSON")) {
+                   throw e;
+                }
                 console.error("Failed to parse SSE chunk", e);
               }
             }
