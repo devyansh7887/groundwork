@@ -27,7 +27,7 @@ export function RateLimitModal({ isOpen, onClose, onSubmit }: Props) {
 
   const fetchKeyStatus = async () => {
     try {
-      const res = await fetch(`/api/key-status`);
+      const res = await fetch(`https://groundwork-api-6bnh.onrender.com/api/key-status`);
       if (res.ok) {
         const data = await res.json();
         setKeyStatuses(data.keys || []);
