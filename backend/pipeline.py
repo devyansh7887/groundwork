@@ -120,8 +120,18 @@ class Pipeline:
         files = [f["path"] for f in state["downloaded_files"]]
         
         blame_analyzer = GitBlameAnalyzer(state.get("session_token"))
-        authors_map = await blame_analyzer.analyze_authors(owner, repo, files)
-        await blame_analyzer.close()
+        try:
+            # Git Blame is an optional overlay. Never let it freeze the pipeline for more than 5 seconds.
+            authors_map = await asyncio.wait_for(
+                blame_analyzer.analyze_authors(owner, repo, files),
+                timeout=5.0
+            )
+        except asyncio.TimeoutError:
+            logger.warning("Git Blame took too long (>5s). Bypassing to prevent pipeline freeze.")
+            authors_map = {}
+        finally:
+            await blame_analyzer.close()
+            
         graph["authors"] = authors_map
         
         n_nodes = len(graph.get("nodes", []))
