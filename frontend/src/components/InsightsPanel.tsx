@@ -120,7 +120,23 @@ export function InsightsPanel({ graph, fileSizes, fileLocs = {}, claims, readme,
   // Language breakdown
   const langMap: Record<string, number> = {};
   for (const f of graph.files) {
-    const lang = f.endsWith(".py") ? "Python" : f.endsWith(".ts") || f.endsWith(".tsx") ? "TypeScript" : "JavaScript";
+    let lang = "Unknown";
+    if (f.endsWith(".py")) lang = "Python";
+    else if (f.endsWith(".ts") || f.endsWith(".tsx")) lang = "TypeScript";
+    else if (f.endsWith(".js") || f.endsWith(".jsx")) lang = "JavaScript";
+    else if (f.endsWith(".kt") || f.endsWith(".kts")) lang = "Kotlin";
+    else if (f.endsWith(".java")) lang = "Java";
+    else if (f.endsWith(".rs")) lang = "Rust";
+    else if (f.endsWith(".go")) lang = "Go";
+    else if (f.endsWith(".cpp") || f.endsWith(".c") || f.endsWith(".h")) lang = "C/C++";
+    else if (f.endsWith(".xml")) lang = "XML";
+    else if (f.endsWith(".gradle")) lang = "Gradle";
+    else if (f.endsWith(".md")) lang = "Markdown";
+    else if (f.endsWith(".yml") || f.endsWith(".yaml")) lang = "YAML";
+    else if (f.endsWith(".sh")) lang = "Shell";
+    else if (f.endsWith(".json")) lang = "JSON";
+    else lang = "Other";
+    
     langMap[lang] = (langMap[lang] ?? 0) + 1;
   }
 

@@ -106,14 +106,16 @@ class LLMKeyPool:
                 model="llama-3.3-70b-versatile",
                 groq_api_key=token_to_use,
                 temperature=temperature,
-                max_retries=max_retries
+                max_retries=max_retries,
+                max_tokens=8192
             )
         elif key_type == "gemini":
             return ChatGoogleGenerativeAI(
                 model="gemini-2.5-flash",
                 google_api_key=token_to_use,
                 temperature=temperature,
-                max_retries=max_retries
+                max_retries=max_retries,
+                max_output_tokens=8192
             )
         elif key_type == "openai":
             return ChatOpenAI(

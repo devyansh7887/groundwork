@@ -132,6 +132,16 @@ export function DiagramCanvas({ mermaidChart = "", graph, fileSizes, colorBy = "
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<Tab>("Flow");
   const [isMaximized, setIsMaximized] = useState(false);
+  const fgRef = useRef<any>(null);
+
+  // Configure Force Graph physics for large repos
+  useEffect(() => {
+    if (fgRef.current && activeTab === "Graph") {
+      fgRef.current.d3Force('charge').strength(-200); // Stronger repulsion
+      fgRef.current.d3Force('link').distance(60);     // Longer links
+      fgRef.current.d3Force('center').strength(0.05); // Looser centering
+    }
+  }, [activeTab, forceData]);
 
   // Escape key closes expanded modal
   useEffect(() => {
@@ -194,6 +204,7 @@ export function DiagramCanvas({ mermaidChart = "", graph, fileSizes, colorBy = "
 
         {activeTab === "Graph" && forceData.nodes.length > 0 && (
           <ForceGraph2D
+            ref={fgRef}
             key={colorBy}
             graphData={{ nodes: forceData.nodes, links: forceData.links }}
             nodeLabel={(node: any) => `

@@ -227,7 +227,15 @@ export function BundleView({ graph, fileSizes, colorMap, width, height }: Props)
   const data = useMemo(() => {
     if (!graph?.files?.length) return null;
     const h = buildHierarchy(graph, fileSizes);
-    const radius = Math.min(width, height) / 2 - 120;
+    const nNodes = graph.files.length;
+    
+    // Ensure nodes have enough space along the circumference (at least 12px per node)
+    const minRadius = (nNodes * 12) / (2 * Math.PI);
+    const baseRadius = Math.min(width, height) / 2 - 120;
+    const radius = Math.max(baseRadius, minRadius);
+    
+    const containerWidth = Math.max(width, radius * 2 + 250);
+    const containerHeight = Math.max(height, radius * 2 + 250);
     
     const cluster = d3.cluster().size([2 * Math.PI, radius]);
     const root = cluster(h) as d3.HierarchyPointNode<any>;
@@ -250,7 +258,7 @@ export function BundleView({ graph, fileSizes, colorMap, width, height }: Props)
       }
     });
 
-    return { root, links, radius };
+    return { root, links, radius, containerWidth, containerHeight };
   }, [graph, fileSizes, width, height]);
 
   if (!data) return null;
@@ -261,8 +269,9 @@ export function BundleView({ graph, fileSizes, colorMap, width, height }: Props)
     .angle(d => d.x);
 
   return (
-    <svg width={width} height={height} className="bg-[#0d1117] overflow-visible">
-      <g transform={`translate(${width / 2},${height / 2})`}>
+    <div style={{ width, height, overflow: "auto" }}>
+      <svg width={data.containerWidth} height={data.containerHeight} className="bg-[#0d1117] overflow-visible">
+        <g transform={`translate(${data.containerWidth / 2},${data.containerHeight / 2})`}>
         {/* Draw edges */}
         {data.links.map((link, i) => (
           <path
@@ -299,6 +308,7 @@ export function BundleView({ graph, fileSizes, colorMap, width, height }: Props)
         })}
       </g>
     </svg>
+    </div>
   );
 }
 
