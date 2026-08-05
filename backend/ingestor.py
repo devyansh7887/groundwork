@@ -95,11 +95,22 @@ class Ingestor:
             supported_exts.extend(exts)
             
         filtered_files = []
+        ignore_dirs = ["node_modules", "build", "dist", ".gradle", ".idea", "venv", "out", "target", "__pycache__", ".next"]
+        
         for item in tree:
             if item["type"] == "blob":
                 path = item["path"]
+                size = item.get("size", 0)
+                
+                # Exclude common build and dependency directories
+                if any(f"/{d}/" in f"/{path}" or path.startswith(f"{d}/") for d in ignore_dirs):
+                    continue
+                    
+                # Exclude massive files (> 150 KB) to prevent Render memory OOM
+                if size > 150 * 1024:
+                    continue
+                
                 if any(path.endswith(ext) for ext in supported_exts):
-                    # Exclude common minified or generated files if needed, but for now just extensions
                     filtered_files.append(item)
                     
         return filtered_files
