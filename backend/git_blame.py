@@ -38,11 +38,18 @@ class GitBlameAnalyzer:
                 key_pool.update_key_status(token, remaining, reset_time)
             
             if response.status_code in [403, 429] and remaining == 0:
+                if not token:
+                    # Unauthenticated IP rate limit hit. Abort completely to save time.
+                    logger.warning("Unauthenticated rate limit hit. Bypassing blame for this file.")
+                    return []
                 logger.warning(f"Rate limit hit during blame. Rotating key...")
                 continue
                 
             if response.status_code == 200:
-                return response.json()
+                try:
+                    return response.json()
+                except Exception:
+                    return []
             return []
                 
         return []

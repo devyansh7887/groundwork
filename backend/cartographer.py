@@ -42,12 +42,16 @@ class Cartographer:
         calls = []
         entry_points = []
         
-        # Prevent C-level segfaults on heavily minified files with extremely long lines
+        # Prevent C-level segfaults and infinite hangs on massive/minified files
         try:
-            text = content.decode('utf8', errors='ignore')
-            if any(len(line) > 2000 for line in text.splitlines()):
-                logger.warning(f"Skipping AST parse for {file_path} due to extremely long lines (minified)")
+            if len(content) > 500 * 1024:
+                logger.warning(f"Skipping AST parse for {file_path} (too large: {len(content)//1024}KB)")
                 parser = None
+            else:
+                text = content.decode('utf8', errors='ignore')
+                if any(len(line) > 2000 for line in text.splitlines()):
+                    logger.warning(f"Skipping AST parse for {file_path} due to extremely long lines (minified)")
+                    parser = None
         except Exception:
             pass
             
