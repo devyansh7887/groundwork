@@ -132,12 +132,25 @@ class DiagramAgent:
             ("human", HUMAN_PROMPT),
         ])
 
-        # Representative file sample — prioritize non-test, non-config files
+        # Filter out tests and build artifacts
         all_files = graph.get("files", [])
-        important_files = [
+        valid_files = [
             f for f in all_files
             if not any(x in f.lower() for x in ["test", "spec", "__pycache__", ".min.", "node_modules", "dist/", "build/"])
-        ][:40]
+        ]
+
+        # Calculate centrality (how often a file is imported or called) to pick the most architecturally significant files
+        from collections import Counter
+        centrality = Counter()
+        for imp in graph.get("imports", []):
+            tgt = imp.get("target_module", "").split(".")[-1]
+            for f in valid_files:
+                if f.endswith(tgt + ".py") or f.endswith(tgt + ".ts") or f.endswith(tgt + ".tsx"):
+                    centrality[f] += 1
+                    break
+        
+        # Sort by centrality (descending), fallback to alphabetical
+        important_files = sorted(valid_files, key=lambda x: (centrality[x], x), reverse=True)[:20]
 
         topology_summary = self._build_topology_summary(graph)
 

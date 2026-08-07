@@ -111,12 +111,16 @@ function MermaidView({ chart }: { chart: string }) {
       if (ref.current) {
         ref.current.innerHTML = svg;
         const el = ref.current.querySelector("svg");
-        if (el) { el.style.width = "100%"; el.style.height = "100%"; }
+        if (el) { 
+          el.removeAttribute("width"); 
+          el.removeAttribute("height"); 
+          el.style.maxWidth = "none"; 
+        }
       }
     }).catch(e => setErr(e.message));
   }, [chart]);
   if (err) return <div className="text-red-400 p-4 text-sm font-mono">{err}</div>;
-  return <div ref={ref} className="w-full h-full overflow-auto p-4" />;
+  return <div className="w-full h-full overflow-auto cursor-grab active:cursor-grabbing border border-[#30363d] rounded bg-[#0d1117] p-8 shadow-inner"><div ref={ref} className="min-w-fit min-h-fit origin-top-left hover:scale-[1.02] transition-transform duration-300" /></div>;
 }
 
 // ─── Main DiagramCanvas ───────────────────────────────────────────────────────

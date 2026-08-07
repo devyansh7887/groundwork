@@ -139,6 +139,16 @@ class OnboardRequest(BaseModel):
 class DraftRequest(BaseModel):
     repo_url: str
     action: dict | None = None
+    issue: dict | None = None
+    
+    @field_validator("repo_url")
+    def validate_url(cls, v):
+        if not re.match(r"^https://github\.com/[\w.-]+/[\w.-]+/?$", v):
+            raise ValueError("Invalid GitHub repository URL")
+        return v
+
+class IssuesRequest(BaseModel):
+    repo_url: str
     
     @field_validator("repo_url")
     def validate_url(cls, v):
@@ -437,6 +447,20 @@ Include:
                 "test_code": f"// The AI drafting service is currently rate-limited.\n// Please write tests for {target} to verify the fix.",
                 "pr_description": f"## {title}\n\n{description}\n\n**Action:** {action_text}\n\n**Impact:** {req.action.get('impact', '')}"
             }
+    elif req.issue:
+        # Real GitHub issue draft
+        try:
+            patch = drafter.draft_patch(req.issue, state["graph"], state.get("downloaded_files", []), session_token)
+            return patch.model_dump()
+        except Exception as e:
+            logger.error(f"LLM draft for issue failed: {e}")
+            return {
+                "issue_title": req.issue.get("title", "Issue"),
+                "target_file": "unknown",
+                "diff": "Draft failed due to rate limits or error.",
+                "test_code": "",
+                "pr_description": f"Fixes #{req.issue.get('number', '')}"
+            }
     else:
         # Generic fallback: find a good first issue on GitHub
         owner = state["repo_metadata"].get("owner", "")
@@ -447,3 +471,21 @@ Include:
             return {"message": "No good first issues found."}
         patch = drafter.draft_patch(top_issue, state["graph"], state.get("downloaded_files", []), session_token)
         return patch.model_dump()
+
+@app.post("/api/issues")
+async def get_issues(req: IssuesRequest, request: Request):
+    session_token = extract_token(request)
+    if req.repo_url not in repo_cache:
+        raise HTTPException(status_code=400, detail="Repository not analyzed yet.")
+    state = repo_cache[req.repo_url]
+    owner = state["repo_metadata"].get("owner", "")
+    repo = state["repo_metadata"].get("repo", "")
+    if not owner or not repo:
+        return {"issues": []}
+    
+    try:
+        issues = await drafter.fetch_issues(owner, repo, session_token)
+        return {"issues": issues}
+    except Exception as e:
+        logger.error(f"Failed to fetch issues: {e}")
+        return {"issues": [], "error": str(e)}
