@@ -211,10 +211,27 @@ verified against the graph and file contents above.""")
         else:
             logger.info("Calling Synthesizer for initial architecture pass...")
 
-        result: SynthesizerOutput = chain.invoke(invoke_kwargs)
+        max_retries = 3
+        backoff = 2.0
         
-        return {
-            "claims": [c.model_dump() for c in result.claims],
-            "narrative": result.narrative
-        }
+        for attempt in range(1, max_retries + 1):
+            try:
+                result: SynthesizerOutput = chain.invoke(invoke_kwargs)
+                return {
+                    "claims": [c.model_dump() for c in result.claims],
+                    "narrative": result.narrative
+                }
+            except Exception as e:
+                import time
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.warning(f"Synthesizer attempt {attempt} failed: {e}")
+                if attempt == max_retries:
+                    logger.error("All retries exhausted for synthesizer. Returning fallback.")
+                    return {
+                        "claims": [],
+                        "narrative": "⚠️ **Analysis Unavailable**: The AI models are currently experiencing heavy load or rate limits. Please try again later or provide a custom API token."
+                    }
+                time.sleep(backoff)
+                backoff = min(backoff * 2, 10.0)
 
