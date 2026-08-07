@@ -413,12 +413,11 @@ Include:
             return patch.model_dump()
         except Exception as e:
             logger.error(f"LLM draft failed: {e}")
-            # Graceful fallback with structured template (better than TODO)
             return {
                 "issue_title": title,
                 "target_file": target,
-                "diff": f"--- a/{target}\n+++ b/{target}\n@@ -1,1 +1,1 @@\n# LLM draft temporarily unavailable\n# Action: {action_text}",
-                "test_code": f"def test_{title.lower().replace(' ', '_')}():\n    # TODO: Write test after implementing fix\n    pass",
+                "diff": f"--- a/{target}\n+++ b/{target}\n@@ -1,1 +1,1 @@\n# [AI Draft Unavailable]\n# The drafting service is currently rate-limited or unavailable.\n# Please write the code to address: {action_text}",
+                "test_code": f"// The AI drafting service is currently rate-limited.\n// Please write tests for {target} to verify the fix.",
                 "pr_description": f"## {title}\n\n{description}\n\n**Action:** {action_text}\n\n**Impact:** {req.action.get('impact', '')}"
             }
     else:
