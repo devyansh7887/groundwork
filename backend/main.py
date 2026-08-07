@@ -457,7 +457,7 @@ Include:
             return {
                 "issue_title": req.issue.get("title", "Issue"),
                 "target_file": "unknown",
-                "diff": "Draft failed due to rate limits or error.",
+                "diff": f"Draft failed: {str(e)}",
                 "test_code": "",
                 "pr_description": f"Fixes #{req.issue.get('number', '')}"
             }
