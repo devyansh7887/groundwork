@@ -129,11 +129,18 @@ Question: {question}
 """)
         ])
         
-        llm = llm_key_pool.get_llm(session_token, temperature=0.0)
-        structured_llm = llm.with_structured_output(QAResponse)
-        chain = prompt | structured_llm
-        logger.info("Generating Q&A response...")
-        qa_res: QAResponse = await chain.ainvoke({"context": context_text, "question": question})
+        try:
+            llm = llm_key_pool.get_llm(session_token, temperature=0.0)
+            structured_llm = llm.with_structured_output(QAResponse)
+            chain = prompt | structured_llm
+            logger.info("Generating Q&A response...")
+            qa_res: QAResponse = await chain.ainvoke({"context": context_text, "question": question})
+        except Exception as e:
+            logger.warning(f"Failed to generate QA response: {e}")
+            return {
+                "answer": "I'm sorry, I cannot answer right now because no valid AI keys are available on the server. Please configure your Groq or Gemini keys.",
+                "claims": []
+            }
         
         # Convert Pydantic claims to dicts for verifier
         claims_dicts = [c.model_dump() for c in qa_res.claims]

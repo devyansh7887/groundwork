@@ -132,10 +132,6 @@ class DiagramAgent:
             ("human", HUMAN_PROMPT),
         ])
 
-        llm = llm_key_pool.get_llm(session_token, temperature=0.1)
-        structured_llm = llm.with_structured_output(ComponentDiagramOutput)
-        chain = prompt | structured_llm
-
         # Representative file sample — prioritize non-test, non-config files
         all_files = graph.get("files", [])
         important_files = [
@@ -154,6 +150,9 @@ class DiagramAgent:
 
         for attempt in range(1, max_retries + 1):
             try:
+                llm = llm_key_pool.get_llm(session_token, temperature=0.1)
+                structured_llm = llm.with_structured_output(ComponentDiagramOutput)
+                chain = prompt | structured_llm
                 diagram_output = chain.invoke({
                     "narrative": narrative[:3000],  # trim to avoid token limits
                     "files": json.dumps(important_files),

@@ -90,11 +90,11 @@ File Content Snippet (first 1500 chars):
 """)
         ])
 
-        llm = llm_key_pool.get_llm(session_token, temperature=0.0)
-        structured_llm = llm.with_structured_output(VerifierResult)
-        chain = prompt | structured_llm
         import asyncio
         try:
+            llm = llm_key_pool.get_llm(session_token, temperature=0.0)
+            structured_llm = llm.with_structured_output(VerifierResult)
+            chain = prompt | structured_llm
             result: VerifierResult = await chain.ainvoke({
                 "claim_text": claim_text,
                 "cited_file": cited_file,

@@ -196,11 +196,6 @@ verified against the graph and file contents above.""")
             "entry_points": [ep.get("id") for ep in graph["entry_points"]][:10],
             "calls": graph["calls"][:10],
         }
-        
-        llm = llm_key_pool.get_llm(session_token, temperature=0.1)
-        structured_llm = llm.with_structured_output(SynthesizerOutput)
-        chain = prompt | structured_llm
-
         invoke_kwargs: Dict[str, Any] = {
             "graph_json": json.dumps(simplified_graph, indent=2),
             "file_contents": file_contents,
@@ -216,6 +211,9 @@ verified against the graph and file contents above.""")
         
         for attempt in range(1, max_retries + 1):
             try:
+                llm = llm_key_pool.get_llm(session_token, temperature=0.1)
+                structured_llm = llm.with_structured_output(SynthesizerOutput)
+                chain = prompt | structured_llm
                 result: SynthesizerOutput = chain.invoke(invoke_kwargs)
                 return {
                     "claims": [c.model_dump() for c in result.claims],
