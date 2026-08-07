@@ -18,6 +18,7 @@ import { ExplorerPanel } from '@/components/ExplorerPanel';
 import { NarrativeSection } from '@/components/NarrativeSection';
 import { QASection } from '@/components/QASection';
 import { OnboardingSection } from '@/components/OnboardingSection';
+import { ContributionDrafter } from '@/components/ContributionDrafter';
 
 mermaid.initialize({ startOnLoad: false, theme: "dark", themeVariables: { fontFamily: "monospace" } });
 
@@ -158,7 +159,7 @@ function AnalyzeContent() {
   const [security, setSecurity] = useState<any[]>([]);
   const [patterns, setPatterns] = useState<any[]>([]);
   const [driftInfo, setDriftInfo] = useState<{ stale: boolean; cached_sha: string; current_sha: string } | null>(null);
-  const [activeResultTab, setActiveResultTab] = useState<"narrative" | "diagram" | "wizard" | "qa">("narrative");
+  const [activeResultTab, setActiveResultTab] = useState<"narrative" | "diagram" | "wizard" | "qa" | "onboarding" | "issues">("narrative");
   
   // Q&A
   const [question, setQuestion] = useState("");
@@ -623,6 +624,16 @@ function AnalyzeContent() {
             >
               🤖 Q&A
             </button>
+            <button 
+              onClick={() => setActiveResultTab("issues")} 
+              className={`flex-1 py-2 px-3 rounded-md text-sm font-bold flex items-center justify-center gap-1.5 transition-all ${
+                activeResultTab === "issues" 
+                  ? "bg-[#21262d] text-[#238636] shadow-sm border border-[#30363d]" 
+                  : "text-[#8b949e] hover:text-[#238636] border border-transparent"
+              }`}
+            >
+              🛠️ Issues & Contribute
+            </button>
           </div>
 
           {/* Architecture Narrative */}
@@ -696,6 +707,16 @@ function AnalyzeContent() {
               setQaError={setQaError}
               handleAsk={handleAsk}
             />
+          )}
+
+          {/* Contribution Drafter Tab */}
+          {activeResultTab === "issues" && (
+            <div className="h-[600px] xl:h-full w-full">
+              <ContributionDrafter 
+                repoUrl={repoUrl}
+                sessionToken={sessionToken}
+              />
+            </div>
           )}
 
         </div>
