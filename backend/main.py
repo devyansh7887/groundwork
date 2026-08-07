@@ -234,27 +234,34 @@ async def analyze_repo(req: AnalyzeRequest, request: Request):
     session_token = extract_token(request)
     async def event_generator():
         q = asyncio.Queue()
-        # Store both the event loop and the queue in the context var
-        # to ensure thread-safe putting from worker threads.
         log_queue_var.set((asyncio.get_running_loop(), q))
-
-        # Safe to call put_nowait directly here because we are ON the main thread
         q.put_nowait(f"🚀  Starting analysis of {req.repo_url}...")
 
-        task = asyncio.create_task(_run_and_cache(req.repo_url, session_token, req.mode, req.force_refresh))
+        # Hard 9-minute timeout so a silent hang gives a real error instead of a dropped connection
+        task = asyncio.create_task(
+            asyncio.wait_for(
+                _run_and_cache(req.repo_url, session_token, req.mode, req.force_refresh),
+                timeout=540.0
+            )
+        )
 
         while not task.done():
             try:
                 msg = await asyncio.wait_for(q.get(), timeout=4.0)
-                yield f"data: {json.dumps({'log': msg})}\n\n"
+                try:
+                    yield f"data: {json.dumps({'log': msg})}\n\n"
+                except (TypeError, ValueError):
+                    yield f"data: {json.dumps({'log': str(msg)})}\n\n"
             except asyncio.TimeoutError:
-                # Emit a varied heartbeat so it feels alive
                 yield f"data: {json.dumps({'log': '⏳  AI agents are working... hang tight'})}\n\n"
 
-        # Drain any remaining logs
+        # Drain remaining logs
         while not q.empty():
-            msg = q.get_nowait()
-            yield f"data: {json.dumps({'log': msg})}\n\n"
+            try:
+                msg = q.get_nowait()
+                yield f"data: {json.dumps({'log': str(msg)})}\n\n"
+            except Exception:
+                pass
 
         try:
             final_state = task.result()
@@ -283,10 +290,15 @@ async def analyze_repo(req: AnalyzeRequest, request: Request):
                 },
             }
             yield f"data: {json.dumps({'result': result})}\n\n"
-        except Exception as e:
-            error_msg = str(e)
+        except BaseException as e:
+            # Catch BaseException (not just Exception) to also handle
+            # asyncio.CancelledError, asyncio.TimeoutError, MemoryError, etc.
+            error_msg = str(e) or type(e).__name__
             logger.exception("Error during analysis:")
             is_rate_limit = "rate limit" in error_msg.lower() or "429" in error_msg
+            is_timeout = "timed out" in error_msg.lower() or isinstance(e, asyncio.TimeoutError)
+            if is_timeout:
+                error_msg = "Analysis timed out — repository may be too large or AI services are under heavy load. Please try again or try a smaller repository."
             yield f"data: {json.dumps({'error': error_msg, 'rate_limit': is_rate_limit})}\n\n"
 
     return StreamingResponse(
@@ -294,7 +306,7 @@ async def analyze_repo(req: AnalyzeRequest, request: Request):
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
-            "X-Accel-Buffering": "no",  # Disable nginx buffering on Render
+            "X-Accel-Buffering": "no",
         }
     )
 
