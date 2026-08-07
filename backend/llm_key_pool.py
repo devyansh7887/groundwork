@@ -69,8 +69,11 @@ class LLMKeyPool:
             available_keys = [k for k in self.keys if (k["remaining"] > 0 or k["remaining"] == -1) and k["reset_time"] < now]
             
             if available_keys:
-                # Sort putting -1 (unknown) at the end
-                return sorted(available_keys, key=lambda k: k["remaining"], reverse=True)[0]
+                # Prioritize gemini due to massive rate limits and 1M context window
+                def sort_key(k):
+                    type_score = 1 if k["type"] == "gemini" else 0
+                    return (type_score, k["remaining"])
+                return sorted(available_keys, key=sort_key, reverse=True)[0]
                 
             if self.keys:
                 # All exhausted, return the one resetting soonest
