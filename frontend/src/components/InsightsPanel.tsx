@@ -102,11 +102,14 @@ export function InsightsPanel({ graph, fileSizes, fileLocs = {}, claims, readme,
   const totalNodes = graph.nodes.length;
   const securityIssues = security.filter(s => ["critical", "high"].includes(s.severity)).length;
   const patternIssues = patterns.filter(p => p.severity === "warning").length;
+  // Normalize issues per 100 files to make it fair for large codebases
+  const normalizedSecurity = (securityIssues / Math.max(1, totalFiles)) * 100;
+  const normalizedPatterns = (patternIssues / Math.max(1, totalFiles)) * 100;
+  
   const score = Math.max(0, Math.min(100,
     100
-    - (securityIssues * 10)
-    - (patternIssues * 5)
-    - (totalFiles > 200 ? 10 : 0)
+    - Math.round(normalizedSecurity * 5)
+    - Math.round(normalizedPatterns * 2)
   ));
 
   const scoreColor = score >= 80 ? "#3fb950" : score >= 50 ? "#d29922" : "#ff7b72";
