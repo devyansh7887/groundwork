@@ -23,23 +23,22 @@ class ContributionDrafter:
         pass
 
     async def fetch_issues(self, owner: str, repo: str, session_token: str | None = None) -> List[Dict[str, Any]]:
-        """Fetches issues labeled 'good first issue' or 'help wanted'."""
+        """Fetches all open issues (up to 100)."""
         issues = []
-        for label in ["good first issue", "help wanted"]:
-            url = f"https://api.github.com/repos/{owner}/{repo}/issues?state=open&labels={label.replace(' ', '%20')}"
-            headers = {
-                "Accept": "application/vnd.github.v3+json",
-                "User-Agent": "Groundwork-Agent"
-            }
-            token = session_token or key_pool.get_best_key()
-            if token:
-                headers["Authorization"] = f"Bearer {token}"
+        url = f"https://api.github.com/repos/{owner}/{repo}/issues?state=open&per_page=100"
+        headers = {
+            "Accept": "application/vnd.github.v3+json",
+            "User-Agent": "Groundwork-Agent"
+        }
+        token = session_token or key_pool.get_best_key()
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+            
+        async with httpx.AsyncClient(follow_redirects=True) as client:
+            response = await client.get(url, headers=headers)
+            if response.status_code == 200:
+                issues.extend(response.json())
                 
-            async with httpx.AsyncClient(follow_redirects=True) as client:
-                response = await client.get(url, headers=headers)
-                if response.status_code == 200:
-                    issues.extend(response.json())
-                    
         # Remove pull requests (GitHub API returns PRs as issues)
         issues = [i for i in issues if "pull_request" not in i]
         return issues
