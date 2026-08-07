@@ -34,6 +34,7 @@ class Cartographer:
 
     def parse_file(self, file_path: str, content: bytes) -> Dict[str, Any]:
         """Parses a file and extracts graph nodes and edges."""
+        import time
         lang = self.determine_language(file_path)
         parser = self.parsers.get(lang)
         
@@ -42,32 +43,40 @@ class Cartographer:
         calls = []
         entry_points = []
         
-        # Prevent C-level segfaults, memory leaks, and CPU hangs on large/minified files
+        # Guard 1: size limit — skip very large files (minified/generated)
+        # Guard 2: long-line check — skip minified files with no newlines
         try:
-            if len(content) > 30 * 1024:
-                logger.warning(f"Skipping AST parse for {file_path} (too large: {len(content)//1024}KB)")
+            if len(content) > 20 * 1024:  # 20 KB hard limit
+                parser = None
+            elif content.count(b'\n') < 3 and len(content) > 500:  # virtually no newlines = minified
                 parser = None
             else:
                 text = content.decode('utf8', errors='ignore')
-                if any(len(line) > 2000 for line in text.splitlines()):
-                    logger.warning(f"Skipping AST parse for {file_path} due to extremely long lines (minified)")
+                if any(len(line) > 1000 for line in text.splitlines()):
                     parser = None
         except Exception:
-            pass
+            parser = None
             
         if parser:
             try:
+                deadline = time.monotonic() + 2.0  # 2-second wall-clock budget per file
                 tree = parser.parse(content)
-                def traverse(node):
+                
+                # Iterative BFS traversal — avoids Python RecursionError on deep ASTs
+                # and lets us enforce the deadline mid-traversal.
+                stack = [tree.root_node]
+                while stack:
+                    if time.monotonic() > deadline:
+                        # Bail out — this file has a pathologically deep/wide AST
+                        break
+                    node = stack.pop()
                     if lang == "Python":
                         self._extract_python_features(node, file_path, content, nodes, imports, calls, entry_points)
                     else:
                         self._extract_js_features(node, file_path, content, nodes, imports, calls, entry_points)
-                        
-                    for child in node.children:
-                        traverse(child)
-                        
-                traverse(tree.root_node)
+                    # Push children in reverse order so left-to-right order is preserved
+                    stack.extend(reversed(node.children))
+                    
             except Exception as e:
                 logger.error(f"Tree-sitter failed on {file_path}: {e}")
         else:
@@ -226,9 +235,11 @@ class Cartographer:
             "action_findings": []
         }
         total_files = len(files)
+        log_interval = max(1, total_files // 10)  # log at ~10 points: 10%, 20%, ...
         for i, f in enumerate(files, 1):
             path = f["path"]
-            logger.info(f"🗺️  [CARTOGRAPHER] Parsing AST: {i}/{total_files} ({path[-30:] if len(path) > 30 else path})...")
+            if i == 1 or i == total_files or i % log_interval == 0:
+                logger.info(f"🗺️  [CARTOGRAPHER] Parsing AST: {i}/{total_files}...")
             content = f["content"].encode('utf8')
             
             file_data = self.parse_file(path, content)
