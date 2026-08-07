@@ -22,6 +22,11 @@ class Cartographer:
             "JavaScript": Parser(JS_LANGUAGE),
             "TypeScript": Parser(JS_LANGUAGE)
         }
+        # 1-second C-level parse timeout — prevents tree-sitter from busy-looping
+        # on pathological files (raises ValueError which we catch in parse_file)
+        for p in self.parsers.values():
+            if hasattr(p, 'timeout_micros'):
+                p.timeout_micros = 1_000_000
 
     def determine_language(self, file_path: str) -> str:
         if file_path.endswith(".py"):
@@ -256,10 +261,9 @@ class Cartographer:
                 import gc
                 gc.collect()
 
+        # security_scan is capped internally; pattern_scan is called separately
+        # in node_cartograph (pipeline.py) after this returns — don't call it twice.
         graph["security_findings"] = self.security_scan(files)
-        patterns, actions = self.pattern_scan(graph, files)
-        graph["pattern_findings"] = patterns
-        graph["action_findings"] = actions
         return graph
 
     def security_scan(self, files: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -276,7 +280,8 @@ class Cartographer:
             ("Debug code", re.compile(r'\bpdb\.set_trace\(\)|debugger;'), "info", "Leftover debug code can halt production execution or expose internal state.", "Remove debug statements before committing or use a configurable logging framework."),
             ("Debug Statements", re.compile(r'\b(console\.log|print)\s*\('), "low", "Excessive logging can clutter production logs and potentially leak sensitive information.", "Replace with structured logging at appropriate log levels (DEBUG, INFO, ERROR)."),
         ]
-        for f in files:
+        # Cap to first 200 files to avoid O(files*lines*patterns) blowup on huge repos
+        for f in files[:200]:
             path = f["path"]
             content = f.get("content", "")
             if not content:
@@ -291,6 +296,9 @@ class Cartographer:
                             "impact": impact,
                             "remediation": remediation
                         })
+                        # Cap total findings to prevent memory blowup
+                        if len(findings) >= 500:
+                            return findings
         return findings
 
     def pattern_scan(self, graph: Dict[str, Any], files: List[Dict[str, Any]]):
