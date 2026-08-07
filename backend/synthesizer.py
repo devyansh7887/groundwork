@@ -1,5 +1,6 @@
 import os
 import json
+import time
 import logging
 from typing import Dict, Any, List, Optional
 from pydantic import BaseModel, Field
@@ -220,9 +221,6 @@ verified against the graph and file contents above.""")
                     "narrative": result.narrative
                 }
             except Exception as e:
-                import time
-                import logging
-                logger = logging.getLogger(__name__)
                 logger.warning(f"Synthesizer attempt {attempt} failed: {e}")
                 if attempt == max_retries:
                     logger.error("All retries exhausted for synthesizer. Returning fallback.")
