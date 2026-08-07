@@ -35,6 +35,9 @@ class LLMKeyPool:
             logger.warning("No LLM keys found in environment. AI drafting will be unavailable unless a session token is provided.")
 
     def _is_valid_token(self, token: str, key_type: str) -> bool:
+        if not token:
+            return False
+        token = token.strip(" \t\n\r\"'")
         if not token or "your_" in token or "dummy" in token:
             return False
         if key_type == "gemini" and not token.startswith("AIza"):
@@ -49,7 +52,7 @@ class LLMKeyPool:
         # Check base env (e.g. GROQ_API_KEY)
         base_val = os.environ.get(base_env_name)
         if base_val and self._is_valid_token(base_val, key_type):
-            self.keys.append({"token": base_val, "type": key_type, "reset_time": 0, "remaining": -1})
+            self.keys.append({"token": base_val.strip(" \t\n\r\"'"), "type": key_type, "reset_time": 0, "remaining": -1})
             
         # Check GROQ_API_KEY_1, GROQ_API_KEY_2, etc.
         i = 1
@@ -58,7 +61,7 @@ class LLMKeyPool:
             if not token:
                 break
             if self._is_valid_token(token, key_type):
-                self.keys.append({"token": token, "type": key_type, "reset_time": 0, "remaining": -1})
+                self.keys.append({"token": token.strip(" \t\n\r\"'"), "type": key_type, "reset_time": 0, "remaining": -1})
             i += 1
 
     def _determine_key_type(self, token: str) -> str:
