@@ -228,13 +228,9 @@ class Cartographer:
         total_files = len(files)
         for i, f in enumerate(files, 1):
             path = f["path"]
+            logger.info(f"🗺️  [CARTOGRAPHER] Parsing AST: {i}/{total_files} ({path[-30:] if len(path) > 30 else path})...")
             content = f["content"].encode('utf8')
             
-            # Log every single file so the UI shows exactly which one we are on
-            logger.info(f"🗺️  [CARTOGRAPHER] Parsing AST: {i}/{total_files} ({path[-30:] if len(path) > 30 else path})...")
-            if i % max(1, total_files // 10) == 0 or i == total_files:
-                logger.info(f"🗺️  [CARTOGRAPHER] Parsing AST: {i}/{total_files}...")
-                
             file_data = self.parse_file(path, content)
                 
             graph["files"].append(path)

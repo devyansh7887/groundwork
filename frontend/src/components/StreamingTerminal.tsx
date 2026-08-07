@@ -59,7 +59,8 @@ export function StreamingTerminal({ logs }: StreamingTerminalProps) {
     /^(Parsing AST for).*/i,
     /^(Analyzing node).*/i,
     /^(Fetching issue).*/i,
-    /^(📥\s*Fetching file).*/i
+    /^(📥\s*Fetching file).*/i,
+    /^(🗺️\s*\[CARTOGRAPHER\] Parsing AST).*/i
   ];
 
   logs.map(humanize).filter(l => l !== "").forEach((log) => {

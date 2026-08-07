@@ -98,8 +98,13 @@ class Pipeline:
                 return {"path": file_info["path"], "content": content}
                 
         tasks = [fetch_file(f) for f in files_to_download]
-        results = await asyncio.gather(*tasks)
-        downloaded = [r for r in results if r is not None]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        downloaded = [r for r in results if r is not None and not isinstance(r, Exception)]
+        
+        # Log if there were any failures
+        failures = sum(1 for r in results if isinstance(r, Exception))
+        if failures > 0:
+            logger.warning(f"Failed to download {failures} files due to errors.")
         
         await ingestor.close()
         
