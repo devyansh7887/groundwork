@@ -323,10 +323,12 @@ class Cartographer:
             })
 
         # 2. Highly Coupled (Imported by > 5 other files)
+        # Cap: O(imports × files) can be millions of iterations on large repos
         imported_by = Counter()
-        for imp in graph.get("imports", []):
+        files_set = graph.get("files", [])[:100]  # check against first 100 files only
+        for imp in graph.get("imports", [])[:2000]:  # cap at 2000 imports
             tgt_mod = imp.get("target_module", "").replace(".", "/")
-            for fpath in graph.get("files", []):
+            for fpath in files_set:
                 if tgt_mod and (fpath.endswith(tgt_mod + ".py") or fpath.endswith(tgt_mod + ".ts") or fpath.endswith(tgt_mod + ".tsx")):
                     imported_by[fpath] += 1
                     
