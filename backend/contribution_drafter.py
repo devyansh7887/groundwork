@@ -104,14 +104,14 @@ REQUIRED FORMAT (copy this structure exactly):
 +    added_line = True
      return result
 
-Rules:
+Rules for the `diff` field:
 - Lines starting with `-` are removed
 - Lines starting with `+` are added  
 - Lines starting with ` ` (space) are context (unchanged)
 - Every hunk MUST start with @@ -line,count +line,count @@
 - Use actual line numbers from the file content provided
-- DO NOT wrap the diff in markdown code fences
-- DO NOT add any prose before or after the diff
+- DO NOT wrap the diff in markdown code fences inside the JSON field
+- DO NOT add any prose before or after the diff inside the JSON field
 
 DO NOT auto-submit. This is a local draft only.
 """),
@@ -124,7 +124,7 @@ Repository Context (Graph):
 File Contents (Top files):
 {files}
 
-Draft the patch for the most relevant file using EXACTLY the unified diff format described above.
+Provide the patch, test code, and PR description. Ensure the `diff` field contains EXACTLY the unified diff format described above.
 """)
         ])
         
