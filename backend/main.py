@@ -156,11 +156,13 @@ class QueueHandler(logging.Handler):
     def emit(self, record):
         if record.name not in ALLOWED_LOG_MODULES:
             return
-        q = log_queue_var.get()
-        if q is not None:
+        q_data = log_queue_var.get()
+        if q_data is not None:
+            # We unpack (loop, queue) stored by the request thread
             try:
+                loop, q = q_data
                 msg = self.format(record)
-                q.put_nowait(msg)
+                loop.call_soon_threadsafe(q.put_nowait, msg)
             except Exception:
                 pass
 
@@ -232,8 +234,11 @@ async def analyze_repo(req: AnalyzeRequest, request: Request):
     session_token = extract_token(request)
     async def event_generator():
         q = asyncio.Queue()
-        log_queue_var.set(q)
+        # Store both the event loop and the queue in the context var
+        # to ensure thread-safe putting from worker threads.
+        log_queue_var.set((asyncio.get_running_loop(), q))
 
+        # Safe to call put_nowait directly here because we are ON the main thread
         q.put_nowait(f"🚀  Starting analysis of {req.repo_url}...")
 
         task = asyncio.create_task(_run_and_cache(req.repo_url, session_token, req.mode, req.force_refresh))
