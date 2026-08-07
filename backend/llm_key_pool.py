@@ -51,8 +51,11 @@ class LLMKeyPool:
     def _load_keys(self, base_env_name: str, key_type: str):
         # Check base env (e.g. GROQ_API_KEY)
         base_val = os.environ.get(base_env_name)
-        if base_val and self._is_valid_token(base_val, key_type):
-            self.keys.append({"token": base_val.strip(" \t\n\r\"'"), "type": key_type, "reset_time": 0, "remaining": -1})
+        if base_val:
+            for val in base_val.split(','):
+                clean_val = val.strip(" \t\n\r\"'")
+                if clean_val and self._is_valid_token(clean_val, key_type):
+                    self.keys.append({"token": clean_val, "type": key_type, "reset_time": 0, "remaining": -1})
             
         # Check GROQ_API_KEY_1, GROQ_API_KEY_2, etc.
         i = 1
@@ -60,8 +63,10 @@ class LLMKeyPool:
             token = os.environ.get(f"{base_env_name}_{i}")
             if not token:
                 break
-            if self._is_valid_token(token, key_type):
-                self.keys.append({"token": token.strip(" \t\n\r\"'"), "type": key_type, "reset_time": 0, "remaining": -1})
+            for val in token.split(','):
+                clean_val = val.strip(" \t\n\r\"'")
+                if clean_val and self._is_valid_token(clean_val, key_type):
+                    self.keys.append({"token": clean_val, "type": key_type, "reset_time": 0, "remaining": -1})
             i += 1
 
     def _determine_key_type(self, token: str) -> str:
