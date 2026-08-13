@@ -133,7 +133,7 @@ class LLMKeyPool:
             )
         elif key_type == "gemini":
             return ChatGoogleGenerativeAI(
-                model="gemini-1.5-flash",
+                model="gemini-3.7-flash",
                 google_api_key=token_to_use,
                 temperature=temperature,
                 max_retries=max_retries,
