@@ -40,7 +40,7 @@ class LLMKeyPool:
         token = token.strip(" \t\n\r\"'")
         if not token or "your_" in token or "dummy" in token:
             return False
-        if key_type == "gemini" and not token.startswith("AIza"):
+        if key_type == "gemini" and not (token.startswith("AIza") or token.startswith("AQ.")):
             return False
         if key_type == "groq" and not token.startswith("gsk_"):
             return False
@@ -72,7 +72,7 @@ class LLMKeyPool:
     def _determine_key_type(self, token: str) -> str:
         if token.startswith("gsk_"):
             return "groq"
-        if token.startswith("AIza"):
+        if token.startswith("AIza") or token.startswith("AQ."):
             return "gemini"
         if token.startswith("sk-ant-"):
             return "anthropic"
