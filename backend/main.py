@@ -172,6 +172,15 @@ class QueueHandler(logging.Handler):
             try:
                 loop, q = q_data
                 msg = self.format(record)
+                
+                # Clean up ugly LLM validation traces for the user UI
+                if "LLM attempt" in msg and "failed:" in msg:
+                    msg = "⚠️ AI response validation failed. Retrying..."
+                elif "Synthesizer attempt" in msg and "failed:" in msg:
+                    msg = "⚠️ AI response validation failed. Retrying..."
+                elif "Verifier LLM fallback failed:" in msg:
+                    msg = "⚠️ AI verifier fallback failed. Proceeding with defaults."
+                    
                 loop.call_soon_threadsafe(q.put_nowait, msg)
             except Exception:
                 pass
