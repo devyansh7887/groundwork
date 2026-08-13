@@ -120,11 +120,14 @@ export function ContributionDrafter({ repoUrl, sessionToken }: { repoUrl: string
                     <p className="text-xs text-[#8b949e] mt-1 font-mono">#{issue.number} opened by {issue.author}</p>
                     {issue.labels && issue.labels.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
-                        {issue.labels.slice(0,3).map((l, i) => (
-                          <span key={i} className="px-1.5 py-0.5 rounded-full border border-[#30363d] text-[10px] text-[#8b949e] bg-[#0d1117]">
-                            {l}
-                          </span>
-                        ))}
+                        {issue.labels.slice(0,3).map((l, i) => {
+                          const labelText = typeof l === 'string' ? l : (l as any).name || 'label';
+                          return (
+                            <span key={i} className="px-1.5 py-0.5 rounded-full border border-[#30363d] text-[10px] text-[#8b949e] bg-[#0d1117]">
+                              {labelText}
+                            </span>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
