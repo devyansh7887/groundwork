@@ -271,7 +271,7 @@ export function BundleView({ graph, fileSizes, colorMap, width, height }: Props)
     return { root, links, radius };
   }, [graph, fileSizes, width, height]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!svgRef.current || !gRef.current || !data) return;
     const zoom = d3.zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.1, 5])
