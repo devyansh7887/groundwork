@@ -94,8 +94,8 @@ export function TreeView({ graph, fileSizes, colorMap, width, height }: Props) {
             <path
               key={`link-${i}`}
               d={d3.linkHorizontal()({
-                source: [link.source.x, link.source.y] as any,
-                target: [link.target.x, link.target.y] as any
+                source: [link.source.y, link.source.x] as any,
+                target: [link.target.y, link.target.x] as any
               }) || undefined}
               fill="none"
               stroke="#30363d"
@@ -144,8 +144,8 @@ export function ClusterView({ graph, fileSizes, colorMap, width, height }: Props
             <path
               key={`link-${i}`}
               d={d3.linkHorizontal()({
-                source: [link.source.x, link.source.y] as any,
-                target: [link.target.x, link.target.y] as any
+                source: [link.source.y, link.source.x] as any,
+                target: [link.target.y, link.target.x] as any
               }) || undefined}
               fill="none"
               stroke="#30363d"
@@ -234,19 +234,19 @@ export function MatrixView({ graph, fileSizes, colorMap, width, height }: Props)
 }
 
 export function BundleView({ graph, fileSizes, colorMap, width, height }: Props) {
+  const svgRef = React.useRef<SVGSVGElement>(null);
+  const gRef = React.useRef<SVGGElement>(null);
+
   const data = useMemo(() => {
     if (!graph?.files?.length) return null;
     const h = buildHierarchy(graph, fileSizes);
     const nNodes = graph.files.length;
     
-    // Ensure nodes have enough space along the circumference (at least 12px per node)
     const minRadius = (nNodes * 12) / (2 * Math.PI);
     const baseRadius = Math.min(width, height) / 2 - 120;
     const radius = Math.max(baseRadius, minRadius);
     
-    const containerWidth = Math.max(width, radius * 2 + 250);
-    const containerHeight = Math.max(height, radius * 2 + 250);
-    
+    // We don't need container size anymore because we use zoom
     const cluster = d3.cluster().size([2 * Math.PI, radius]);
     const root = cluster(h) as d3.HierarchyPointNode<any>;
 
@@ -268,8 +268,25 @@ export function BundleView({ graph, fileSizes, colorMap, width, height }: Props)
       }
     });
 
-    return { root, links, radius, containerWidth, containerHeight };
+    return { root, links, radius };
   }, [graph, fileSizes, width, height]);
+
+  useEffect(() => {
+    if (!svgRef.current || !gRef.current || !data) return;
+    const zoom = d3.zoom<SVGSVGElement, unknown>()
+      .scaleExtent([0.1, 5])
+      .on("zoom", (e) => {
+        d3.select(gRef.current).attr("transform", e.transform);
+      });
+      
+    const svg = d3.select(svgRef.current);
+    svg.call(zoom);
+    
+    // Initial centering and scaling if the circle is larger than the screen
+    const diameter = data.radius * 2 + 250;
+    const scale = Math.min(1, Math.min(width, height) / diameter);
+    svg.call(zoom.transform, d3.zoomIdentity.translate(width / 2, height / 2).scale(scale));
+  }, [data, width, height]);
 
   if (!data) return null;
 
@@ -279,45 +296,45 @@ export function BundleView({ graph, fileSizes, colorMap, width, height }: Props)
     .angle(d => d.x);
 
   return (
-    <div style={{ width, height, overflow: "auto" }}>
-      <svg width={data.containerWidth} height={data.containerHeight} className="bg-[#0d1117] overflow-visible">
-        <g transform={`translate(${data.containerWidth / 2},${data.containerHeight / 2})`}>
-        {/* Draw edges */}
-        {data.links.map((link, i) => (
-          <path
-            key={`bundle-${i}`}
-            d={line(link.source.path(link.target)) as string}
-            fill="none"
-            stroke="#58a6ff"
-            strokeWidth={1}
-            strokeOpacity={0.2}
-            className="hover:stroke-[#79c0ff] hover:stroke-opacity-100 transition-all duration-300"
-          />
-        ))}
-        
-        {/* Draw leaf nodes and labels */}
-        {data.root.leaves().map((node, i) => {
-          const angle = (node.x * 180) / Math.PI - 90;
-          return (
-            <g key={`leaf-${i}`} transform={`rotate(${angle}) translate(${node.y},0)`}>
-              <circle r={3} fill="#bc8cff" />
-              <text
-                dy="0.31em"
-                x={node.x < Math.PI ? 6 : -6}
-                textAnchor={node.x < Math.PI ? "start" : "end"}
-                transform={node.x >= Math.PI ? "rotate(180)" : ""}
-                fill="#8b949e"
-                fontSize="9px"
-                fontFamily="monospace"
-                className="hover:fill-[#c9d1d9] cursor-default"
-              >
-                {node.data.name}
-              </text>
-            </g>
-          );
-        })}
-      </g>
-    </svg>
+    <div style={{ width, height, overflow: "hidden" }}>
+      <svg ref={svgRef} width={width} height={height} className="bg-[#0d1117] cursor-move">
+        <g ref={gRef}>
+          {/* Draw edges */}
+          {data.links.map((link, i) => (
+            <path
+              key={`bundle-${i}`}
+              d={line(link.source.path(link.target)) as string}
+              fill="none"
+              stroke="#58a6ff"
+              strokeWidth={1}
+              strokeOpacity={0.2}
+              className="hover:stroke-[#79c0ff] hover:stroke-opacity-100 transition-all duration-300"
+            />
+          ))}
+          
+          {/* Draw leaf nodes and labels */}
+          {data.root.leaves().map((node, i) => {
+            const angle = (node.x * 180) / Math.PI - 90;
+            return (
+              <g key={`leaf-${i}`} transform={`rotate(${angle}) translate(${node.y},0)`}>
+                <circle r={3} fill="#bc8cff" />
+                <text
+                  dy="0.31em"
+                  x={node.x < Math.PI ? 6 : -6}
+                  textAnchor={node.x < Math.PI ? "start" : "end"}
+                  transform={node.x >= Math.PI ? "rotate(180)" : ""}
+                  fill="#8b949e"
+                  fontSize="9px"
+                  fontFamily="monospace"
+                  className="hover:fill-[#c9d1d9] cursor-default"
+                >
+                  {node.data.name}
+                </text>
+              </g>
+            );
+          })}
+        </g>
+      </svg>
     </div>
   );
 }

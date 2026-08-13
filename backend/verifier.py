@@ -74,41 +74,13 @@ class Verifier:
                 reasoning="File exists in repository; no specific symbol to verify deeper."
             )
 
-        # --- SLOW PATH: grey area — file exists but symbol not found. Call LLM once. ---
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", """You are a strict architectural verification agent.
-Classify the claim as Verified, Inferred, or Unverified.
-- 'Verified': File + symbol confirmed in static data.
-- 'Inferred': File exists, claim is plausible from context but symbol not extracted.
-- 'Unverified': File missing or claim is a hallucination.
-Only output the structured JSON."""),
-            ("human", """Claim: {claim_text}
-Cited File: {cited_file} (EXISTS in repo)
-Cited Symbol: {cited_symbol} (NOT found in graph or grep)
-File Content Snippet (first 1500 chars):
-{file_content_snippet}
-""")
-        ])
-
-        import asyncio
-        try:
-            llm = llm_key_pool.get_llm(session_token, temperature=0.0)
-            structured_llm = llm.with_structured_output(VerifierResult)
-            chain = prompt | structured_llm
-            result: VerifierResult = await chain.ainvoke({
-                "claim_text": claim_text,
-                "cited_file": cited_file,
-                "cited_symbol": cited_symbol,
-                "file_content_snippet": file_content[:1500] if file_content else "EMPTY"
-            })
-            return result
-        except Exception as e:
-            logger.warning(f"Verifier LLM fallback failed: {e}. Defaulting to Inferred.")
-            return VerifierResult(
-                claim=claim_text, cited_file=cited_file, cited_symbol=cited_symbol,
-                status="Inferred",
-                reasoning=f"LLM unavailable; file exists so marked Inferred."
-            )
+        # --- FAST PATH ONLY: Grey area — file exists but symbol not found. ---
+        # We used to call the LLM here, but it takes too long and causes 100s timeouts on Render.
+        return VerifierResult(
+            claim=claim_text, cited_file=cited_file, cited_symbol=cited_symbol,
+            status="Inferred",
+            reasoning=f"File exists in repository, but symbol was not explicitly found. Marked Inferred to save time."
+        )
 
     async def verify_claims_async(self, claims: List[Dict[str, Any]], graph: Dict[str, Any], downloaded_files: List[Dict[str, str]], session_token: str | None = None) -> List[Dict[str, Any]]:
         import asyncio
