@@ -16,9 +16,10 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 if GROQ_API_KEY and "your_" in GROQ_API_KEY:
     GROQ_API_KEY = None
 
-# Hard Constraints from Spec (Lowered for Render Free Tier 512MB RAM limit)
-MAX_FILES = 300
-MAX_LOC = 50000
+# Hard Constraints
+MAX_FILES = 500          # Absolute hard cap — repos larger than this are truly too big
+MAX_LOC = 150000          # Max lines of code
+SMART_SAMPLE_LIMIT = 300  # If repo has more files than this, smart-sample the most important ones
 SUPPORTED_LANGUAGES = [
     "Python", 
     "JavaScript", 
