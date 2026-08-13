@@ -77,44 +77,49 @@ export function TreeView({ graph, fileSizes, colorMap, width, height }: Props) {
   const data = useMemo(() => {
     if (!graph?.files?.length) return null;
     const h = buildHierarchy(graph, fileSizes);
-    const tree = d3.tree().size([height - 40, width - 150]);
-    return tree(h);
+    const leafCount = h.leaves().length;
+    const minHeight = leafCount * 14;
+    const finalHeight = Math.max(height, minHeight);
+    const tree = d3.tree().size([finalHeight - 40, width - 150]);
+    return { root: tree(h), finalHeight };
   }, [graph, fileSizes, width, height]);
 
   if (!data) return null;
 
   return (
-    <svg width={width} height={height} className="bg-[#0d1117] overflow-visible">
-      <g transform="translate(50, 20)">
-        {data.links().map((link: any, i: number) => (
-          <path
-            key={`link-${i}`}
-            d={d3.linkHorizontal()({
-              source: [link.source.x, link.source.y] as any,
-              target: [link.target.x, link.target.y] as any
-            }) || undefined}
-            fill="none"
-            stroke="#30363d"
-            strokeWidth={1}
-          />
-        ))}
-        {data.descendants().map((node: any, i: number) => (
-          <g key={`node-${i}`} transform={`translate(${node.y},${node.x})`}>
-            <circle r={node.children ? 4 : 3} fill={node.children ? "#30363d" : (colorMap?.[node.data.path] || "#58a6ff")} />
-            <text
-              dy="0.31em"
-              x={node.children ? -6 : 6}
-              textAnchor={node.children ? "end" : "start"}
-              fill="#c9d1d9"
-              fontSize="10px"
-              fontFamily="monospace"
-            >
-              {node.data.name}
-            </text>
-          </g>
-        ))}
-      </g>
-    </svg>
+    <div style={{ width, height, overflow: "auto" }}>
+      <svg width={Math.max(width, 600)} height={data.finalHeight} className="bg-[#0d1117] overflow-visible">
+        <g transform="translate(50, 20)">
+          {data.root.links().map((link: any, i: number) => (
+            <path
+              key={`link-${i}`}
+              d={d3.linkHorizontal()({
+                source: [link.source.x, link.source.y] as any,
+                target: [link.target.x, link.target.y] as any
+              }) || undefined}
+              fill="none"
+              stroke="#30363d"
+              strokeWidth={1}
+            />
+          ))}
+          {data.root.descendants().map((node: any, i: number) => (
+            <g key={`node-${i}`} transform={`translate(${node.y},${node.x})`}>
+              <circle r={node.children ? 4 : 3} fill={node.children ? "#30363d" : (colorMap?.[node.data.path] || "#58a6ff")} />
+              <text
+                dy="0.31em"
+                x={node.children ? -6 : 6}
+                textAnchor={node.children ? "end" : "start"}
+                fill="#c9d1d9"
+                fontSize="10px"
+                fontFamily="monospace"
+              >
+                {node.data.name}
+              </text>
+            </g>
+          ))}
+        </g>
+      </svg>
+    </div>
   );
 }
 
@@ -122,45 +127,50 @@ export function ClusterView({ graph, fileSizes, colorMap, width, height }: Props
   const data = useMemo(() => {
     if (!graph?.files?.length) return null;
     const h = buildHierarchy(graph, fileSizes);
-    const cluster = d3.cluster().size([height - 40, width - 150]);
-    return cluster(h);
+    const leafCount = h.leaves().length;
+    const minHeight = leafCount * 14;
+    const finalHeight = Math.max(height, minHeight);
+    const cluster = d3.cluster().size([finalHeight - 40, width - 150]);
+    return { root: cluster(h), finalHeight };
   }, [graph, fileSizes, width, height]);
 
   if (!data) return null;
 
   return (
-    <svg width={width} height={height} className="bg-[#0d1117] overflow-visible">
-      <g transform="translate(50, 20)">
-        {data.links().map((link: any, i: number) => (
-          <path
-            key={`link-${i}`}
-            d={d3.linkHorizontal()({
-              source: [link.source.x, link.source.y] as any,
-              target: [link.target.x, link.target.y] as any
-            }) || undefined}
-            fill="none"
-            stroke="#30363d"
-            strokeWidth={1}
-            opacity={0.6}
-          />
-        ))}
-        {data.descendants().map((node: any, i: number) => (
-          <g key={`node-${i}`} transform={`translate(${node.y},${node.x})`}>
-            <circle r={3} fill={colorMap?.[node.data.path] || "#bc8cff"} />
-            <text
-              dy="0.31em"
-              x={node.children ? -6 : 6}
-              textAnchor={node.children ? "end" : "start"}
-              fill="#8b949e"
-              fontSize="9px"
-              fontFamily="monospace"
-            >
-              {node.data.name}
-            </text>
-          </g>
-        ))}
-      </g>
-    </svg>
+    <div style={{ width, height, overflow: "auto" }}>
+      <svg width={Math.max(width, 600)} height={data.finalHeight} className="bg-[#0d1117] overflow-visible">
+        <g transform="translate(50, 20)">
+          {data.root.links().map((link: any, i: number) => (
+            <path
+              key={`link-${i}`}
+              d={d3.linkHorizontal()({
+                source: [link.source.x, link.source.y] as any,
+                target: [link.target.x, link.target.y] as any
+              }) || undefined}
+              fill="none"
+              stroke="#30363d"
+              strokeWidth={1}
+              opacity={0.6}
+            />
+          ))}
+          {data.root.descendants().map((node: any, i: number) => (
+            <g key={`node-${i}`} transform={`translate(${node.y},${node.x})`}>
+              <circle r={3} fill={colorMap?.[node.data.path] || "#bc8cff"} />
+              <text
+                dy="0.31em"
+                x={node.children ? -6 : 6}
+                textAnchor={node.children ? "end" : "start"}
+                fill="#8b949e"
+                fontSize="9px"
+                fontFamily="monospace"
+              >
+                {node.data.name}
+              </text>
+            </g>
+          ))}
+        </g>
+      </svg>
+    </div>
   );
 }
 
