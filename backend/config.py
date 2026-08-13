@@ -16,9 +16,9 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 if GROQ_API_KEY and "your_" in GROQ_API_KEY:
     GROQ_API_KEY = None
 
-# Hard Constraints from Spec
-MAX_FILES = 1000
-MAX_LOC = 150000
+# Hard Constraints from Spec (Lowered for Render Free Tier 512MB RAM limit)
+MAX_FILES = 300
+MAX_LOC = 50000
 SUPPORTED_LANGUAGES = [
     "Python", 
     "JavaScript", 
