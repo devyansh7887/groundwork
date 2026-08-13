@@ -1,7 +1,7 @@
 import httpx
 import logging
 from typing import List, Dict, Any, Optional
-from config import GITHUB_TOKEN, MAX_FILES, SUPPORTED_LANGUAGES, LANGUAGE_EXTENSIONS, DEFAULT_BRANCH_ONLY, PUBLIC_REPOS_ONLY
+from config import GITHUB_TOKEN, MAX_FILES, MAX_LOC, SMART_SAMPLE_LIMIT, SUPPORTED_LANGUAGES, LANGUAGE_EXTENSIONS, DEFAULT_BRANCH_ONLY, PUBLIC_REPOS_ONLY
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -125,6 +125,44 @@ class Ingestor:
         response.raise_for_status()
         return response.text
 
+    def _smart_sample(self, files: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """When a repo has more files than SMART_SAMPLE_LIMIT, intelligently select
+        the most architecturally significant files rather than hard-rejecting.
+        Priority order:
+          1. Root-level files (high-level entrypoints like main.py, app.py, index.ts)
+          2. Files with 'main', 'app', 'index', 'server', 'core', 'api' in the name
+          3. Non-test files (exclude test/, spec/, __tests__/)
+          4. Smaller files first (less memory, more likely to be focused modules)
+        """
+        import re
+        
+        ENTRY_KEYWORDS = {"main", "app", "index", "server", "core", "api", "router", "handler", "cli", "run"}
+        TEST_PATTERN = re.compile(r"(^|/)tests?/|spec/|__tests__/|_test\.|_spec\.", re.IGNORECASE)
+        
+        def score(f: Dict[str, Any]) -> int:
+            path: str = f["path"]
+            name = path.split("/")[-1].split(".")[0].lower()
+            depth = path.count("/")
+            size = f.get("size", 9999)
+            is_test = bool(TEST_PATTERN.search(path))
+            is_entry = name in ENTRY_KEYWORDS
+            is_root = depth == 0
+
+            score = 0
+            if is_root:   score += 100
+            if is_entry:  score += 80
+            if is_test:   score -= 200
+            # Prefer smaller files (less memory + more focused)
+            score -= size // 5000
+            # Prefer shallower paths (more likely to be core modules)
+            score -= depth * 5
+            return score
+
+        sorted_files = sorted(files, key=score, reverse=True)
+        sampled = sorted_files[:SMART_SAMPLE_LIMIT]
+        logger.info(f"📊  Smart-sampled {len(sampled)}/{len(files)} files (prioritising entry-points and core modules)")
+        return sampled
+
     async def ingest_repository(self, url: str) -> Dict[str, Any]:
         """Main entry point to ingest and validate a repository."""
         owner, repo = self.parse_github_url(url)
@@ -143,19 +181,21 @@ class Ingestor:
         file_count = len(in_scope_files)
         logger.info(f"📁  {file_count} source files in scope — fetching contents...")
         
-        # 4. Check scope limits
+        # 4. Hard cap — truly massive repos (>500 files) are unsupported
         if file_count > MAX_FILES:
-            raise RepoScopeError(f"Repository exceeds the max file limit: {file_count} > {MAX_FILES} files.")
-            
-        # We will check LOC limits when fetching contents in a more robust implementation,
-        # but for phase 1, we return the manifest of files to fetch.
+            raise RepoScopeError(f"Repository is too large ({file_count} files). Maximum supported is {MAX_FILES} files.")
+        
+        # 5. Smart-sample if above the comfortable memory threshold
+        if file_count > SMART_SAMPLE_LIMIT:
+            logger.info(f"⚡  Repo has {file_count} files — applying smart sampling to stay within memory limits...")
+            in_scope_files = self._smart_sample(in_scope_files)
         
         return {
             "owner": owner,
             "repo": repo,
             "branch": branch,
             "files": in_scope_files,
-            "file_count": file_count
+            "file_count": len(in_scope_files)
         }
 
     async def get_current_sha(self, owner: str, repo: str, branch: str) -> str:
