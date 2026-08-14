@@ -395,6 +395,9 @@ function AnalyzeContent() {
       });
       
       const data = await res.json();
+      if (data.error || data.detail) {
+        throw new Error(data.error || data.detail);
+      }
       setQaHistory([...qaHistory, { q: question, a: data.answer, claims: data.claims }]);
       setQuestion("");
     } catch (err: unknown) {
