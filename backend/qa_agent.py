@@ -103,8 +103,12 @@ class QAAgent:
             return {"error": "Repository not indexed."}
             
         # Retrieve
-        embeddings_model = self._get_embeddings(session_token)
-        query_embedding = embeddings_model.embed_query(question)
+        try:
+            embeddings_model = self._get_embeddings(session_token)
+            query_embedding = embeddings_model.embed_query(question)
+        except Exception as e:
+            return {"error": f"Failed to initialize AI embeddings. Please provide a valid Gemini key or Session Token. Details: {e}"}
+            
         results = collection.query(query_embeddings=[query_embedding], n_results=5)
         
         context_chunks = results["documents"][0]
