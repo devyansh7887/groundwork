@@ -29,12 +29,12 @@ class QAAgent:
     def _get_embeddings(self, session_token: str | None = None):
         # Prefer session token if it's Gemini
         if session_token and session_token.startswith("AIza"):
-            return GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=session_token)
+            return GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=session_token)
         
         # Fallback to pool
         gemini_keys = [k["token"] for k in llm_key_pool.keys if k["type"] == "gemini"]
         if gemini_keys:
-            return GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=gemini_keys[0])
+            return GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=gemini_keys[0])
             
         raise ValueError("No Gemini key available for embeddings. Please provide a Gemini session token.")
 
