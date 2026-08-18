@@ -76,7 +76,7 @@ class Synthesizer:
             "files_sample": all_files,
             "top_functions_by_call_frequency": top_nodes_by_freq,
             "top_imported_modules": top_imports,
-            "entry_points": all_entry_points[:30],
+            "entry_points": all_entry_points[:15],
             "total_nodes": len(graph.get("nodes", [])),
             "total_calls": len(graph.get("calls", [])),
             "total_imports": len(graph.get("imports", [])),
@@ -101,14 +101,14 @@ class Synthesizer:
             if fpath:
                 central_files.add(fpath)
         
-        important_files = entry_point_files.union(central_files)
+        important_files = list(entry_point_files.union(central_files))[:8] # Cap to 8 files max to prevent token limits
         
-        # 3. Gather contents for important files — 2000 chars each (was: 300)
+        # 3. Gather contents for important files — 1500 chars each
         file_contents = ""
         for f in downloaded_files:
             if f["path"] in important_files:
                 file_contents += f"\n--- File: {f['path']} ---\n"
-                file_contents += f["content"][:2000]  # 2000 chars = meaningful context
+                file_contents += f["content"][:1500]  # 1500 chars = meaningful context
                 
         mode_prompts = {
             "technical": """You are a senior software architect writing an internal ADR (Architecture Decision Record) for other senior engineers.
