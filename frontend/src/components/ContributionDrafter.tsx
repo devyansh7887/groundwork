@@ -1,9 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { MessageSquare, GitPullRequest, Terminal, Maximize2, Minimize2, Loader2, Play } from "lucide-react";
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import React, { useState, useEffect, useRef } from "react";
+import {
+  MessageSquare, GitPullRequest, Terminal, Maximize2, Minimize2, Loader2,
+  ChevronRight, Search, Filter, Star, Clock, TrendingUp, HelpCircle,
+  CheckCircle2, GitBranch, GitFork, Code, GitCommit, X, Send,
+  AlertTriangle, Info, Zap
+} from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface Issue {
   number: number;
@@ -12,16 +19,554 @@ interface Issue {
   author: string;
   state: string;
   labels: string[];
+  comments: number;
+  created_at?: string;
+  html_url?: string;
+  _difficulty?: "easy" | "medium" | "hard";
+  _difficulty_reason?: string;
+  _score?: number;
 }
 
-export function ContributionDrafter({ repoUrl, sessionToken }: { repoUrl: string, sessionToken: string | null }) {
+interface ContributionGuide {
+  issue_title: string;
+  issue_url: string;
+  difficulty: string;
+  difficulty_reason: string;
+  target_files: string[];
+  understanding: string;
+  what_needs_to_change: string;
+  diff: string;
+  test_code: string;
+  pr_title: string;
+  pr_description: string;
+  confidence: "high" | "partial" | "low";
+  confidence_reason: string;
+}
+
+interface QAMessage {
+  role: "user" | "ai";
+  text: string;
+  cited_file?: string | null;
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+const DIFFICULTY_CONFIG = {
+  easy: { color: "text-emerald-400", bg: "bg-emerald-400/10 border-emerald-400/30", icon: "🌱", label: "Easy" },
+  medium: { color: "text-amber-400", bg: "bg-amber-400/10 border-amber-400/30", icon: "🌿", label: "Medium" },
+  hard: { color: "text-red-400", bg: "bg-red-400/10 border-red-400/30", icon: "🌳", label: "Hard" },
+};
+
+const CONFIDENCE_CONFIG = {
+  high: { color: "text-emerald-400", bg: "bg-emerald-400/10 border-emerald-400/30", icon: "✅", label: "High Confidence" },
+  partial: { color: "text-amber-400", bg: "bg-amber-400/10 border-amber-400/30", icon: "⚠️", label: "Partial — Review Needed" },
+  low: { color: "text-red-400", bg: "bg-red-400/10 border-red-400/30", icon: "🚨", label: "Low — Human Judgment Required" },
+};
+
+const GFI_LABELS = ["good first issue", "good-first-issue", "beginner", "starter", "easy"];
+const HW_LABELS = ["help wanted", "help-wanted"];
+const BUG_LABELS = ["bug", "fix"];
+
+function isGoodFirstIssue(labels: string[]) {
+  return labels.some(l => GFI_LABELS.includes(l.toLowerCase()));
+}
+function isHelpWanted(labels: string[]) {
+  return labels.some(l => HW_LABELS.includes(l.toLowerCase()));
+}
+function isBug(labels: string[]) {
+  return labels.some(l => BUG_LABELS.includes(l.toLowerCase()));
+}
+
+function timeAgo(dateStr?: string) {
+  if (!dateStr) return "";
+  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  if (diff < 2592000) return `${Math.floor(diff / 86400)}d ago`;
+  return `${Math.floor(diff / 2592000)}mo ago`;
+}
+
+// ─── Subcomponents ────────────────────────────────────────────────────────────
+
+function DiffBlock({ diff }: { diff: string }) {
+  const [copied, setCopied] = useState(false);
+  const lines = diff.split("\n");
+  const copy = () => {
+    navigator.clipboard.writeText(diff);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+  return (
+    <div className="relative group rounded-lg overflow-hidden border border-[#30363d] bg-[#0d1117]">
+      <div className="flex items-center justify-between px-4 py-2 bg-[#161b22] border-b border-[#30363d]">
+        <span className="text-xs font-mono text-[#8b949e] uppercase tracking-wider">Unified Diff Patch</span>
+        <button onClick={copy} className="text-xs px-2 py-1 rounded bg-[#21262d] hover:bg-[#30363d] text-[#8b949e] hover:text-[#c9d1d9] transition-colors">
+          {copied ? "Copied!" : "Copy"}
+        </button>
+      </div>
+      <pre className="overflow-x-auto p-4 text-xs font-mono max-h-96">
+        {lines.map((line, i) => {
+          let cls = "text-[#c9d1d9]";
+          if (line.startsWith("+") && !line.startsWith("+++")) cls = "text-emerald-400 bg-emerald-400/5";
+          else if (line.startsWith("-") && !line.startsWith("---")) cls = "text-red-400 bg-red-400/5";
+          else if (line.startsWith("@@")) cls = "text-[#58a6ff]";
+          else if (line.startsWith("---") || line.startsWith("+++")) cls = "text-[#8b949e]";
+          return <div key={i} className={`${cls} block leading-relaxed`}>{line || " "}</div>;
+        })}
+      </pre>
+    </div>
+  );
+}
+
+function CodeBlock({ code, label = "bash" }: { code: string; label?: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+  return (
+    <div className="relative group rounded-lg overflow-hidden border border-[#30363d] bg-[#0d1117]">
+      <div className="flex items-center justify-between px-4 py-2 bg-[#161b22] border-b border-[#30363d]">
+        <span className="text-xs font-mono text-[#8b949e] uppercase">{label}</span>
+        <button onClick={copy} className="text-xs px-2 py-1 rounded bg-[#21262d] hover:bg-[#30363d] text-[#8b949e] hover:text-[#c9d1d9] transition-colors">
+          {copied ? "Copied!" : "Copy"}
+        </button>
+      </div>
+      <pre className="overflow-x-auto p-4 text-xs font-mono text-[#c9d1d9] max-h-64">
+        <code>{code}</code>
+      </pre>
+    </div>
+  );
+}
+
+// ─── In-Wizard QA Panel ───────────────────────────────────────────────────────
+
+function QAPanel({
+  guide,
+  repoUrl,
+  sessionToken,
+  onClose,
+}: {
+  guide: ContributionGuide;
+  repoUrl: string;
+  sessionToken: string | null;
+  onClose: () => void;
+}) {
+  const [messages, setMessages] = useState<QAMessage[]>([
+    { role: "ai", text: "👋 Hi! I'm here to help you understand this contribution. What's confusing you?" }
+  ]);
+  const [input, setInput] = useState("");
+  const [asking, setAsking] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const ask = async () => {
+    if (!input.trim() || asking) return;
+    const q = input.trim();
+    setInput("");
+    setMessages(prev => [...prev, { role: "user", text: q }]);
+    setAsking(true);
+
+    try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (sessionToken) headers["Authorization"] = `Bearer ${sessionToken}`;
+      const res = await fetch("https://groundwork-api-6bnh.onrender.com/api/draft/qa", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          repo_url: repoUrl,
+          question: q,
+          issue_title: guide.issue_title,
+          understanding: guide.understanding,
+          what_needs_to_change: guide.what_needs_to_change,
+          target_files: guide.target_files,
+        }),
+      });
+      const data = await res.json();
+      setMessages(prev => [...prev, { role: "ai", text: data.answer || "No answer returned.", cited_file: data.cited_file }]);
+    } catch {
+      setMessages(prev => [...prev, { role: "ai", text: "Sorry, I couldn't reach the AI right now. Try again in a moment." }]);
+    } finally {
+      setAsking(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full bg-[#0d1117] border-l border-[#30363d]">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#30363d] bg-[#161b22]">
+        <div className="flex items-center gap-2">
+          <HelpCircle className="w-4 h-4 text-[#a371f7]" />
+          <span className="text-sm font-semibold text-[#c9d1d9]">Ask a Question</span>
+        </div>
+        <button onClick={onClose} className="text-[#8b949e] hover:text-[#c9d1d9] transition-colors">
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.map((msg, i) => (
+          <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+            <div className={`max-w-[85%] rounded-xl px-4 py-3 text-sm leading-relaxed ${
+              msg.role === "user"
+                ? "bg-[#1f6feb] text-white"
+                : "bg-[#161b22] border border-[#30363d] text-[#c9d1d9]"
+            }`}>
+              {msg.text}
+              {msg.cited_file && (
+                <div className="mt-2 text-xs font-mono text-[#8b949e] border-t border-[#30363d] pt-2">
+                  📄 {msg.cited_file}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+        {asking && (
+          <div className="flex justify-start">
+            <div className="bg-[#161b22] border border-[#30363d] rounded-xl px-4 py-3 flex items-center gap-2 text-sm text-[#8b949e]">
+              <Loader2 className="w-3 h-3 animate-spin" /> Thinking...
+            </div>
+          </div>
+        )}
+        <div ref={bottomRef} />
+      </div>
+
+      <div className="p-4 border-t border-[#30363d]">
+        <form onSubmit={(e) => { e.preventDefault(); ask(); }} className="flex gap-2">
+          <input
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            placeholder="What don't you understand?"
+            className="flex-1 bg-[#161b22] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-[#c9d1d9] placeholder-[#8b949e] focus:outline-none focus:border-[#58a6ff]"
+          />
+          <button
+            type="submit"
+            disabled={!input.trim() || asking}
+            className="p-2 bg-[#1f6feb] hover:bg-[#388bfd] disabled:opacity-50 text-white rounded-lg transition-colors"
+          >
+            <Send className="w-4 h-4" />
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ─── Wizard Panel ─────────────────────────────────────────────────────────────
+
+function ContributionWizardPanel({
+  guide,
+  repoUrl,
+  sessionToken,
+}: {
+  guide: ContributionGuide;
+  repoUrl: string;
+  sessionToken: string | null;
+}) {
+  const [activeTab, setActiveTab] = useState<"code" | "steps">("code");
+  const [showQA, setShowQA] = useState(false);
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+
+  const repoPath = repoUrl.replace("https://github.com/", "").replace(/\/$/, "");
+  const [, repo] = repoPath.split("/");
+
+  const conf = CONFIDENCE_CONFIG[guide.confidence] || CONFIDENCE_CONFIG.low;
+  const diff = guide.confidence;
+
+  const GIT_STEPS = [
+    {
+      id: 0,
+      icon: GitFork,
+      title: "Fork & Clone",
+      color: "text-[#3fb950]",
+      content: (
+        <div className="space-y-3">
+          <div className="bg-[#161b22] border-l-4 border-[#3fb950] p-4 rounded-r-lg">
+            <p className="text-xs font-bold text-[#3fb950] mb-1">👨‍🏫 What is a Fork?</p>
+            <p className="text-sm text-[#8b949e] leading-relaxed">
+              You can't edit the original project directly — it's not yours. A <strong className="text-[#c9d1d9]">Fork</strong> copies the project to your GitHub account.
+              Once forked, you own that copy and can edit it freely.
+            </p>
+          </div>
+          <ol className="list-decimal list-inside space-y-2 text-sm text-[#c9d1d9]">
+            <li>Go to <a href={repoUrl} target="_blank" rel="noreferrer" className="text-[#58a6ff] hover:underline">{repoPath}</a> → click the <strong>Fork</strong> button (top right)</li>
+            <li>Then run these commands (replace YOUR-USERNAME):</li>
+          </ol>
+          <CodeBlock code={`git clone https://github.com/YOUR-USERNAME/${repo}.git\ncd ${repo}`} label="terminal" />
+        </div>
+      )
+    },
+    {
+      id: 1,
+      icon: GitBranch,
+      title: "Create Branch",
+      color: "text-[#58a6ff]",
+      content: (
+        <div className="space-y-3">
+          <div className="bg-[#161b22] border-l-4 border-[#58a6ff] p-4 rounded-r-lg">
+            <p className="text-xs font-bold text-[#58a6ff] mb-1">👨‍🏫 Why branch?</p>
+            <p className="text-sm text-[#8b949e] leading-relaxed">
+              Think of <code className="bg-[#0d1117] px-1 rounded text-[#c9d1d9]">main</code> as a published book. You don't scribble on the original pages —
+              you make a copy of relevant pages (a branch), work on them, then ask the authors to include your changes.
+            </p>
+          </div>
+          <CodeBlock code={`git checkout -b fix/${guide.issue_title.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 40)}`} label="terminal" />
+        </div>
+      )
+    },
+    {
+      id: 2,
+      icon: Code,
+      title: "Make Changes",
+      color: "text-[#a371f7]",
+      content: (
+        <div className="space-y-3">
+          <div className="bg-[#161b22] border-l-4 border-[#a371f7] p-4 rounded-r-lg">
+            <p className="text-xs font-bold text-[#a371f7] mb-1">📁 Files to edit:</p>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {guide.target_files.length > 0 ? guide.target_files.map(f => (
+                <code key={f} className="text-xs bg-[#0d1117] px-2 py-1 rounded border border-[#30363d] text-[#c9d1d9]">{f.split("/").slice(-2).join("/")}</code>
+              )) : <span className="text-xs text-[#8b949e]">Check the AI guidance above for specific files</span>}
+            </div>
+          </div>
+          <p className="text-sm text-[#8b949e]">
+            Open the file(s) above in your code editor and apply the change shown in the <strong className="text-[#c9d1d9]">Code Solution</strong> tab.
+            Not sure what to change? Hit <span className="text-[#a371f7]">"I don't understand"</span> to ask.
+          </p>
+          <button
+            onClick={() => setShowQA(true)}
+            className="text-sm text-[#a371f7] hover:text-[#c084fc] flex items-center gap-1 transition-colors"
+          >
+            <HelpCircle className="w-3.5 h-3.5" /> I don't understand something
+          </button>
+        </div>
+      )
+    },
+    {
+      id: 3,
+      icon: GitCommit,
+      title: "Commit & Push",
+      color: "text-[#f97316]",
+      content: (
+        <div className="space-y-3">
+          <div className="bg-[#161b22] border-l-4 border-[#f97316] p-4 rounded-r-lg">
+            <p className="text-xs font-bold text-[#f97316] mb-1">👨‍🏫 Save vs Commit vs Push?</p>
+            <p className="text-sm text-[#8b949e] leading-relaxed">
+              <code className="text-[#c9d1d9]">git add</code> = tell Git which files to save.<br />
+              <code className="text-[#c9d1d9]">git commit</code> = actually save a snapshot with a message.<br />
+              <code className="text-[#c9d1d9]">git push</code> = upload your saved snapshot to GitHub.
+            </p>
+          </div>
+          <CodeBlock code={`git add .\ngit commit -m "Fix: ${guide.issue_title.slice(0, 60)}"\ngit push -u origin HEAD`} label="terminal" />
+        </div>
+      )
+    },
+    {
+      id: 4,
+      icon: GitPullRequest,
+      title: "Open PR",
+      color: "text-[#ec4899]",
+      content: (
+        <div className="space-y-3">
+          <div className="bg-[#161b22] border-l-4 border-[#ec4899] p-4 rounded-r-lg">
+            <p className="text-xs font-bold text-[#ec4899] mb-1">👨‍🏫 What is a Pull Request?</p>
+            <p className="text-sm text-[#8b949e] leading-relaxed">
+              You've fixed the bug in your Fork. Now you need to formally ask the maintainers: "Hey, please pull my changes into your project!"
+              That's a <strong className="text-[#c9d1d9]">Pull Request</strong> (PR).
+            </p>
+          </div>
+          <div className="bg-[#0d1117] border border-[#30363d] rounded-lg p-4 space-y-3">
+            <div>
+              <div className="text-xs text-[#8b949e] font-mono mb-1">PR Title</div>
+              <div className="text-sm text-[#c9d1d9] font-medium">{guide.pr_title}</div>
+            </div>
+            <div>
+              <div className="text-xs text-[#8b949e] font-mono mb-1">PR Description (copy this)</div>
+              <div className="text-xs text-[#8b949e] max-h-40 overflow-y-auto font-mono whitespace-pre-wrap">
+                {guide.pr_description}
+              </div>
+            </div>
+          </div>
+          <a
+            href={`${repoUrl}/compare`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#238636] hover:bg-[#2ea043] text-white text-sm font-semibold rounded-lg transition-colors"
+          >
+            <GitPullRequest className="w-4 h-4" /> Open PR on GitHub
+          </a>
+        </div>
+      )
+    },
+  ];
+
+  const [activeStep, setActiveStep] = useState(0);
+
+  return (
+    <div className="flex h-full">
+      {/* Main wizard content */}
+      <div className={`flex flex-col flex-1 overflow-hidden transition-all ${showQA ? "w-1/2" : "w-full"}`}>
+        {/* Confidence banner */}
+        {diff !== "high" && (
+          <div className={`mx-4 mt-4 p-3 rounded-lg border ${conf.bg} flex items-start gap-2`}>
+            <span className="text-base leading-none">{conf.icon}</span>
+            <div className="flex-1">
+              <div className={`text-xs font-bold ${conf.color}`}>{conf.label}</div>
+              <p className="text-xs text-[#8b949e] mt-0.5">{guide.confidence_reason}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Tab bar: Code Solution | How to Submit */}
+        <div className="flex border-b border-[#30363d] mx-4 mt-4 gap-1">
+          {[
+            { id: "code", label: "💻 Code Solution", desc: "The exact code change" },
+            { id: "steps", label: "🗺️ How to Submit", desc: "Fork → PR step-by-step" },
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as "code" | "steps")}
+              className={`px-4 py-2.5 text-sm font-semibold border-b-2 transition-colors ${
+                activeTab === tab.id
+                  ? "border-[#58a6ff] text-[#58a6ff]"
+                  : "border-transparent text-[#8b949e] hover:text-[#c9d1d9]"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+          <div className="flex-1" />
+          <button
+            onClick={() => setShowQA(!showQA)}
+            className={`px-3 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${showQA ? "text-[#a371f7]" : "text-[#8b949e] hover:text-[#a371f7]"}`}
+          >
+            <HelpCircle className="w-4 h-4" /> Ask
+          </button>
+        </div>
+
+        {/* Tab content */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {activeTab === "code" && (
+            <>
+              {/* Understanding */}
+              <div className="bg-[#161b22] border border-[#30363d] rounded-lg p-4">
+                <div className="text-xs font-mono text-[#58a6ff] uppercase tracking-wider mb-2">What this issue is about</div>
+                <p className="text-sm text-[#c9d1d9] leading-relaxed">{guide.understanding}</p>
+              </div>
+
+              {/* What needs to change */}
+              <div className="bg-[#161b22] border border-[#30363d] rounded-lg p-4">
+                <div className="text-xs font-mono text-[#a371f7] uppercase tracking-wider mb-2">What needs to change</div>
+                <p className="text-sm text-[#c9d1d9] leading-relaxed">{guide.what_needs_to_change}</p>
+              </div>
+
+              {/* Diff */}
+              {guide.diff && (
+                <div>
+                  <div className="text-xs font-mono text-[#8b949e] uppercase tracking-wider mb-2">AI Drafted Patch</div>
+                  <DiffBlock diff={guide.diff} />
+                </div>
+              )}
+
+              {/* Test code */}
+              {guide.test_code && (
+                <div>
+                  <div className="text-xs font-mono text-[#8b949e] uppercase tracking-wider mb-2">Verification Test</div>
+                  <CodeBlock code={guide.test_code} label="test" />
+                </div>
+              )}
+            </>
+          )}
+
+          {activeTab === "steps" && (
+            <div className="flex gap-4">
+              {/* Step sidebar */}
+              <div className="w-44 flex-none">
+                <div className="space-y-1">
+                  {GIT_STEPS.map(step => {
+                    const Icon = step.icon;
+                    const done = completedSteps.has(step.id);
+                    const active = activeStep === step.id;
+                    return (
+                      <button
+                        key={step.id}
+                        onClick={() => setActiveStep(step.id)}
+                        className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left transition-colors ${
+                          active ? "bg-[#21262d] border border-[#30363d]" : "hover:bg-[#161b22]"
+                        }`}
+                      >
+                        <div className={`shrink-0 ${done ? "text-[#3fb950]" : active ? step.color : "text-[#484f58]"}`}>
+                          {done ? <CheckCircle2 className="w-4 h-4" /> : <Icon className="w-4 h-4" />}
+                        </div>
+                        <span className={`text-xs font-semibold ${active ? "text-[#c9d1d9]" : done ? "text-[#8b949e]" : "text-[#484f58]"}`}>
+                          {step.title}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Step content */}
+              <div className="flex-1">
+                <div className="text-xs text-[#8b949e] font-mono mb-3">
+                  Step {activeStep + 1} of {GIT_STEPS.length} · {GIT_STEPS[activeStep].title}
+                </div>
+                {GIT_STEPS[activeStep].content}
+                <div className="flex items-center gap-3 mt-6 pt-4 border-t border-[#30363d]">
+                  <button
+                    onClick={() => setCompletedSteps(prev => new Set(prev).add(activeStep))}
+                    disabled={completedSteps.has(activeStep)}
+                    className="px-4 py-2 bg-[#238636] hover:bg-[#2ea043] disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold rounded-lg transition-colors"
+                  >
+                    {completedSteps.has(activeStep) ? "✓ Done" : "Mark as Done"}
+                  </button>
+                  {activeStep < GIT_STEPS.length - 1 && (
+                    <button
+                      onClick={() => setActiveStep(s => s + 1)}
+                      className="px-4 py-2 bg-[#21262d] hover:bg-[#30363d] text-[#c9d1d9] text-xs font-semibold rounded-lg flex items-center gap-1 transition-colors"
+                    >
+                      Next <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* QA Panel */}
+      {showQA && (
+        <div className="w-1/2 border-l border-[#30363d] flex flex-col">
+          <QAPanel guide={guide} repoUrl={repoUrl} sessionToken={sessionToken} onClose={() => setShowQA(false)} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Main ContributionDrafter ─────────────────────────────────────────────────
+
+export function ContributionDrafter({
+  repoUrl,
+  sessionToken,
+}: {
+  repoUrl: string;
+  sessionToken: string | null;
+}) {
   const [issues, setIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [isMaximized, setIsMaximized] = useState(false);
   const [drafting, setDrafting] = useState(false);
-  const [draftResult, setDraftResult] = useState<any>(null);
+  const [guide, setGuide] = useState<ContributionGuide | null>(null);
+  const [draftError, setDraftError] = useState("");
+  const [filter, setFilter] = useState<"all" | "easy" | "gfi" | "bugs">("all");
 
   useEffect(() => {
     fetchIssues();
@@ -31,182 +576,234 @@ export function ContributionDrafter({ repoUrl, sessionToken }: { repoUrl: string
     setLoading(true);
     setError("");
     try {
-      const headers: any = { "Content-Type": "application/json" };
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (sessionToken) headers["Authorization"] = `Bearer ${sessionToken}`;
-
-      const res = await fetch(`https://groundwork-api-6bnh.onrender.com/api/issues`, {
+      const res = await fetch("https://groundwork-api-6bnh.onrender.com/api/issues", {
         method: "POST",
         headers,
-        body: JSON.stringify({ repo_url: repoUrl })
+        body: JSON.stringify({ repo_url: repoUrl }),
       });
       if (!res.ok) throw new Error("Failed to fetch issues");
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setIssues(data.issues || []);
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e: unknown) {
+      setError((e as Error).message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDraft = async (issue: Issue) => {
+  const handleSelectIssue = async (issue: Issue) => {
+    setSelectedIssue(issue);
+    setGuide(null);
+    setDraftError("");
     setDrafting(true);
-    setDraftResult(null);
-    try {
-      const headers: any = { "Content-Type": "application/json" };
-      if (sessionToken) headers["Authorization"] = `Bearer ${sessionToken}`;
 
-      const res = await fetch(`https://groundwork-api-6bnh.onrender.com/api/draft`, {
+    try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (sessionToken) headers["Authorization"] = `Bearer ${sessionToken}`;
+      const res = await fetch("https://groundwork-api-6bnh.onrender.com/api/draft", {
         method: "POST",
         headers,
-        body: JSON.stringify({ repo_url: repoUrl, issue })
+        body: JSON.stringify({ repo_url: repoUrl, issue }),
       });
       if (!res.ok) throw new Error("Failed to draft contribution");
       const data = await res.json();
-      setDraftResult(data);
-    } catch (e: any) {
-      setError(e.message);
+      setGuide(data as ContributionGuide);
+    } catch (e: unknown) {
+      setDraftError((e as Error).message);
     } finally {
       setDrafting(false);
     }
   };
 
-  const containerClasses = isMaximized 
-    ? "fixed inset-4 z-50 bg-[#0d1117] border border-[#30363d] rounded-xl shadow-2xl flex flex-col overflow-hidden" 
-    : "w-full h-full bg-[#0d1117] border border-[#30363d] rounded-xl flex flex-col overflow-hidden shadow-inner relative";
+  // Filtered issues
+  const filteredIssues = issues.filter(issue => {
+    if (filter === "easy") return issue._difficulty === "easy";
+    if (filter === "gfi") return isGoodFirstIssue(issue.labels);
+    if (filter === "bugs") return isBug(issue.labels);
+    return true;
+  });
+
+  const containerCls = isMaximized
+    ? "fixed inset-4 z-50 bg-[#0d1117] border border-[#30363d] rounded-xl shadow-2xl flex flex-col overflow-hidden"
+    : "w-full h-full bg-[#0d1117] border border-[#30363d] rounded-xl flex flex-col overflow-hidden";
+
+  const easyCount = issues.filter(i => i._difficulty === "easy").length;
+  const gfiCount = issues.filter(i => isGoodFirstIssue(i.labels)).length;
+  const bugCount = issues.filter(i => isBug(i.labels)).length;
 
   return (
-    <div className={containerClasses}>
-      {/* Header bar - GitHub/Terminal hybrid style */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#30363d] bg-[#161b22] text-[#8b949e] font-mono text-xs">
+    <div className={containerCls}>
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#30363d] bg-[#161b22] flex-none">
         <div className="flex items-center gap-2">
           <Terminal size={14} className="text-[#58a6ff]" />
-          <span className="text-[#c9d1d9]">groundwork/contribution-drafter <span className="text-[#58a6ff]">~</span></span>
+          <span className="text-sm font-semibold text-[#c9d1d9]">Contribution Drafter</span>
+          <span className="text-xs px-2 py-0.5 rounded-full bg-[#238636]/20 text-[#3fb950] border border-[#238636]/30 font-mono">
+            {issues.length} open issues
+          </span>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500"></span> Online</span>
-          <button onClick={() => setIsMaximized(!isMaximized)} className="hover:text-white transition-colors">
-            {isMaximized ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
-          </button>
-        </div>
+        <button onClick={() => setIsMaximized(m => !m)} className="text-[#8b949e] hover:text-[#c9d1d9] transition-colors">
+          {isMaximized ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+        </button>
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Left pane: Issues List */}
-        <div className="w-1/3 border-r border-[#30363d] bg-[#0d1117] flex flex-col">
-          <div className="p-3 border-b border-[#30363d] bg-[#161b22]/50 font-semibold text-[#c9d1d9] flex justify-between items-center text-sm">
-            <span>Open Issues</span>
-            <span className="px-2 py-0.5 rounded-full bg-[#238636]/20 text-[#238636] text-xs font-mono">{issues.length}</span>
+        {/* ── Left: Issue Browser ──────────────────────────────────────────── */}
+        <div className="w-72 flex-none border-r border-[#30363d] flex flex-col bg-[#0d1117]">
+          {/* Filter bar */}
+          <div className="p-3 border-b border-[#30363d] space-y-2">
+            <div className="flex items-center gap-1.5 text-xs text-[#8b949e]">
+              <Filter size={12} /> Filter issues
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                { id: "all", label: "All", count: issues.length },
+                { id: "easy", label: "🌱 Easy", count: easyCount },
+                { id: "gfi", label: "👋 GFI", count: gfiCount },
+                { id: "bugs", label: "🐛 Bugs", count: bugCount },
+              ].map(f => (
+                <button
+                  key={f.id}
+                  onClick={() => setFilter(f.id as typeof filter)}
+                  className={`px-2 py-1 rounded-full text-xs font-semibold border transition-colors ${
+                    filter === f.id
+                      ? "bg-[#1f6feb] border-[#388bfd] text-white"
+                      : "bg-transparent border-[#30363d] text-[#8b949e] hover:border-[#8b949e]"
+                  }`}
+                >
+                  {f.label} ({f.count})
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2">
-            {loading && <div className="text-[#8b949e] p-4 text-center text-sm animate-pulse flex items-center justify-center gap-2"><Loader2 size={14} className="animate-spin" /> Fetching issues...</div>}
-            {error && <div className="text-red-400 p-4 text-xs font-mono bg-red-500/10 rounded">{error}</div>}
-            {!loading && issues.length === 0 && !error && <div className="text-[#8b949e] p-4 text-center text-sm">No issues found.</div>}
-            {issues.map(issue => (
-              <div 
-                key={issue.number}
-                onClick={() => { setSelectedIssue(issue); setDraftResult(null); }}
-                className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                  selectedIssue?.number === issue.number 
-                    ? 'border-[#58a6ff] bg-[#1f6feb]/10 shadow-[0_0_10px_rgba(88,166,255,0.1)]' 
-                    : 'border-[#30363d] bg-[#161b22] hover:border-[#8b949e] hover:bg-[#21262d]'
-                }`}
-              >
-                <div className="flex items-start gap-2">
-                  <MessageSquare size={14} className="text-[#238636] mt-1 shrink-0" />
-                  <div>
-                    <h4 className="text-sm font-semibold text-[#c9d1d9] line-clamp-2 leading-snug">{issue.title}</h4>
-                    <p className="text-xs text-[#8b949e] mt-1 font-mono">#{issue.number} opened by {issue.author}</p>
-                    {issue.labels && issue.labels.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {issue.labels.slice(0,3).map((l, i) => {
-                          const labelText = typeof l === 'string' ? l : (l as any).name || 'label';
-                          return (
-                            <span key={i} className="px-1.5 py-0.5 rounded-full border border-[#30363d] text-[10px] text-[#8b949e] bg-[#0d1117]">
-                              {labelText}
-                            </span>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </div>
+
+          {/* Issues list */}
+          <div className="flex-1 overflow-y-auto">
+            {loading && (
+              <div className="p-6 text-center text-sm text-[#8b949e] flex flex-col items-center gap-2">
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Loading issues...
               </div>
-            ))}
+            )}
+            {error && <div className="p-4 text-xs text-red-400 bg-red-400/5 m-3 rounded-lg">{error}</div>}
+            {!loading && filteredIssues.length === 0 && !error && (
+              <div className="p-6 text-center text-sm text-[#8b949e]">No issues match this filter.</div>
+            )}
+
+            {filteredIssues.map(issue => {
+              const diff = issue._difficulty || "medium";
+              const dc = DIFFICULTY_CONFIG[diff] || DIFFICULTY_CONFIG.medium;
+              const isSelected = selectedIssue?.number === issue.number;
+              return (
+                <button
+                  key={issue.number}
+                  onClick={() => handleSelectIssue(issue)}
+                  className={`w-full text-left p-3 border-b border-[#30363d] transition-colors hover:bg-[#161b22] ${
+                    isSelected ? "bg-[#1f6feb]/10 border-l-2 border-l-[#58a6ff]" : ""
+                  }`}
+                >
+                  <div className="flex items-start gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-[#c9d1d9] line-clamp-2 leading-snug mb-1.5">
+                        {issue.title}
+                      </p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full border font-semibold ${dc.bg} ${dc.color}`}>
+                          {dc.icon} {dc.label}
+                        </span>
+                        {isGoodFirstIssue(issue.labels) && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-[#238636]/40 bg-[#238636]/10 text-[#3fb950] font-semibold">GFI</span>
+                        )}
+                        {isHelpWanted(issue.labels) && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-[#58a6ff]/40 bg-[#58a6ff]/10 text-[#58a6ff] font-semibold">Help Wanted</span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 mt-1.5 text-[10px] text-[#8b949e] font-mono">
+                        <span>#{issue.number}</span>
+                        {issue.comments > 0 && <span>💬 {issue.comments}</span>}
+                        {issue.created_at && <span>{timeAgo(issue.created_at)}</span>}
+                      </div>
+                    </div>
+                    {isSelected && drafting && <Loader2 className="w-3 h-3 animate-spin text-[#58a6ff] mt-0.5 shrink-0" />}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Right pane: Draft Area */}
-        <div className="w-2/3 bg-[#0d1117] flex flex-col">
+        {/* ── Right: Contribution Guide ────────────────────────────────────── */}
+        <div className="flex-1 flex flex-col overflow-hidden">
           {!selectedIssue ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-[#8b949e] font-mono text-sm">
-              <GitPullRequest size={32} className="mb-4 opacity-50" />
-              <p>Select an issue to draft a contribution</p>
+            <div className="flex-1 flex flex-col items-center justify-center text-[#8b949e] p-8 text-center">
+              <div className="w-16 h-16 rounded-full bg-[#161b22] border border-[#30363d] flex items-center justify-center mb-4">
+                <GitPullRequest size={24} className="opacity-50" />
+              </div>
+              <h3 className="text-lg font-bold text-[#c9d1d9] mb-2">Select an Issue to Start</h3>
+              <p className="text-sm max-w-sm leading-relaxed">
+                Pick any issue from the left panel. Groundwork will analyze the codebase, find the relevant files,
+                and generate a step-by-step contribution guide.
+              </p>
+              <div className="mt-4 flex items-center gap-2 text-xs text-[#3fb950]">
+                <Zap className="w-3.5 h-3.5" />
+                Start with a <strong>🌱 Easy</strong> issue if this is your first contribution
+              </div>
             </div>
           ) : (
-            <>
-              {/* Issue Details Header */}
-              <div className="p-4 border-b border-[#30363d] bg-[#161b22] shrink-0">
-                <h2 className="text-xl font-semibold text-[#c9d1d9] mb-2">{selectedIssue.title} <span className="text-[#8b949e] font-mono font-normal">#{selectedIssue.number}</span></h2>
-                <div className="flex justify-between items-center">
-                  <div className="prose prose-invert prose-sm max-w-none text-[#8b949e] line-clamp-2">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{selectedIssue.body || "*No description provided*"}</ReactMarkdown>
+            <div className="flex flex-col flex-1 overflow-hidden">
+              {/* Issue header */}
+              <div className="px-5 py-4 border-b border-[#30363d] bg-[#161b22] flex-none">
+                <div className="flex items-start gap-3">
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-base font-bold text-[#c9d1d9] leading-snug line-clamp-2">
+                      {selectedIssue.title}
+                      <span className="text-[#8b949e] font-normal ml-2">#{selectedIssue.number}</span>
+                    </h2>
+                    <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                      {guide && (
+                        <span className={`text-xs px-2 py-0.5 rounded-full border font-semibold ${DIFFICULTY_CONFIG[guide.difficulty as keyof typeof DIFFICULTY_CONFIG]?.bg} ${DIFFICULTY_CONFIG[guide.difficulty as keyof typeof DIFFICULTY_CONFIG]?.color}`}>
+                          {DIFFICULTY_CONFIG[guide.difficulty as keyof typeof DIFFICULTY_CONFIG]?.icon} {guide.difficulty_reason}
+                        </span>
+                      )}
+                      {selectedIssue.html_url && (
+                        <a
+                          href={selectedIssue.html_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-xs text-[#58a6ff] hover:underline flex items-center gap-0.5"
+                        >
+                          View on GitHub <ChevronRight className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
                   </div>
-                  <button 
-                    onClick={() => handleDraft(selectedIssue)}
-                    disabled={drafting}
-                    className="ml-4 shrink-0 px-4 py-2 bg-[#238636] hover:bg-[#2ea043] disabled:opacity-50 text-white text-sm font-semibold rounded-md shadow-sm transition-colors flex items-center gap-2"
-                  >
-                    {drafting ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />}
-                    {drafting ? "Drafting..." : "Auto Draft PR"}
-                  </button>
                 </div>
               </div>
 
-              {/* Draft Results */}
-              <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-                {!draftResult && !drafting && (
-                  <div className="h-full flex items-center justify-center text-[#8b949e] font-mono text-xs text-center p-8">
-                    <div className="bg-[#161b22] border border-[#30363d] rounded-lg p-6 max-w-md">
-                      <Terminal size={24} className="mx-auto mb-3 text-[#58a6ff]" />
-                      <p className="mb-2 text-[#c9d1d9] font-semibold">Ready to draft</p>
-                      <p>Click "Auto Draft PR" to let the AI analyze this issue and write the necessary code patches to fix it.</p>
-                    </div>
-                  </div>
-                )}
-                
+              {/* Content area */}
+              <div className="flex-1 overflow-hidden">
                 {drafting && (
-                  <div className="font-mono text-sm text-[#8b949e] p-4 space-y-2">
-                    <div className="flex items-center gap-2 text-[#58a6ff]"><Loader2 size={14} className="animate-spin" /> Analyzing codebase context...</div>
-                    <div className="text-xs pl-5 opacity-70">Reviewing central nodes & related files</div>
+                  <div className="flex flex-col items-center justify-center h-full text-[#8b949e] gap-4">
+                    <Loader2 className="w-8 h-8 animate-spin text-[#58a6ff]" />
+                    <div className="text-sm text-center">
+                      <p className="font-semibold text-[#c9d1d9]">Analyzing codebase...</p>
+                      <p className="text-xs mt-1">Finding relevant files and generating your contribution guide</p>
+                    </div>
                   </div>
                 )}
-
-                {draftResult && (
-                  <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="bg-[#161b22] border border-[#30363d] rounded-lg overflow-hidden">
-                      <div className="px-4 py-2 bg-[#21262d] border-b border-[#30363d] text-xs font-mono font-semibold text-[#c9d1d9] flex justify-between">
-                        <span>Proposed Patch ({draftResult.target_file})</span>
-                        <span className="text-[#8b949e]">git diff</span>
-                      </div>
-                      <pre className="p-4 text-xs font-mono text-gray-300 overflow-x-auto">
-                        <code dangerouslySetInnerHTML={{ __html: draftResult.diff.replace(/^\+.*$/gm, '<span class="text-green-400">$&</span>').replace(/^-.*$/gm, '<span class="text-red-400">$&</span>') }} />
-                      </pre>
-                    </div>
-                    
-                    <div className="bg-[#161b22] border border-[#30363d] rounded-lg overflow-hidden">
-                      <div className="px-4 py-2 bg-[#21262d] border-b border-[#30363d] text-xs font-mono font-semibold text-[#c9d1d9]">
-                        PR Description
-                      </div>
-                      <div className="p-4 text-sm text-[#8b949e] prose prose-invert max-w-none">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{draftResult.pr_description}</ReactMarkdown>
-                      </div>
-                    </div>
+                {draftError && (
+                  <div className="p-6 m-4 rounded-lg bg-red-400/5 border border-red-400/20 text-sm text-red-400">
+                    {draftError}
                   </div>
+                )}
+                {guide && !drafting && (
+                  <ContributionWizardPanel guide={guide} repoUrl={repoUrl} sessionToken={sessionToken} />
                 )}
               </div>
-            </>
+            </div>
           )}
         </div>
       </div>

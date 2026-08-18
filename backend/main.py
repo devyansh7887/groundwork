@@ -19,7 +19,8 @@ except ImportError:
         async def answer_question(self, *args, **kwargs): return {"error": "QA Agent unavailable. Missing dependencies."}
 
 from onboarding_agent import OnboardingAgent
-from contribution_drafter import ContributionDrafter
+from contribution_drafter import ContributionDrafter, ContributionGuide, find_relevant_files
+from contribution_qa import contribution_qa
 import cache_manager
 from ingestor import Ingestor
 
@@ -140,7 +141,22 @@ class DraftRequest(BaseModel):
     repo_url: str
     action: dict | None = None
     issue: dict | None = None
+    issue_number: int | None = None  # New: reference to a GitHub issue by number
     
+    @field_validator("repo_url")
+    def validate_url(cls, v):
+        if not re.match(r"^https://github\.com/[\w.-]+/[\w.-]+/?$", v):
+            raise ValueError("Invalid GitHub repository URL")
+        return v
+
+class ContributionQARequest(BaseModel):
+    repo_url: str
+    question: str
+    issue_title: str = ""
+    understanding: str = ""
+    what_needs_to_change: str = ""
+    target_files: list[str] = []
+
     @field_validator("repo_url")
     def validate_url(cls, v):
         if not re.match(r"^https://github\.com/[\w.-]+/[\w.-]+/?$", v):
@@ -274,7 +290,6 @@ async def analyze_repo(req: AnalyzeRequest, request: Request):
             except asyncio.TimeoutError:
                 yield f"data: {json.dumps({'log': '⏳  AI agents are working... hang tight'})}\n\n"
 
-        # Drain remaining logs
         while not q.empty():
             try:
                 msg = q.get_nowait()
@@ -290,12 +305,31 @@ async def analyze_repo(req: AnalyzeRequest, request: Request):
                 final_state.get("readme_content", ""),
                 session_token
             )
+            graph = final_state.get("graph", {})
+            downloaded = final_state.get("downloaded_files", [])
+            repo_meta = final_state.get("repo_metadata", {})
+
+            total_sloc = graph.get("total_sloc", 0)
+            public_functions = graph.get("total_public_functions", len(graph.get("nodes", [])))
+            in_scope_files = repo_meta.get("in_scope_files", len(graph.get("files", [])))
+            total_blobs = repo_meta.get("total_blobs", in_scope_files)
+
+            file_locs_sloc = {}
+            for f in downloaded:
+                path = f.get("path", "")
+                content = f.get("content") or ""
+                sloc = sum(
+                    1 for line in content.splitlines()
+                    if line.strip() and not line.strip().startswith(('#', '//', '*', '/*'))
+                )
+                file_locs_sloc[path] = sloc
+
             result = {
                 "readme": final_state.get("readme_content", ""),
                 "diagram": final_state.get("mermaid_diagram", ""),
                 "claims": final_state.get("claims", []),
                 "from_cache": "sha" in final_state,
-                "graph": final_state.get("graph", {}),
+                "graph": graph,
                 "security": final_state.get("security_findings", []),
                 "patterns": final_state.get("pattern_findings", []),
                 "actions": final_state.get("actions", []),
@@ -457,29 +491,46 @@ Include:
                 "pr_description": f"## {title}\n\n{description}\n\n**Action:** {action_text}\n\n**Impact:** {req.action.get('impact', '')}"
             }
     elif req.issue:
-        # Real GitHub issue draft
+        # Real GitHub issue → generate full ContributionGuide
+        owner = state["repo_metadata"].get("owner", "")
+        repo = state["repo_metadata"].get("repo", "")
         try:
-            patch = drafter.draft_patch(req.issue, state["graph"], state.get("downloaded_files", []), session_token)
-            return patch.model_dump()
+            guide = drafter.draft_contribution_guide(
+                issue=req.issue,
+                graph=state["graph"],
+                downloaded_files=state.get("downloaded_files", []),
+                owner=owner,
+                repo=repo,
+                session_token=session_token
+            )
+            return guide.model_dump()
         except Exception as e:
-            logger.error(f"LLM draft for issue failed: {e}")
+            logger.error(f"ContributionGuide generation failed: {e}")
             return {
                 "issue_title": req.issue.get("title", "Issue"),
-                "target_file": "unknown",
-                "diff": f"Draft failed: {str(e)}",
+                "issue_url": f"https://github.com/{owner}/{repo}/issues/{req.issue.get('number', '')}",
+                "difficulty": "medium",
+                "difficulty_reason": "Could not estimate difficulty.",
+                "target_files": [],
+                "understanding": "AI service unavailable. Please retry.",
+                "what_needs_to_change": "Please retry.",
+                "diff": f"# Draft failed: {str(e)}",
                 "test_code": "",
-                "pr_description": f"Fixes #{req.issue.get('number', '')}"
+                "pr_title": f"Fix: {req.issue.get('title', '')}",
+                "pr_description": f"Fixes #{req.issue.get('number', '')}",
+                "confidence": "low",
+                "confidence_reason": f"AI service failed: {str(e)}"
             }
     else:
         # Generic fallback: find a good first issue on GitHub
         owner = state["repo_metadata"].get("owner", "")
         repo = state["repo_metadata"].get("repo", "")
         issues = await drafter.fetch_issues(owner, repo, session_token)
-        top_issue = drafter.rank_issues(issues, state["graph"])
-        if not top_issue:
-            return {"message": "No good first issues found."}
-        patch = drafter.draft_patch(top_issue, state["graph"], state.get("downloaded_files", []), session_token)
-        return patch.model_dump()
+        ranked = drafter.rank_issues(issues, state["graph"])
+        if not ranked:
+            return {"message": "No open issues found in this repository."}
+        # Return the top-ranked (easiest) issue as a suggestion
+        return {"suggested_issue": ranked[0], "message": "Select an issue from the Issues tab to start your contribution."}
 
 @app.post("/api/issues")
 async def get_issues(req: IssuesRequest, request: Request):
@@ -494,7 +545,37 @@ async def get_issues(req: IssuesRequest, request: Request):
     
     try:
         issues = await drafter.fetch_issues(owner, repo, session_token)
-        return {"issues": issues}
+        # Rank issues by beginner-friendliness using the graph
+        graph = state.get("graph", {})
+        ranked_issues = drafter.rank_issues(issues, graph)
+        return {"issues": ranked_issues}
     except Exception as e:
         logger.error(f"Failed to fetch issues: {e}")
         return {"issues": [], "error": str(e)}
+
+
+@app.post("/api/draft/qa")
+async def contribution_qa_endpoint(req: ContributionQARequest, request: Request):
+    """In-wizard Q&A: answers beginner questions about their contribution."""
+    session_token = extract_token(request)
+    if req.repo_url not in repo_cache:
+        raise HTTPException(status_code=400, detail="Repository not analyzed yet.")
+    
+    state = repo_cache[req.repo_url]
+    downloaded = state.get("downloaded_files", [])
+    
+    # Find relevant files for this contribution context
+    relevant_contents = [f for f in downloaded if f["path"] in req.target_files]
+    if not relevant_contents and downloaded:
+        relevant_contents = downloaded[:5]
+    
+    result = await contribution_qa.answer(
+        question=req.question,
+        issue_title=req.issue_title,
+        understanding=req.understanding,
+        what_needs_to_change=req.what_needs_to_change,
+        target_files=req.target_files,
+        relevant_file_contents=relevant_contents,
+        session_token=session_token
+    )
+    return result

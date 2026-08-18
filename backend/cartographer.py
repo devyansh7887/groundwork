@@ -1,12 +1,14 @@
 import os
+import re
 import json
 import logging
 import gc
-import logging
 from typing import Dict, Any, List
+from collections import Counter
 from tree_sitter import Language, Parser
 import tree_sitter_python
 import tree_sitter_javascript
+from config import PARSE_SIZE_LIMIT
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -14,6 +16,15 @@ logger = logging.getLogger(__name__)
 # Load tree-sitter languages
 PY_LANGUAGE = Language(tree_sitter_python.language())
 JS_LANGUAGE = Language(tree_sitter_javascript.language())
+
+# Regex patterns for fast stat counting (used on ALL files regardless of size)
+# These count NAMED top-level declarations only — matches industry standard "function count"
+_PY_FUNC_RE = re.compile(r'^(?:async\s+)?def\s+\w+', re.MULTILINE)
+_PY_CLASS_RE = re.compile(r'^class\s+\w+', re.MULTILINE)
+_JS_FUNC_RE = re.compile(r'^(?:export\s+)?(?:async\s+)?function\s+\w+', re.MULTILINE)
+_JS_CLASS_RE = re.compile(r'^(?:export\s+)?class\s+\w+', re.MULTILINE)
+_JS_EXPORT_CONST_FN_RE = re.compile(r'^(?:export\s+)?const\s+\w+\s*=\s*(?:async\s*)?\(', re.MULTILINE)
+
 
 class Cartographer:
     def __init__(self):
@@ -23,7 +34,6 @@ class Cartographer:
             "TypeScript": Parser(JS_LANGUAGE)
         }
         # 1-second C-level parse timeout — prevents tree-sitter from busy-looping
-        # on pathological files (raises ValueError which we catch in parse_file)
         for p in self.parsers.values():
             if hasattr(p, 'timeout_micros'):
                 p.timeout_micros = 1_000_000
@@ -37,8 +47,50 @@ class Cartographer:
             return "JavaScript"
         return "Unknown"
 
+    def count_stats(self, file_path: str, content_str: str) -> Dict[str, int]:
+        """
+        Fast, regex-based stat counting that runs on the FULL file content —
+        never truncated. Returns industry-standard metric counts:
+        - sloc: non-blank, non-comment lines (Source Lines of Code)
+        - public_functions: named top-level functions + classes (NOT arrow functions/callbacks)
+        """
+        lang = self.determine_language(file_path)
+        lines = content_str.splitlines()
+
+        # SLOC: non-blank, non-comment lines
+        sloc = 0
+        for line in lines:
+            stripped = line.strip()
+            if not stripped:
+                continue
+            # Skip pure comment lines
+            if stripped.startswith('#') or stripped.startswith('//') or stripped.startswith('*') or stripped.startswith('/*'):
+                continue
+            sloc += 1
+
+        # Public function count — named top-level declarations only
+        pub_funcs = 0
+        if lang == "Python":
+            pub_funcs = len(_PY_FUNC_RE.findall(content_str)) + len(_PY_CLASS_RE.findall(content_str))
+        elif lang in ("JavaScript", "TypeScript"):
+            pub_funcs = (
+                len(_JS_FUNC_RE.findall(content_str)) +
+                len(_JS_CLASS_RE.findall(content_str)) +
+                len(_JS_EXPORT_CONST_FN_RE.findall(content_str))
+            )
+
+        return {"sloc": sloc, "total_lines": len(lines), "public_functions": pub_funcs}
+
     def parse_file(self, file_path: str, content: bytes) -> Dict[str, Any]:
-        """Parses a file and extracts graph nodes and edges."""
+        """
+        Parses a file and extracts graph nodes and edges.
+        
+        IMPORTANT — two-pass design:
+        Pass 1 (always): count_stats() runs on the FULL content string for accurate metrics.
+        Pass 2 (AST): tree-sitter runs on content truncated to PARSE_SIZE_LIMIT to stay
+                      within Render's 512 MB RAM. This affects graph QUALITY only — never
+                      the headline stats shown to users.
+        """
         import time
         lang = self.determine_language(file_path)
         parser = self.parsers.get(lang)
@@ -48,12 +100,9 @@ class Cartographer:
         calls = []
         entry_points = []
         
-        # Guard 1: size limit — skip very large files (minified/generated)
-        # Guard 2: long-line check — skip minified files with no newlines
+        # ── Guard: long-line check — skip minified files (virtually no newlines)
         try:
-            if len(content) > 20 * 1024:  # 20 KB hard limit
-                parser = None
-            elif content.count(b'\n') < 3 and len(content) > 500:  # virtually no newlines = minified
+            if content.count(b'\n') < 3 and len(content) > 500:
                 parser = None
             else:
                 text = content.decode('utf8', errors='ignore')
@@ -61,26 +110,30 @@ class Cartographer:
                     parser = None
         except Exception:
             parser = None
-            
+
         if parser:
+            # Truncate for AST parsing only — stats were already computed from full content
+            parse_content = content[:PARSE_SIZE_LIMIT] if len(content) > PARSE_SIZE_LIMIT else content
+            was_truncated = len(content) > PARSE_SIZE_LIMIT
+
             try:
                 deadline = time.monotonic() + 2.0  # 2-second wall-clock budget per file
-                tree = parser.parse(content)
+                tree = parser.parse(parse_content)
                 
                 # Iterative BFS traversal — avoids Python RecursionError on deep ASTs
-                # and lets us enforce the deadline mid-traversal.
                 stack = [tree.root_node]
                 while stack:
                     if time.monotonic() > deadline:
-                        # Bail out — this file has a pathologically deep/wide AST
                         break
                     node = stack.pop()
                     if lang == "Python":
-                        self._extract_python_features(node, file_path, content, nodes, imports, calls, entry_points)
+                        self._extract_python_features(node, file_path, parse_content, nodes, imports, calls, entry_points)
                     else:
-                        self._extract_js_features(node, file_path, content, nodes, imports, calls, entry_points)
-                    # Push children in reverse order so left-to-right order is preserved
+                        self._extract_js_features(node, file_path, parse_content, nodes, imports, calls, entry_points)
                     stack.extend(reversed(node.children))
+
+                if was_truncated:
+                    logger.debug(f"AST truncated at {PARSE_SIZE_LIMIT//1024}KB for {file_path} (stats unaffected)")
                     
             except Exception as e:
                 logger.error(f"Tree-sitter failed on {file_path}: {e}")
@@ -150,7 +203,6 @@ class Cartographer:
                     "statement": stmt,
                     "line": node.start_point[0] + 1
                 })
-            # Fallback if parsing failed
             if not modules:
                 imports.append({
                     "source": file_path,
@@ -183,19 +235,36 @@ class Cartographer:
                     })
 
     def _extract_js_features(self, node, file_path, content, nodes, imports, calls, entry_points):
-        # Functions and Classes
-        if node.type in ["function_declaration", "class_declaration", "arrow_function", "method_definition"]:
+        # Named functions and classes ONLY — not bare arrow functions
+        if node.type in ["function_declaration", "class_declaration", "method_definition"]:
             name_node = node.child_by_field_name("name")
             name = "anonymous"
             if name_node:
                 name = content[name_node.start_byte:name_node.end_byte].decode('utf8')
-            
             nodes.append({
                 "id": f"{file_path}:{name}",
                 "type": node.type,
                 "name": name,
                 "line": node.start_point[0] + 1
             })
+
+        # Named arrow functions assigned to exported const — these ARE public API
+        elif node.type == "export_statement":
+            # export const fn = () => {}
+            for child in node.children:
+                if child.type == "lexical_declaration":
+                    for decl in child.children:
+                        if decl.type == "variable_declarator":
+                            name_node = decl.child_by_field_name("name")
+                            val_node = decl.child_by_field_name("value")
+                            if name_node and val_node and val_node.type in ("arrow_function", "function"):
+                                name = content[name_node.start_byte:name_node.end_byte].decode('utf8')
+                                nodes.append({
+                                    "id": f"{file_path}:{name}",
+                                    "type": "exported_function",
+                                    "name": name,
+                                    "line": node.start_point[0] + 1
+                                })
             
         # Imports
         elif node.type == "import_statement":
@@ -203,7 +272,6 @@ class Cartographer:
             target_module = ""
             if source_node:
                 target_module = content[source_node.start_byte:source_node.end_byte].decode('utf8').strip("'\"")
-            
             imports.append({
                 "source": file_path,
                 "target_module": target_module,
@@ -230,24 +298,41 @@ class Cartographer:
                     })
 
     def analyze_repo(self, files: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """Analyzes a list of files (dict containing 'path' and 'content')."""
+        """
+        Analyzes ALL files in the repo. Two-pass design:
+        - Pass 1: count_stats() on full content → accurate SLOC + function counts
+        - Pass 2: tree-sitter AST on first 50KB → graph nodes/edges for topology
+        """
         graph = {
             "files": [],
             "nodes": [],
             "imports": [],
             "calls": [],
             "entry_points": [],
-            "action_findings": []
+            "action_findings": [],
+            # Accurate aggregate stats — always computed from full file content
+            "total_sloc": 0,
+            "total_public_functions": 0,
+            "total_lines": 0,
         }
         total_files = len(files)
-        log_interval = max(1, total_files // 10)  # log at ~10 points: 10%, 20%, ...
+        log_interval = max(1, total_files // 10)
+
         for i, f in enumerate(files, 1):
             path = f["path"]
             if i == 1 or i == total_files or i % log_interval == 0:
                 logger.info(f"🗺️  [CARTOGRAPHER] Parsing AST: {i}/{total_files}...")
-            content = f["content"].encode('utf8')
-            
-            file_data = self.parse_file(path, content)
+            content_str = f.get("content", "")
+            content_bytes = content_str.encode('utf8')
+
+            # Pass 1: full-content stats (never truncated)
+            stats = self.count_stats(path, content_str)
+            graph["total_sloc"] += stats["sloc"]
+            graph["total_public_functions"] += stats["public_functions"]
+            graph["total_lines"] += stats["total_lines"]
+
+            # Pass 2: AST graph extraction (first 50KB)
+            file_data = self.parse_file(path, content_bytes)
                 
             graph["files"].append(path)
             graph["nodes"].extend(file_data.get("nodes", []))
@@ -255,40 +340,46 @@ class Cartographer:
             graph["calls"].extend(file_data.get("calls", []))
             graph["entry_points"].extend(file_data.get("entry_points", []))
 
-            # Free up tree-sitter C bindings that leak into Gen 1/2 garbage collection,
-            # but only every 50 files to prevent O(N^2) CPU thrashing.
+            # GC every 50 files to prevent memory build-up from tree-sitter C bindings
             if i % 50 == 0:
-                import gc
                 gc.collect()
 
-        # security_scan is capped internally; pattern_scan is called separately
-        # in node_cartograph (pipeline.py) after this returns — don't call it twice.
         graph["security_findings"] = self.security_scan(files)
         return graph
 
     def security_scan(self, files: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """Regex-based security scan: TODO/FIXME, hardcoded secrets, eval usage."""
+        """Regex-based security scan: hardcoded secrets, eval usage, XSS risks etc."""
         import re
         findings = []
+        
+        # Code-only extensions — don't scan docs/configs for secrets
+        CODE_EXTS = {".py", ".js", ".ts", ".tsx", ".jsx", ".java", ".go", ".rs", ".rb", ".php", ".cs"}
+        
         patterns = [
             ("TODO/FIXME", re.compile(r'\b(TODO|FIXME|HACK|XXX)\b', re.IGNORECASE), "info", "Technical debt can accumulate and cause maintenance issues over time.", "Track this debt in a ticketing system and assign it to a sprint."),
             ("eval() usage", re.compile(r'\beval\s*\('), "high", "Execution of arbitrary code can lead to critical remote code execution (RCE) vulnerabilities.", "Replace eval() with safer alternatives like ast.literal_eval() or specific parsers."),
-            ("Hardcoded secret", re.compile(r'(?i)(password|secret|api_key|token|passwd)\s*=\s*["\'][^"\']{4,}["\']'), "critical", "Secrets in source code can be extracted by attackers and used to access sensitive systems.", "Move secrets to environment variables or a secure secret manager (e.g., AWS Secrets Manager, HashiCorp Vault)."),
-            ("SQL injection risk", re.compile(r'execute\s*\(\s*f["\']|execute\s*\(\s*".*%s'), "high", "Dynamic SQL queries can be manipulated by user input, leading to unauthorized data access or deletion.", "Use parameterized queries or an ORM that automatically escapes input parameters."),
-            ("Insecure hash", re.compile(r'\b(md5|sha1)\b', re.IGNORECASE), "medium", "Weak hashing algorithms are vulnerable to collision attacks and can be cracked quickly.", "Upgrade to a strong hashing algorithm like SHA-256 or bcrypt for passwords."),
-            ("XSS Vulnerability", re.compile(r'(?i)innerHTML\s*=|dangerouslySetInnerHTML'), "high", "Unescaped HTML can allow attackers to inject malicious scripts into the browsers of other users.", "Use textContent or safely sanitize HTML input using libraries like DOMPurify."),
-            ("Debug code", re.compile(r'\bpdb\.set_trace\(\)|debugger;'), "info", "Leftover debug code can halt production execution or expose internal state.", "Remove debug statements before committing or use a configurable logging framework."),
-            ("Debug Statements", re.compile(r'\b(console\.log|print)\s*\('), "low", "Excessive logging can clutter production logs and potentially leak sensitive information.", "Replace with structured logging at appropriate log levels (DEBUG, INFO, ERROR)."),
+            ("Hardcoded secret", re.compile(r'(?i)(password|secret|api_key|token|passwd)\s*=\s*["\'][^"\']{12,}["\']'), "critical", "Secrets in source code can be extracted by attackers.", "Move secrets to environment variables or a secure secret manager."),
+            ("SQL injection risk", re.compile(r'execute\s*\(\s*f["\']|execute\s*\(\s*".*%s'), "high", "Dynamic SQL queries can be manipulated by user input.", "Use parameterized queries or an ORM."),
+            ("Insecure hash", re.compile(r'\b(md5|sha1)\b', re.IGNORECASE), "medium", "Weak hashing algorithms are vulnerable to collision attacks.", "Upgrade to SHA-256 or bcrypt for passwords."),
+            ("XSS Vulnerability", re.compile(r'(?i)innerHTML\s*=|dangerouslySetInnerHTML'), "high", "Unescaped HTML can allow attackers to inject malicious scripts.", "Use textContent or sanitize HTML input using DOMPurify."),
+            ("Debug code", re.compile(r'\bpdb\.set_trace\(\)|debugger;'), "info", "Leftover debug code can halt production execution.", "Remove debug statements before committing."),
         ]
-        # Cap to first 200 files to avoid O(files*lines*patterns) blowup on huge repos
+        # Cap to first 200 files to avoid O(files*lines*patterns) blowup
         for f in files[:200]:
             path = f["path"]
             content = f.get("content", "")
             if not content:
                 continue
+            # Skip non-code files (markdown, yaml, json, etc.) to reduce false positives
+            ext = "." + path.rsplit(".", 1)[-1] if "." in path else ""
+            if ext not in CODE_EXTS:
+                continue
             for lines_idx, line in enumerate(content.splitlines(), 1):
                 for label, pattern, severity, impact, remediation in patterns:
                     if pattern.search(line):
+                        # Extra filter: skip obvious template/example values
+                        if 'your_' in line.lower() or 'example' in line.lower() or 'placeholder' in line.lower():
+                            continue
                         findings.append({
                             "file": path, "line": lines_idx,
                             "type": label, "severity": severity,
@@ -296,17 +387,14 @@ class Cartographer:
                             "impact": impact,
                             "remediation": remediation
                         })
-                        # Cap total findings to prevent memory blowup
                         if len(findings) >= 500:
                             return findings
         return findings
 
     def pattern_scan(self, graph: Dict[str, Any], files: List[Dict[str, Any]]):
-        """Detects architectural patterns and anti-patterns, returns (patterns, actions)."""
+        """Detects architectural patterns and anti-patterns."""
         findings = []
         actions = []
-        from collections import Counter
-            # 1. High Complexity Files (God Object)
         node_counts = Counter(n["id"].split(":")[0] for n in graph.get("nodes", []))
         god_objects = [f for f, c in node_counts.items() if c > 15]
         
@@ -322,11 +410,10 @@ class Cartographer:
                 "target_file": god_objects[0]
             })
 
-        # 2. Highly Coupled (Imported by > 5 other files)
-        # Cap: O(imports × files) can be millions of iterations on large repos
+        # Highly coupled files
         imported_by = Counter()
-        files_set = graph.get("files", [])[:100]  # check against first 100 files only
-        for imp in graph.get("imports", [])[:2000]:  # cap at 2000 imports
+        files_set = graph.get("files", [])[:100]
+        for imp in graph.get("imports", [])[:2000]:
             tgt_mod = imp.get("target_module", "").replace(".", "/")
             for fpath in files_set:
                 if tgt_mod and (fpath.endswith(tgt_mod + ".py") or fpath.endswith(tgt_mod + ".ts") or fpath.endswith(tgt_mod + ".tsx")):
@@ -335,23 +422,22 @@ class Cartographer:
         highly_coupled = [f for f, c in imported_by.items() if c > 5]
         if highly_coupled:
             findings.append({"type": "Highly Coupled", "severity": "warning",
-                "file": highly_coupled[0], "detail": f"Files that import 5+ other files. Consider if this is intentional."})
+                "file": highly_coupled[0], "detail": f"Files imported by 5+ other files. Consider if this is intentional."})
             actions.append({
                 "title": "Reduce Coupling",
                 "severity": "medium",
-                "description": f"{len(highly_coupled)} files are imported by many others. Consider if this is intentional.",
+                "description": f"{len(highly_coupled)} files are imported by many others.",
                 "action": "Review if these should be split or if importers should be consolidated",
                 "impact": "Reduces blast radius of changes",
                 "target_file": highly_coupled[0]
             })
 
-        # 3. Large Files / Long Files: > 500 lines
+        # Long files
         long_files = [f["path"] for f in files if (f.get("content") or "").count("\n") > 500]
         if long_files:
             findings.append({"type": "Long File", "severity": "warning",
                 "file": long_files[0], "detail": f"Files over 500 lines are harder to maintain. Consider breaking into smaller modules."})
 
-        # 4. Action for Security if any security findings exist
         if graph.get("security_findings"):
             crit_high = [s for s in graph.get("security_findings", []) if s["severity"] in ("critical", "high")]
             if crit_high:

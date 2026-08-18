@@ -1,7 +1,7 @@
 import httpx
 import logging
 from typing import List, Dict, Any, Optional
-from config import GITHUB_TOKEN, MAX_FILES, MAX_LOC, SMART_SAMPLE_LIMIT, SUPPORTED_LANGUAGES, LANGUAGE_EXTENSIONS, DEFAULT_BRANCH_ONLY, PUBLIC_REPOS_ONLY
+from config import GITHUB_TOKEN, MAX_FILES, MAX_LOC, SUPPORTED_LANGUAGES, LANGUAGE_EXTENSIONS, DEFAULT_BRANCH_ONLY, PUBLIC_REPOS_ONLY
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -76,7 +76,12 @@ class Ingestor:
         
         return {
             "default_branch": data.get("default_branch", "main"),
-            "visibility": data.get("visibility")
+            "visibility": data.get("visibility"),
+            "stargazers_count": data.get("stargazers_count", 0),
+            "description": data.get("description", ""),
+            "language": data.get("language", ""),
+            "forks_count": data.get("forks_count", 0),
+            "open_issues_count": data.get("open_issues_count", 0),
         }
 
     async def get_file_tree(self, owner: str, repo: str, branch: str) -> List[Dict[str, Any]]:
@@ -91,32 +96,56 @@ class Ingestor:
             
         return data.get("tree", [])
 
-    def filter_tree(self, tree: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """Filters the tree to only include supported languages and files."""
+    def filter_tree(self, tree: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """
+        Filters the tree to only include supported languages and files.
+        Returns both the filtered list AND total counts for accurate stats reporting.
+        """
         supported_exts = []
         for exts in LANGUAGE_EXTENSIONS.values():
             supported_exts.extend(exts)
             
         filtered_files = []
         ignore_dirs = ["node_modules", "build", "dist", ".gradle", ".idea", "venv", "out", "target", "__pycache__", ".next"]
+        total_blobs = 0
+        excluded_by_dir = 0
+        excluded_by_size = 0
+        excluded_by_ext = 0
         
         for item in tree:
             if item["type"] == "blob":
+                total_blobs += 1
                 path = item["path"]
                 size = item.get("size", 0)
                 
                 # Exclude common build and dependency directories
                 if any(f"/{d}/" in f"/{path}" or path.startswith(f"{d}/") for d in ignore_dirs):
+                    excluded_by_dir += 1
                     continue
                     
-                # Exclude massive files (> 150 KB) to prevent Render memory OOM
-                if size > 150 * 1024:
+                # Exclude massive files (> 200 KB) to prevent Render memory OOM
+                if size > 200 * 1024:
+                    excluded_by_size += 1
                     continue
                 
                 if any(path.endswith(ext) for ext in supported_exts):
                     filtered_files.append(item)
+                else:
+                    excluded_by_ext += 1
                     
-        return filtered_files
+        logger.info(
+            f"📁  Tree filter: {total_blobs} total blobs → "
+            f"{len(filtered_files)} code files in scope "
+            f"({excluded_by_dir} in build dirs, {excluded_by_size} oversized, {excluded_by_ext} unsupported ext)"
+        )
+        return {
+            "files": filtered_files,
+            "total_blobs": total_blobs,
+            "in_scope": len(filtered_files),
+            "excluded_by_dir": excluded_by_dir,
+            "excluded_by_size": excluded_by_size,
+            "excluded_by_ext": excluded_by_ext,
+        }
 
     async def fetch_file_content(self, owner: str, repo: str, branch: str, file_path: str) -> str:
         """Fetches raw file content."""
@@ -124,44 +153,6 @@ class Ingestor:
         response = await self._fetch(url)
         response.raise_for_status()
         return response.text
-
-    def _smart_sample(self, files: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """When a repo has more files than SMART_SAMPLE_LIMIT, intelligently select
-        the most architecturally significant files rather than hard-rejecting.
-        Priority order:
-          1. Root-level files (high-level entrypoints like main.py, app.py, index.ts)
-          2. Files with 'main', 'app', 'index', 'server', 'core', 'api' in the name
-          3. Non-test files (exclude test/, spec/, __tests__/)
-          4. Smaller files first (less memory, more likely to be focused modules)
-        """
-        import re
-        
-        ENTRY_KEYWORDS = {"main", "app", "index", "server", "core", "api", "router", "handler", "cli", "run"}
-        TEST_PATTERN = re.compile(r"(^|/)tests?/|spec/|__tests__/|_test\.|_spec\.", re.IGNORECASE)
-        
-        def score(f: Dict[str, Any]) -> int:
-            path: str = f["path"]
-            name = path.split("/")[-1].split(".")[0].lower()
-            depth = path.count("/")
-            size = f.get("size", 9999)
-            is_test = bool(TEST_PATTERN.search(path))
-            is_entry = name in ENTRY_KEYWORDS
-            is_root = depth == 0
-
-            score = 0
-            if is_root:   score += 100
-            if is_entry:  score += 80
-            if is_test:   score -= 200
-            # Prefer smaller files (less memory + more focused)
-            score -= size // 5000
-            # Prefer shallower paths (more likely to be core modules)
-            score -= depth * 5
-            return score
-
-        sorted_files = sorted(files, key=score, reverse=True)
-        sampled = sorted_files[:SMART_SAMPLE_LIMIT]
-        logger.info(f"📊  Smart-sampled {len(sampled)}/{len(files)} files (prioritising entry-points and core modules)")
-        return sampled
 
     async def ingest_repository(self, url: str) -> Dict[str, Any]:
         """Main entry point to ingest and validate a repository."""
@@ -176,26 +167,35 @@ class Ingestor:
         # 2. Get tree
         tree = await self.get_file_tree(owner, repo, branch)
         
-        # 3. Filter tree
-        in_scope_files = self.filter_tree(tree)
+        # 3. Filter tree — returns dict with counts for accurate stats
+        filter_result = self.filter_tree(tree)
+        in_scope_files = filter_result["files"]
         file_count = len(in_scope_files)
-        logger.info(f"📁  {file_count} source files in scope — fetching contents...")
         
-        # 4. Hard cap — truly massive repos (>500 files) are unsupported
+        logger.info(f"📁  {file_count} source files in scope (out of {filter_result['total_blobs']} total blobs) — fetching contents...")
+        
+        # 4. Hard cap — truly massive repos (>500 files) are unsupported on free tier
         if file_count > MAX_FILES:
-            raise RepoScopeError(f"Repository is too large ({file_count} files). Maximum supported is {MAX_FILES} files.")
+            raise RepoScopeError(
+                f"Repository is too large ({file_count} source files). Maximum supported is {MAX_FILES} files. "
+                f"Provide your own GitHub token to analyze larger repositories."
+            )
         
-        # 5. Smart-sample if above the comfortable memory threshold
-        if file_count > SMART_SAMPLE_LIMIT:
-            logger.info(f"⚡  Repo has {file_count} files — applying smart sampling to stay within memory limits...")
-            in_scope_files = self._smart_sample(in_scope_files)
+        # No smart sampling — we read EVERYTHING under the cap.
+        # The old SMART_SAMPLE_LIMIT=300 cap silently discarded ~48% of many repos.
         
         return {
             "owner": owner,
             "repo": repo,
             "branch": branch,
             "files": in_scope_files,
-            "file_count": len(in_scope_files)
+            "file_count": file_count,
+            # Accurate stats — never lie about what we read
+            "total_blobs": filter_result["total_blobs"],
+            "in_scope_files": file_count,
+            "excluded_build_dirs": filter_result["excluded_by_dir"],
+            "excluded_oversized": filter_result["excluded_by_size"],
+            "repo_meta": metadata,
         }
 
     async def get_current_sha(self, owner: str, repo: str, branch: str) -> str:

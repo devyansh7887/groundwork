@@ -2,6 +2,7 @@ import json
 import logging
 import time
 from typing import Dict, Any, List, Optional
+from collections import Counter
 from pydantic import BaseModel, Field
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
@@ -82,21 +83,21 @@ Bad: "uses", "calls", "depends on"
 3. NEVER leave an edge unlabeled.
 4. Async edges (events, queues, cache reads) → is_async = True
 5. Do NOT invent components for technologies not present in the codebase.
+6. Every component's `files` list must only contain paths from the provided file list.
 """
 
 HUMAN_PROMPT = """Analyze this codebase and produce a clean component-level architecture diagram.
 
-Architecture Narrative (ground truth):
+Architecture Narrative (ground truth — read carefully):
 {narrative}
 
-File List (representative, not exhaustive):
+Key Files (ranked by architectural importance):
 {files}
 
-Key Topology (calls & imports observed by static analysis):
+Critical Architecture Topology (most-called functions and their call patterns):
 {topology}
 
-Remember: merge files that share a single responsibility into ONE component.
-Aim for 8-15 total components. Every edge needs a label.
+REMINDER: Group files that share a responsibility into ONE component. Target 8-15 total components. Every edge needs a meaningful label (not just 'uses').
 """
 
 class DiagramAgent:
@@ -105,21 +106,52 @@ class DiagramAgent:
 
     def _safe_id(self, s: str) -> str:
         """Convert any string to a safe Mermaid node id."""
-        return s.replace(" ", "_").replace("-", "_").replace("/", "_").replace(".", "_").replace("(", "").replace(")", "")
+        import re
+        safe = re.sub(r'[^a-zA-Z0-9_]', '_', s)
+        # Ensure it doesn't start with a digit
+        if safe and safe[0].isdigit():
+            safe = 'n_' + safe
+        return safe[:40]  # Cap length to prevent overly long IDs
 
-    def _build_topology_summary(self, graph: Dict[str, Any], max_entries: int = 60) -> str:
-        """Build a concise topology string for the LLM prompt."""
+    def _build_ranked_topology(self, graph: Dict[str, Any], max_entries: int = 80) -> str:
+        """
+        Build a topology string ranked by FREQUENCY — the most-called functions
+        and most-used imports appear first, giving the LLM the architectural spine.
+        """
+        # Rank calls by frequency of callee
+        call_freq = Counter(call.get("callee", "") for call in graph.get("calls", []))
+        
+        # Rank imports by how often a module is imported
+        import_freq = Counter(imp.get("target_module", "") for imp in graph.get("imports", []))
+        
         lines = []
-        for call in graph.get("calls", [])[:max_entries // 2]:
+        seen_calls = set()
+        
+        # Top calls by frequency
+        for call in sorted(graph.get("calls", []), key=lambda c: call_freq.get(c.get("callee",""), 0), reverse=True):
+            if len(lines) >= max_entries // 2:
+                break
             caller = call.get("caller_file", "").split("/")[-1]
             callee = call.get("callee", "")
-            if caller and callee:
-                lines.append(f"{caller} → calls → {callee}")
-        for imp in graph.get("imports", [])[:max_entries // 2]:
+            key = (caller, callee)
+            if caller and callee and key not in seen_calls:
+                seen_calls.add(key)
+                freq = call_freq[callee]
+                lines.append(f"{caller} → calls → {callee} (×{freq})")
+        
+        # Top imports by frequency
+        seen_imports = set()
+        for imp in sorted(graph.get("imports", []), key=lambda i: import_freq.get(i.get("target_module",""), 0), reverse=True):
+            if len(lines) >= max_entries:
+                break
             source = imp.get("source", "").split("/")[-1]
             target = imp.get("target_module", "")
-            if source and target:
-                lines.append(f"{source} → imports → {target}")
+            key = (source, target)
+            if source and target and key not in seen_imports:
+                seen_imports.add(key)
+                freq = import_freq[target]
+                lines.append(f"{source} → imports → {target} (×{freq})")
+
         return "\n".join(lines) if lines else "No topology data available."
 
     def generate_diagram(self, graph: Dict[str, Any], narrative: str, session_token: str | None = None) -> str:
@@ -139,20 +171,32 @@ class DiagramAgent:
             if not any(x in f.lower() for x in ["test", "spec", "__pycache__", ".min.", "node_modules", "dist/", "build/"])
         ]
 
-        # Calculate centrality (how often a file is imported or called) to pick the most architecturally significant files
-        from collections import Counter
+        # Rank files by architectural centrality
+        # Fix: For TypeScript, also match by relative path components, not just dotted module names
         centrality = Counter()
         for imp in graph.get("imports", []):
-            tgt = imp.get("target_module", "").split(".")[-1]
+            tgt = imp.get("target_module", "")
+            # Handle both Python dot-notation AND TypeScript/JS relative imports
+            tgt_parts = [tgt.split(".")[-1], tgt.split("/")[-1], tgt.replace("./", "").replace("../", "")]
             for f in valid_files:
-                if f.endswith(tgt + ".py") or f.endswith(tgt + ".ts") or f.endswith(tgt + ".tsx"):
+                f_base = f.split("/")[-1].rsplit(".", 1)[0]
+                if any(f_base == part for part in tgt_parts if part):
                     centrality[f] += 1
                     break
         
-        # Sort by centrality (descending), fallback to alphabetical
-        important_files = sorted(valid_files, key=lambda x: (centrality[x], x), reverse=True)[:20]
+        # Also count call centrality
+        for call in graph.get("calls", []):
+            callee = call.get("callee", "")
+            for node in graph.get("nodes", []):
+                if node.get("name") == callee:
+                    fpath = node.get("id", "").split(":")[0]
+                    if fpath in centrality:
+                        centrality[fpath] += 1
 
-        topology_summary = self._build_topology_summary(graph)
+        # Sort by centrality (descending), top 25 for LLM context
+        important_files = sorted(valid_files, key=lambda x: centrality.get(x, 0), reverse=True)[:25]
+        
+        topology_summary = self._build_ranked_topology(graph)
 
         logger.info(f"Diagram Agent: generating component diagram from {len(all_files)} files → targeting 8-15 components")
 
@@ -167,7 +211,7 @@ class DiagramAgent:
                 structured_llm = llm.with_structured_output(ComponentDiagramOutput)
                 chain = prompt | structured_llm
                 diagram_output = chain.invoke({
-                    "narrative": narrative[:3000],  # trim to avoid token limits
+                    "narrative": narrative[:4000],  # More narrative context = better diagram
                     "files": json.dumps(important_files),
                     "topology": topology_summary,
                 })
@@ -185,34 +229,35 @@ class DiagramAgent:
 
     def _render_mermaid(self, output: ComponentDiagramOutput) -> str:
         """
-        Renders the ComponentDiagramOutput as Mermaid flowchart syntax
-        following the reference spec exactly.
+        Renders the ComponentDiagramOutput as clean Mermaid flowchart syntax.
+        Enforces: max 15 components, deduped edges, safe IDs, no orphan nodes.
         """
         lines = ["flowchart TB"]
         lines.append("")
 
-        # Build component lookup for validation
-        valid_ids = {c.component_id for c in output.components}
-        comp_map = {c.component_id: c for c in output.components}
-
-        # Build layer → component mapping
-        layer_component_ids: Dict[str, List[str]] = {}
-        for layer in output.layers:
-            layer_component_ids[layer.layer_id] = layer.components
+        # Enforce max 15 components to prevent visual chaos
+        components = output.components[:15]
+        
+        # Build lookup tables
+        valid_ids = {c.component_id for c in components}
+        comp_map = {c.component_id: c for c in components}
 
         # Track which components are placed in a layer
         placed = set()
 
         # ── Emit each architectural layer as a subgraph ──────────────────────
         for layer in output.layers:
+            # Only emit layers that have at least one valid component
+            valid_layer_comps = [cid for cid in layer.components if cid in comp_map]
+            if not valid_layer_comps:
+                continue
+                
             lid = self._safe_id(layer.layer_id)
-            # Escape quotes in layer label
             layer_label = layer.layer_label.replace('"', "'")
             lines.append(f'    subgraph {lid}["{layer_label}"]')
+            lines.append('    direction TB')
 
-            for cid in layer.components:
-                if cid not in comp_map:
-                    continue
+            for cid in valid_layer_comps:
                 comp = comp_map[cid]
                 node_id = self._safe_id(cid)
                 node_label = comp.label.replace('"', "'")
@@ -233,7 +278,7 @@ class DiagramAgent:
             lines.append("")
 
         # ── Emit any un-layered components at the top level ──────────────────
-        orphans = [c for c in output.components if c.component_id not in placed]
+        orphans = [c for c in components if c.component_id not in placed]
         if orphans:
             lines.append("    %% Ungrouped components")
             for comp in orphans:
@@ -242,31 +287,35 @@ class DiagramAgent:
                 lines.append(f'    {node_id}["{node_label}"]')
             lines.append("")
 
-        # ── Emit edges ────────────────────────────────────────────────────────
+        # ── Emit edges (deduplicated, only between valid components) ──────────
         lines.append("    %% Connections")
         seen_edges = set()
+        edge_count = 0
+        
         for edge in output.edges:
             src = edge.from_component
             dst = edge.to_component
-            # Skip edges to unknown components
-            if src not in valid_ids or dst not in valid_ids:
+            # Skip edges to unknown components or self-loops
+            if src not in valid_ids or dst not in valid_ids or src == dst:
                 continue
             src_id = self._safe_id(src)
             dst_id = self._safe_id(dst)
-            edge_label = edge.label.replace('"', "'")
-            key = (src_id, dst_id, edge_label)
+            edge_label = edge.label.replace('"', "'")[:50]  # Cap label length
+            key = (src_id, dst_id)  # Allow same connection with different labels (dedupe by src+dst only)
             if key in seen_edges:
                 continue
             seen_edges.add(key)
+            edge_count += 1
 
             if edge.is_async:
                 lines.append(f'    {src_id} -.->|"{edge_label}"| {dst_id}')
             else:
                 lines.append(f'    {src_id} -->|"{edge_label}"| {dst_id}')
-
+        
+        logger.info(f"Diagram rendered: {len(placed) + len(orphans)} components, {edge_count} edges")
         lines.append("")
 
-        # ── Node styling via classDef (Mermaid v11 compliant) ─────────────────
+        # ── Node styling via classDef ─────────────────────────────────────────
         lines.append("    classDef controller fill:#1e3a5f,stroke:#3b82f6,stroke-width:2px,color:#bfdbfe")
         lines.append("    classDef service fill:#14352a,stroke:#22c55e,stroke-width:2px,color:#bbf7d0")
         lines.append("    classDef store fill:#3b1f00,stroke:#f59e0b,stroke-width:2px,color:#fde68a")
@@ -275,7 +324,7 @@ class DiagramAgent:
         lines.append("")
 
         # Apply classes
-        for comp in output.components:
+        for comp in components:
             node_id = self._safe_id(comp.component_id)
             node_type = comp.node_type if comp.node_type in ("controller", "service", "store", "queue", "client") else "service"
             lines.append(f"    class {node_id} {node_type}")
