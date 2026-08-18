@@ -113,7 +113,7 @@ class DiagramAgent:
             safe = 'n_' + safe
         return safe[:40]  # Cap length to prevent overly long IDs
 
-    def _build_ranked_topology(self, graph: Dict[str, Any], max_entries: int = 80) -> str:
+    def _build_ranked_topology(self, graph: Dict[str, Any], max_entries: int = 40) -> str:
         """
         Build a topology string ranked by FREQUENCY — the most-called functions
         and most-used imports appear first, giving the LLM the architectural spine.
@@ -193,16 +193,16 @@ class DiagramAgent:
                     if fpath in centrality:
                         centrality[fpath] += 1
 
-        # Sort by centrality (descending), top 25 for LLM context
-        important_files = sorted(valid_files, key=lambda x: centrality.get(x, 0), reverse=True)[:25]
+        # Sort by centrality (descending), top 15 for LLM context to prevent token limits
+        important_files = sorted(valid_files, key=lambda x: centrality.get(x, 0), reverse=True)[:15]
         
         topology_summary = self._build_ranked_topology(graph)
 
         logger.info(f"Diagram Agent: generating component diagram from {len(all_files)} files → targeting 8-15 components")
 
         # Exponential backoff retry loop
-        max_retries = 5
-        backoff = 1.0
+        max_retries = 3
+        backoff = 2.0
         diagram_output: Optional[ComponentDiagramOutput] = None
 
         for attempt in range(1, max_retries + 1):
@@ -211,7 +211,7 @@ class DiagramAgent:
                 structured_llm = llm.with_structured_output(ComponentDiagramOutput)
                 chain = prompt | structured_llm
                 diagram_output = chain.invoke({
-                    "narrative": narrative[:4000],  # More narrative context = better diagram
+                    "narrative": narrative[:2000],  # Cap to 2000 chars to avoid rate limits
                     "files": json.dumps(important_files),
                     "topology": topology_summary,
                 })
@@ -223,7 +223,7 @@ class DiagramAgent:
                     logger.error("All retries exhausted. Returning fallback diagram.")
                     return 'flowchart TB\n    fallback["⚠️ Diagram generation failed — rate limit or LLM error"]\n    style fallback fill:#1e293b,stroke:#475569,color:#cbd5e1'
                 time.sleep(backoff)
-                backoff = min(backoff * 2, 30)
+                backoff = min(backoff * 2, 10.0)
 
         return self._render_mermaid(diagram_output)
 
