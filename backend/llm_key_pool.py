@@ -125,7 +125,7 @@ class LLMKeyPool:
             
         if key_type == "groq":
             return ChatGroq(
-                model="llama-3.3-70b-versatile",
+                model="llama-3.1-8b-instant",
                 groq_api_key=token_to_use,
                 temperature=temperature,
                 max_retries=max_retries,
@@ -133,7 +133,7 @@ class LLMKeyPool:
             )
         elif key_type == "gemini":
             return ChatGoogleGenerativeAI(
-                model="gemini-3.7-flash",
+                model="gemini-1.5-flash",
                 google_api_key=token_to_use,
                 temperature=temperature,
                 max_retries=max_retries,
