@@ -137,6 +137,10 @@ class OnboardRequest(BaseModel):
             raise ValueError("Invalid GitHub repository URL")
         return v
 
+@app.get("/api/health")
+async def health_check():
+    return {"status": "ok", "version": "2.0"}
+
 class DraftRequest(BaseModel):
     repo_url: str
     action: dict | None = None
