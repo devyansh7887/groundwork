@@ -28,9 +28,10 @@ export function ExplorerPanel({ graph, fileSizes, fileLocs = {}, colorBy = "fold
   // Use import-based links (architectural module dependencies)
   const totalLinks = graph.imports?.length || 0;
   // Use SLOC (non-blank, non-comment) if available, else fall back to raw LOC
-  const totalLoc = graph.total_sloc
-    ?? Object.values(fileLocs).reduce((a, b) => a + b, 0)
-    || Object.values(fileSizes || {}).reduce((a, b) => a + Math.round(b / 40), 0);
+  const totalLoc = graph.total_sloc ?? (
+    Object.values(fileLocs).reduce((a, b) => a + b, 0) ||
+    Object.values(fileSizes || {}).reduce((a, b) => a + Math.round(b / 40), 0)
+  );
 
   // Group files into a simple tree structure based on colorBy
   const tree: Record<string, string[]> = {};
