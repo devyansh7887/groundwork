@@ -303,7 +303,10 @@ async def analyze_repo(req: AnalyzeRequest, request: Request):
 
         try:
             final_state = task.result()
-            qa_agent.index_repository(
+            # Index the repo for Q&A in the background so we don't block the SSE stream and hit a Render timeout
+            asyncio.get_running_loop().run_in_executor(
+                None,
+                qa_agent.index_repository,
                 final_state["repo_metadata"].get("repo", ""),
                 final_state.get("downloaded_files", []),
                 final_state.get("readme_content", ""),
