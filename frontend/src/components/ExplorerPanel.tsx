@@ -8,6 +8,8 @@ interface GraphData {
   nodes: Array<any>;
   imports: Array<any>;
   calls: Array<any>;
+  total_public_functions?: number;
+  total_sloc?: number;
 }
 
 interface Props {
@@ -21,10 +23,14 @@ interface Props {
 
 export function ExplorerPanel({ graph, fileSizes, fileLocs = {}, colorBy = "folder", onColorByChange, onFileSelect }: Props) {
   const totalFiles = graph.files?.length || 0;
-  const totalFunctions = graph.nodes?.length || 0;
+  // Use the accurate public function count from cartographer (named top-level functions only)
+  const totalFunctions = graph.total_public_functions ?? graph.nodes?.length ?? 0;
+  // Use import-based links (architectural module dependencies)
   const totalLinks = graph.imports?.length || 0;
-  
-  const totalLoc = Object.values(fileLocs).reduce((a, b) => a + b, 0) || Object.values(fileSizes || {}).reduce((a, b) => a + Math.round(b / 40), 0);
+  // Use SLOC (non-blank, non-comment) if available, else fall back to raw LOC
+  const totalLoc = graph.total_sloc
+    ?? Object.values(fileLocs).reduce((a, b) => a + b, 0)
+    || Object.values(fileSizes || {}).reduce((a, b) => a + Math.round(b / 40), 0);
 
   // Group files into a simple tree structure based on colorBy
   const tree: Record<string, string[]> = {};
@@ -85,25 +91,25 @@ export function ExplorerPanel({ graph, fileSizes, fileLocs = {}, colorBy = "fold
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="border border-[#30363d] bg-[#161b22] rounded-md p-3 text-center flex flex-col justify-center">
             <div className="text-[#58a6ff] text-xl font-bold font-mono">{totalFiles}</div>
-            <div className="text-[10px] text-[#8b949e] font-bold uppercase tracking-widest mt-1">Files</div>
+            <div className="text-[10px] text-[#8b949e] font-bold uppercase tracking-widest mt-1">Analyzed Files</div>
           </div>
           <div className="border border-[#30363d] bg-[#161b22] rounded-md p-3 text-center flex flex-col justify-center">
-            <div className="text-[#58a6ff] text-xl font-bold font-mono">{totalFunctions}</div>
-            <div className="text-[10px] text-[#8b949e] font-bold uppercase tracking-widest mt-1">Functions</div>
+            <div className="text-[#58a6ff] text-xl font-bold font-mono">{totalFunctions.toLocaleString()}</div>
+            <div className="text-[10px] text-[#8b949e] font-bold uppercase tracking-widest mt-1">Exported Fns</div>
           </div>
           <div className="border border-[#30363d] bg-[#161b22] rounded-md p-3 text-center flex flex-col justify-center">
-            <div className="text-[#3fb950] text-xl font-bold font-mono">{totalLinks}</div>
-            <div className="text-[10px] text-[#8b949e] font-bold uppercase tracking-widest mt-1">Links</div>
+            <div className="text-[#3fb950] text-xl font-bold font-mono">{totalLinks.toLocaleString()}</div>
+            <div className="text-[10px] text-[#8b949e] font-bold uppercase tracking-widest mt-1">Import Links</div>
           </div>
           <div className="border border-[#30363d] bg-[#161b22] rounded-md p-3 text-center flex flex-col justify-center">
-            <div className="text-[#8b949e] text-xl font-bold font-mono">{unusedCount}</div>
-            <div className="text-[10px] text-[#8b949e] font-bold uppercase tracking-widest mt-1">Unused</div>
+            <div className="text-[#8b949e] text-xl font-bold font-mono">{graph.calls?.length?.toLocaleString() ?? 0}</div>
+            <div className="text-[10px] text-[#8b949e] font-bold uppercase tracking-widest mt-1">Call Edges</div>
           </div>
         </div>
 
         <div className="border border-[#30363d] bg-[#161b22] rounded-md p-4 text-center">
           <div className="text-[#3fb950] text-2xl font-bold font-mono">{totalLoc.toLocaleString()}</div>
-          <div className="text-[10px] text-[#8b949e] font-bold uppercase tracking-widest mt-1">Lines of Code</div>
+          <div className="text-[10px] text-[#8b949e] font-bold uppercase tracking-widest mt-1">SLOC (non-blank)</div>
         </div>
       </div>
 

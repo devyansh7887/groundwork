@@ -3,6 +3,7 @@ import json
 import time
 import logging
 from typing import Dict, Any, List, Optional
+from collections import Counter
 from pydantic import BaseModel, Field
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
@@ -25,77 +26,90 @@ class Synthesizer:
     def __init__(self):
         pass
         
-    def _calculate_centrality(self, graph: Dict[str, Any]) -> List[str]:
-        """Returns top 5 files by highest centrality (using NetworkX PageRank)."""
-        import networkx as nx
-        
-        G = nx.DiGraph()
-        
-        # Add all files as nodes
-        for f in graph.get("files", []):
-            G.add_node(f)
-            
-        # Add import edges (importer -> imported module)
-        for imp in graph.get("imports", []):
-            src = imp.get("source")
-            stmt = imp.get("statement", "")
-            for target_file in graph.get("files", []):
-                if target_file == src:
-                    continue
-                target_base = target_file.split("/")[-1].split(".")[0]
-                if target_base in stmt:
-                    G.add_edge(src, target_file)
-                    
-        # Add call edges (caller_file -> callee_file)
+    def _build_intelligence_summary(self, graph: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Build a rich, ranked intelligence summary to send to the LLM.
+        Instead of sending 10 random nodes, we send the most architecturally
+        significant data: most-called functions, most-imported modules, entry points.
+        """
+        # 1. Rank functions by how often they appear as call targets (centrality)
+        call_targets = Counter()
         for call in graph.get("calls", []):
-            caller = call.get("caller_file")
-            callee_name = call.get("callee", "")
+            callee = call.get("callee", "")
+            if callee:
+                call_targets[callee] += 1
+        
+        # Top 30 most-called functions with their locations
+        top_nodes_by_freq = []
+        seen_names = set()
+        for callee_name, freq in call_targets.most_common(50):
+            if len(top_nodes_by_freq) >= 30:
+                break
+            # Find which file this function is in
             for node in graph.get("nodes", []):
-                if node.get("name") == callee_name:
-                    callee_file = node.get("id", "").split(":")[0]
-                    if caller and callee_file and caller != callee_file:
-                        G.add_edge(caller, callee_file)
-                        
-        if len(G.nodes) == 0:
-            return []
-            
-        try:
-            # Calculate PageRank
-            pr = nx.pagerank(G)
-            sorted_files = sorted(pr.items(), key=lambda x: x[1], reverse=True)
-            return [f[0] for f in sorted_files[:3]]
-        except Exception as e:
-            logger.error(f"PageRank calculation failed: {e}")
-            return graph.get("files", [])[:5]
+                if node.get("name") == callee_name and callee_name not in seen_names:
+                    top_nodes_by_freq.append({
+                        "id": node["id"],
+                        "name": callee_name,
+                        "call_count": freq,
+                        "type": node.get("type", "function")
+                    })
+                    seen_names.add(callee_name)
+                    break
+        
+        # 2. Most imported modules (architectural dependencies)
+        import_counts = Counter()
+        for imp in graph.get("imports", []):
+            mod = imp.get("target_module", "")
+            if mod and not mod.startswith("."):  # skip relative imports for this summary
+                import_counts[mod] += 1
+        top_imports = [{"module": mod, "import_count": cnt} for mod, cnt in import_counts.most_common(20)]
+
+        # 3. All entry points (unlimited — these are the architectural spine)
+        all_entry_points = list(set(ep.get("id", "") for ep in graph.get("entry_points", [])))
+
+        # 4. File list (up to 100)
+        all_files = graph.get("files", [])[:100]
+
+        return {
+            "total_files": len(graph.get("files", [])),
+            "files_sample": all_files,
+            "top_functions_by_call_frequency": top_nodes_by_freq,
+            "top_imported_modules": top_imports,
+            "entry_points": all_entry_points[:30],
+            "total_nodes": len(graph.get("nodes", [])),
+            "total_calls": len(graph.get("calls", [])),
+            "total_imports": len(graph.get("imports", [])),
+            # Graph stats (accurate, from full file content)
+            "total_sloc": graph.get("total_sloc", 0),
+            "total_public_functions": graph.get("total_public_functions", 0),
+        }
         
     def synthesize(self, graph: Dict[str, Any], downloaded_files: List[Dict[str, str]], verifier_feedback: str = "", mode: str = "technical", session_token: str | None = None) -> Dict[str, Any]:
-        """Generates the narrative and claims list from the graph and file contents.
+        """Generates the narrative and claims list from the graph and file contents."""
         
-        Args:
-            graph: The Cartographer's static analysis graph (ground truth).
-            downloaded_files: Raw file contents for snippet grounding.
-            verifier_feedback: Non-empty string on retry runs. Contains the Verifier's
-                               structured rejection report.
-            mode: 'technical', 'eli5', or 'tldr'
-        """
+        # 1. Build intelligence summary (ranked, not random)
+        intel = self._build_intelligence_summary(graph)
         
-        # 1. Identify entry points and highest centrality files
-        entry_point_files = set(ep.get("id", "").split(":")[0] for ep in graph.get("entry_points", []))
-        central_files = set(self._calculate_centrality(graph))
+        # 2. Identify entry points and highest centrality files
+        entry_point_files = set(ep.split(":")[0] for ep in intel["entry_points"] if ":" in ep)
+        
+        # Top 5 files by call centrality
+        central_files = set()
+        for node_info in intel["top_functions_by_call_frequency"][:5]:
+            fpath = node_info["id"].split(":")[0] if ":" in node_info["id"] else ""
+            if fpath:
+                central_files.add(fpath)
         
         important_files = entry_point_files.union(central_files)
         
-        # 2. Gather contents for important files
+        # 3. Gather contents for important files — 2000 chars each (was: 300)
         file_contents = ""
         for f in downloaded_files:
             if f["path"] in important_files:
                 file_contents += f"\n--- File: {f['path']} ---\n"
-                # Truncate content to avoid blowing up context for Groq limits
-                file_contents += f["content"][:300] 
+                file_contents += f["content"][:2000]  # 2000 chars = meaningful context
                 
-        # 3. Build prompt messages — base turn is always present.
-        #    On retries, a corrective second human turn is appended so the model
-        #    knows exactly which claims failed verification and must be fixed.
         mode_prompts = {
             "technical": """You are a senior software architect writing an internal ADR (Architecture Decision Record) for other senior engineers.
 Write with precision. Use exact technical terms: design patterns (MVC, Repository, Mediator, CQRS), protocol names (REST, gRPC, SSE), runtime concepts (event loop, coroutine, GIL), and framework internals.
@@ -161,7 +175,7 @@ CRITICAL RULES:
 - In your structured claims list, `cited_file` must be exactly the file path from the repository.
 - If you cannot verify a claim from the provided data, do not include it.
 """),
-            ("human", """Here is the static analysis graph of the repository:
+            ("human", """Here is the ranked intelligence summary of the repository:
 {graph_json}
 
 Here are the contents of the entry points and highest-centrality files:
@@ -172,8 +186,6 @@ Produce the structured output with claims and narrative text.
         ]
 
         if verifier_feedback:
-            # Corrective turn: show the model its previous failures and instruct it
-            # to replace each failing claim with one that IS in the graph.
             messages.append(
                 ("human", """A downstream Verifier agent reviewed your previous output and rejected the following claims.
 You MUST fix every issue listed below before producing your corrected output.
@@ -190,15 +202,8 @@ verified against the graph and file contents above.""")
 
         prompt = ChatPromptTemplate.from_messages(messages)
         
-        # Simplify graph for token usage to respect Groq limits
-        simplified_graph = {
-            "files": graph["files"][:50],
-            "nodes": [n.get("id") for n in graph["nodes"]][:10],
-            "entry_points": [ep.get("id") for ep in graph["entry_points"]][:10],
-            "calls": graph["calls"][:10],
-        }
         invoke_kwargs: Dict[str, Any] = {
-            "graph_json": json.dumps(simplified_graph, indent=2),
+            "graph_json": json.dumps(intel, indent=2),
             "file_contents": file_contents,
         }
         if verifier_feedback:
@@ -230,4 +235,3 @@ verified against the graph and file contents above.""")
                     }
                 time.sleep(backoff)
                 backoff = min(backoff * 2, 10.0)
-
