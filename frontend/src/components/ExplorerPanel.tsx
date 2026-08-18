@@ -110,7 +110,7 @@ export function ExplorerPanel({ graph, fileSizes, fileLocs = {}, colorBy = "fold
 
         <div className="border border-[#30363d] bg-[#161b22] rounded-md p-4 text-center">
           <div className="text-[#3fb950] text-2xl font-bold font-mono">{totalLoc.toLocaleString()}</div>
-          <div className="text-[10px] text-[#8b949e] font-bold uppercase tracking-widest mt-1">SLOC (non-blank)</div>
+          <div className="text-[10px] text-[#8b949e] font-bold uppercase tracking-widest mt-1">Lines of Code</div>
         </div>
       </div>
 
