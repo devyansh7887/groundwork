@@ -123,8 +123,9 @@ class LLMKeyPool:
         if not token_to_use:
             raise ValueError("No valid LLM API key available in pool and no valid session token provided.")
             
+        llm = None
         if key_type == "groq":
-            return ChatGroq(
+            llm = ChatGroq(
                 model="llama-3.1-8b-instant",
                 groq_api_key=token_to_use,
                 temperature=temperature,
@@ -132,7 +133,7 @@ class LLMKeyPool:
                 max_tokens=8192
             )
         elif key_type == "gemini":
-            return ChatGoogleGenerativeAI(
+            llm = ChatGoogleGenerativeAI(
                 model="gemini-3.7-flash",
                 google_api_key=token_to_use,
                 temperature=temperature,
@@ -140,14 +141,14 @@ class LLMKeyPool:
                 max_output_tokens=8192
             )
         elif key_type == "openai":
-            return ChatOpenAI(
+            llm = ChatOpenAI(
                 model="gpt-4o",
                 api_key=token_to_use,
                 temperature=temperature,
                 max_retries=max_retries
             )
         elif key_type == "anthropic":
-            return ChatAnthropic(
+            llm = ChatAnthropic(
                 model="claude-3-5-sonnet-20240620",
                 api_key=token_to_use,
                 temperature=temperature,
@@ -155,6 +156,9 @@ class LLMKeyPool:
             )
         else:
             raise ValueError(f"Unsupported LLM key type: {key_type}")
+            
+        llm.token_used = token_to_use
+        return llm
 
     def mark_rate_limit(self, token: str, retry_after: int = 60):
         """Marks a key as exhausted for a certain period."""

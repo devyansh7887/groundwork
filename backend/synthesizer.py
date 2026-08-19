@@ -226,12 +226,18 @@ verified against the graph and file contents above.""")
                     "narrative": result.narrative
                 }
             except Exception as e:
+                error_str = str(e).lower()
+                # If we hit a rate limit, quota issue, or 429, mark the token so the next attempt uses a new key
+                if "429" in error_str or "rate limit" in error_str or "quota" in error_str or "exhausted" in error_str:
+                    if hasattr(llm, "token_used"):
+                        llm_key_pool.mark_rate_limit(llm.token_used, retry_after=60)
+                
                 logger.warning(f"Synthesizer attempt {attempt} failed: {e}")
                 if attempt == max_retries:
                     logger.error("All retries exhausted for synthesizer. Returning fallback.")
                     return {
                         "claims": [],
-                        "narrative": "⚠️ **Analysis Unavailable**: The AI models are currently experiencing heavy load or rate limits. Please try again later or provide a custom API token."
+                        "narrative": f"⚠️ **Analysis Unavailable**: {str(e)} (Attempted {max_retries} times. Please provide a custom API token or wait for rate limits to reset.)"
                     }
                 time.sleep(backoff)
                 backoff = min(backoff * 2, 10.0)
