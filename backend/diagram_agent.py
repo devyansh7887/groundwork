@@ -225,7 +225,9 @@ class DiagramAgent:
                 logger.warning(f"Diagram Agent attempt {attempt} failed: {e}")
                 if attempt == max_retries:
                     logger.error("All retries exhausted for diagram agent. Returning generic failure block.")
-                    return f"graph TD\n    A[⚠️ Diagram generation failed: {str(e)}]\n    B[Please try again or provide a custom API token]"
+                    # Must escape double quotes and wrap in them so Mermaid doesn't choke on error strings containing () or '
+                    error_safe = str(e).replace('"', "'").replace('\n', ' ')
+                    return f'graph TD\n    A["⚠️ Diagram generation failed: {error_safe}"]\n    B["Please try again or provide a custom API token"]'
                 time.sleep(backoff)
                 backoff = min(backoff * 2, 10.0)
 
