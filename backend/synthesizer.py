@@ -229,8 +229,7 @@ verified against the graph and file contents above.""")
                 error_str = str(e).lower()
                 # If we hit a rate limit, quota issue, or 429, mark the token so the next attempt uses a new key
                 if "429" in error_str or "rate limit" in error_str or "quota" in error_str or "exhausted" in error_str:
-                    if hasattr(llm, "token_used"):
-                        llm_key_pool.mark_rate_limit(llm.token_used, retry_after=60)
+                    llm_key_pool.mark_rate_limit_for_llm(llm)
                 
                 logger.warning(f"Synthesizer attempt {attempt} failed: {e}")
                 if attempt == max_retries:

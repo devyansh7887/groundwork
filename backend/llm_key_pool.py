@@ -157,8 +157,15 @@ class LLMKeyPool:
         else:
             raise ValueError(f"Unsupported LLM key type: {key_type}")
             
-        llm.token_used = token_to_use
+        if not hasattr(self, "_llm_to_token"):
+            self._llm_to_token = {}
+        self._llm_to_token[id(llm)] = token_to_use
         return llm
+
+    def mark_rate_limit_for_llm(self, llm):
+        token = getattr(self, "_llm_to_token", {}).get(id(llm))
+        if token:
+            self.mark_rate_limit(token, retry_after=60)
 
     def mark_rate_limit(self, token: str, retry_after: int = 60):
         """Marks a key as exhausted for a certain period."""
