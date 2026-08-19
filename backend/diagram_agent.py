@@ -220,8 +220,7 @@ class DiagramAgent:
             except Exception as e:
                 error_str = str(e).lower()
                 if "429" in error_str or "rate limit" in error_str or "quota" in error_str or "exhausted" in error_str:
-                    if hasattr(llm, "token_used"):
-                        llm_key_pool.mark_rate_limit(llm.token_used, retry_after=60)
+                    llm_key_pool.mark_rate_limit_for_llm(llm)
                         
                 logger.warning(f"Diagram Agent attempt {attempt} failed: {e}")
                 if attempt == max_retries:
