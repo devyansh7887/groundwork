@@ -29,6 +29,11 @@ MAX_LOC = 150000          # Max lines of code
 # computed for the FULL file before truncation so numbers are never falsified.
 PARSE_SIZE_LIMIT = 50 * 1024   # 50 KB
 
+# Language support — TWO TIERS:
+#   Tier 1 (Full AST — tree-sitter): Python, JavaScript, TypeScript
+#     → nodes, imports, call graph, entry points
+#   Tier 2 (Import-only — regex fallback): all others below
+#     → only top-level import statements extracted; no call graph or node list
 SUPPORTED_LANGUAGES = [
     "Python",
     "JavaScript",
@@ -69,3 +74,21 @@ LANGUAGE_EXTENSIONS = {
     "CSS": [".css", ".scss", ".sass"],
     "Shell": [".sh", ".bash"]
 }
+
+# ─── Model Registry ───────────────────────────────────────────────────────────
+# Centralised model names. Update HERE when providers deprecate a model.
+# Do NOT hardcode model strings anywhere else in the codebase.
+MODEL_REGISTRY = {
+    # Groq — fast inference, used as default fallback
+    "groq": os.getenv("GROQ_MODEL", "llama-3.1-8b-instant"),
+
+    # Gemini — large context window, prioritised in the key pool
+    "gemini": os.getenv("GEMINI_MODEL", "gemini-2.0-flash"),
+
+    # OpenAI — highest quality, used when an openai key is in the pool
+    "openai": os.getenv("OPENAI_MODEL", "gpt-4o"),
+
+    # Anthropic — alternative premium model
+    "anthropic": os.getenv("ANTHROPIC_MODEL", "claude-3-5-sonnet-20241022"),
+}
+

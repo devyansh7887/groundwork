@@ -14,6 +14,11 @@ backend/venv/
 backend/__pycache__/
 backend/*.pyc
 
+# Old script-style test files (replaced by backend/tests/)
+backend/test_cartographer.py
+backend/test_synth.py
+backend/run_manual.py
+
 # Cache Directory rules
 backend/cache/*.json
 !backend/cache/encode_starlette_5174d4c8358a.json
@@ -26,3 +31,6 @@ walkthrough.md
 backend/chroma_db/
 
 !backend/cache/permissionlesstech_bitchat-android_094657efa0aa.json
+
+# Explicitly track the new test suite
+!backend/tests/

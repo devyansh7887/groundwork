@@ -9,6 +9,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from llm_key_pool import llm_key_pool
+from prompt_guard import sanitize_content
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -108,7 +109,9 @@ class Synthesizer:
         for f in downloaded_files:
             if f["path"] in important_files:
                 file_contents += f"\n--- File: {f['path']} ---\n"
-                file_contents += f["content"][:1500]  # 1500 chars = meaningful context
+                # Sanitize file content before injecting into LLM prompt
+                safe_content = sanitize_content(f["content"][:1500])
+                file_contents += safe_content
                 
         mode_prompts = {
             "technical": """You are a senior software architect writing an internal ADR (Architecture Decision Record) for other senior engineers.

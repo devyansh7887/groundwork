@@ -9,6 +9,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
+from config import MODEL_REGISTRY
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -126,7 +127,7 @@ class LLMKeyPool:
         llm = None
         if key_type == "groq":
             llm = ChatGroq(
-                model="llama-3.1-8b-instant",
+                model=MODEL_REGISTRY["groq"],
                 groq_api_key=token_to_use,
                 temperature=temperature,
                 max_retries=max_retries,
@@ -134,7 +135,7 @@ class LLMKeyPool:
             )
         elif key_type == "gemini":
             llm = ChatGoogleGenerativeAI(
-                model="gemini-3.7-flash",
+                model=MODEL_REGISTRY["gemini"],
                 google_api_key=token_to_use,
                 temperature=temperature,
                 max_retries=max_retries,
@@ -142,14 +143,14 @@ class LLMKeyPool:
             )
         elif key_type == "openai":
             llm = ChatOpenAI(
-                model="gpt-4o",
+                model=MODEL_REGISTRY["openai"],
                 api_key=token_to_use,
                 temperature=temperature,
                 max_retries=max_retries
             )
         elif key_type == "anthropic":
             llm = ChatAnthropic(
-                model="claude-3-5-sonnet-20240620",
+                model=MODEL_REGISTRY["anthropic"],
                 api_key=token_to_use,
                 temperature=temperature,
                 max_retries=max_retries

@@ -16,6 +16,11 @@ class VerifierResult(BaseModel):
     status: str = Field(description="One of: 'Verified', 'Inferred', 'Unverified'")
     reasoning: str = Field(description="Explanation of why this status was assigned.")
 
+class _FallbackResult(BaseModel):
+    """Module-level fallback used when a claim verification raises an exception."""
+    status: str = "Unverified"
+    reasoning: str = "LLM or system error during verification."
+
 class Verifier:
     def __init__(self):
         pass
@@ -92,12 +97,8 @@ class Verifier:
                     return await self.verify_claim_async(claim, graph, downloaded_files, session_token)
                 except Exception as e:
                     logger.warning(f"Failed to verify claim '{claim.get('claim', '')[:20]}...': {e}")
-                    # Return a fallback result so asyncio.gather doesn't crash the pipeline
-                    from pydantic import BaseModel
-                    class FallbackRes(BaseModel):
-                        status: str = "Unverified"
-                        reasoning: str = f"LLM or system error during verification."
-                    return FallbackRes()
+                    # Return the module-level fallback so asyncio.gather doesn't crash the pipeline
+                    return _FallbackResult()
 
         tasks = [verify_with_sem(claim) for claim in claims]
         results = await asyncio.gather(*tasks)

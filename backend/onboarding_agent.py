@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import Dict, Any, List
 from pydantic import BaseModel, Field
@@ -23,7 +24,7 @@ class OnboardingAgent:
     def __init__(self):
         pass
 
-    def generate_path(self, role: str, level: str, graph: Dict[str, Any], narrative: str, session_token: str | None = None) -> OnboardingPath:
+    async def generate_path(self, role: str, level: str, graph: Dict[str, Any], narrative: str, session_token: str | None = None) -> OnboardingPath:
         logger.info(f"Generating onboarding path for {level} {role}...")
         
         prompt = ChatPromptTemplate.from_messages([
@@ -60,12 +61,15 @@ Generate the ordered reading path.
         structured_llm = llm.with_structured_output(OnboardingPath)
         chain = prompt | structured_llm
         
-        result: OnboardingPath = chain.invoke({
+        invoke_kwargs = {
             "role": role,
             "level": level,
             "narrative": narrative,
             "entry_points": ", ".join(set(entry_points)),
             "central_files": ", ".join(central_files)
-        })
+        }
+
+        # chain.invoke is a blocking call — run in a thread to avoid blocking the event loop
+        result: OnboardingPath = await asyncio.to_thread(chain.invoke, invoke_kwargs)
         
         return result
