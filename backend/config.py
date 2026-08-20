@@ -83,7 +83,7 @@ MODEL_REGISTRY = {
     "groq": os.getenv("GROQ_MODEL", "llama-3.1-8b-instant"),
 
     # Gemini — large context window, prioritised in the key pool
-    "gemini": os.getenv("GEMINI_MODEL", "gemini-2.0-flash"),
+    "gemini": os.getenv("GEMINI_MODEL", "gemini-3.6-flash"),
 
     # OpenAI — highest quality, used when an openai key is in the pool
     "openai": os.getenv("OPENAI_MODEL", "gpt-4o"),
