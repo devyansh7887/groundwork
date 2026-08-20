@@ -26,6 +26,10 @@ class KeyPool:
                 else:
                     break
             
+            token = token.strip(" \t\n\r\"'")
+            if "=" in token:
+                token = token.split("=", 1)[-1].strip(" \t\n\r\"'")
+            
             self.keys.append({
                 "token": token,
                 "reset_time": 0,

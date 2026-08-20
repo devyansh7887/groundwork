@@ -55,6 +55,8 @@ class LLMKeyPool:
         if base_val:
             for val in base_val.split(','):
                 clean_val = val.strip(" \t\n\r\"'")
+                if "=" in clean_val:
+                    clean_val = clean_val.split("=", 1)[-1].strip(" \t\n\r\"'")
                 if clean_val and self._is_valid_token(clean_val, key_type):
                     self.keys.append({"token": clean_val, "type": key_type, "reset_time": 0, "remaining": -1})
             
@@ -66,6 +68,8 @@ class LLMKeyPool:
                 break
             for val in token.split(','):
                 clean_val = val.strip(" \t\n\r\"'")
+                if "=" in clean_val:
+                    clean_val = clean_val.split("=", 1)[-1].strip(" \t\n\r\"'")
                 if clean_val and self._is_valid_token(clean_val, key_type):
                     self.keys.append({"token": clean_val, "type": key_type, "reset_time": 0, "remaining": -1})
             i += 1
