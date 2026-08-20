@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 # Approximate cost per 1M tokens (USD) — update when providers change pricing
 _COST_PER_1M_TOKENS = {
-    "gemini": {"input": 0.075, "output": 0.30},   # gemini-2.0-flash
+    "gemini": {"input": 0.075, "output": 0.30},   # gemini-3.6-flash
     "groq": {"input": 0.05, "output": 0.08},        # llama-3.1-8b-instant (est.)
     "openai": {"input": 5.0, "output": 15.0},        # gpt-4o
     "anthropic": {"input": 3.0, "output": 15.0},     # claude-3-5-sonnet
