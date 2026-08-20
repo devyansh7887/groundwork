@@ -11,12 +11,25 @@ import json
 import os
 import re
 
+# Configure logging first so logger is available everywhere below
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 try:
     from qa_agent import QAAgent
-except ImportError:
-    class QAAgent:
-        def index_repository(self, *args, **kwargs): pass
-        async def answer_question(self, *args, **kwargs): return {"error": "QA Agent unavailable. Missing dependencies."}
+except ImportError as _qa_import_err:
+    # ChromaDB or another QA dependency is missing.
+    # Log loudly at startup so this is visible in server logs, not silently swallowed.
+    logger.warning(
+        f"⚠️  QAAgent unavailable — ChromaDB dependency missing ({_qa_import_err}). "
+        "The /api/qa endpoint will return an error message. "
+        "Install requirements: pip install chromadb sentence-transformers"
+    )
+    class QAAgent:  # type: ignore[no-redef]
+        def index_repository(self, *args, **kwargs):
+            logger.warning("QAAgent.index_repository called but QAAgent is unavailable.")
+        async def answer_question(self, *args, **kwargs):
+            return {"error": "QA Agent unavailable. Run: pip install chromadb sentence-transformers"}
 
 from onboarding_agent import OnboardingAgent
 from contribution_drafter import ContributionDrafter, ContributionGuide, find_relevant_files
@@ -28,6 +41,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # In-memory cache (mirrors disk cache for fast access)
+# Hard cap: evict oldest entry when limit is reached to prevent OOM on long-running instances
+_CACHE_MAX_ENTRIES = 20
 repo_cache: dict = {}
 
 def _hydrate_cache_from_disk():
@@ -61,12 +76,19 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Groundwork API", lifespan=lifespan)
 
+# Explicit CORS origins — add your production frontend URL here instead of using "*"
+_CORS_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "https://groundwork-three.vercel.app",  # replace with your real Vercel URL
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_CORS_ORIGINS,
     allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 pipeline = Pipeline()
@@ -75,13 +97,6 @@ onboarding_agent = OnboardingAgent()
 drafter = ContributionDrafter()
 
 
-
-# ─── Health Check ─────────────────────────────────────────────────────────────
-
-@app.get("/api/health")
-async def health_check():
-    """Simple health check used by the frontend to detect backend readiness."""
-    return {"status": "ok", "version": "1.0.0"}
 
 # ─── Models ───────────────────────────────────────────────────────────────────
 
@@ -136,10 +151,6 @@ class OnboardRequest(BaseModel):
         if not re.match(r"^https://github\.com/[\w.-]+/[\w.-]+/?$", v):
             raise ValueError("Invalid GitHub repository URL")
         return v
-
-@app.get("/api/health")
-async def health_check():
-    return {"status": "ok", "version": "2.0"}
 
 class DraftRequest(BaseModel):
     repo_url: str
@@ -250,6 +261,13 @@ async def _run_and_cache(repo_url: str, session_token: str | None, mode: str, fo
     # Persist to disk
     cache_manager.save(owner, repo_name, sha, final_state)
     final_state["sha"] = sha
+
+    # LRU eviction: keep the in-memory cache bounded to prevent OOM
+    if len(repo_cache) >= _CACHE_MAX_ENTRIES:
+        oldest_key = next(iter(repo_cache))
+        del repo_cache[oldest_key]
+        logger.info(f"♻️  Cache eviction: removed oldest entry '{oldest_key}' (limit={_CACHE_MAX_ENTRIES})")
+
     repo_cache[repo_url] = final_state
     return final_state
 
@@ -258,6 +276,13 @@ async def _run_and_cache(repo_url: str, session_token: str | None, mode: str, fo
 @app.get("/api/health")
 def health_check():
     return {"status": "ok", "message": "Groundwork agents are awake."}
+
+@app.get("/api/cost-summary")
+def cost_summary():
+    """Returns per-component LLM cost + latency stats for this server session."""
+    from cost_tracker import get_summary
+    return get_summary()
+
 
 @app.get("/api/key-status")
 def key_status():
@@ -439,7 +464,7 @@ async def generate_path(req: OnboardRequest, request: Request):
     if req.repo_url not in repo_cache:
         raise HTTPException(status_code=400, detail="Repository not analyzed yet.")
     state = repo_cache[req.repo_url]
-    path = onboarding_agent.generate_path(req.role, req.level, state["graph"], state.get("narrative", ""), session_token)
+    path = await onboarding_agent.generate_path(req.role, req.level, state["graph"], state.get("narrative", ""), session_token)
     return path.model_dump()
 
 @app.post("/api/draft")
@@ -486,7 +511,7 @@ Include:
         }
         
         try:
-            patch = drafter.draft_patch(synthetic_issue, state["graph"], relevant_files + downloaded_files[:5], session_token)
+            patch = await drafter.draft_patch(synthetic_issue, state["graph"], relevant_files + downloaded_files[:5], session_token)
             return patch.model_dump()
         except Exception as e:
             logger.error(f"LLM draft failed: {e}")
@@ -502,7 +527,7 @@ Include:
         owner = state["repo_metadata"].get("owner", "")
         repo = state["repo_metadata"].get("repo", "")
         try:
-            guide = drafter.draft_contribution_guide(
+            guide = await drafter.draft_contribution_guide(
                 issue=req.issue,
                 graph=state["graph"],
                 downloaded_files=state.get("downloaded_files", []),

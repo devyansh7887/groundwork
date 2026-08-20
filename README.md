@@ -23,9 +23,17 @@ Groundwork answers these questions via a **Grounded Verification Loop**. Any cla
 ## Scope and Limitations
 
 Groundwork was built under a strict 48-hour build spec constraint. As such:
-- **Languages:** Only supports Python and JavaScript/TypeScript repositories.
-- **Size:** Best effort on repos under 150k Lines of Code / 3000 files.
+
+- **Language Support — Two Tiers:**
+
+  | Tier | Languages | Capability |
+  |------|-----------|------------|
+  | **Full AST** (tree-sitter) | Python, JavaScript, TypeScript | Dependency graph, call graph, entry points, function-level nodes |
+  | **Import-only** (regex) | Java, Kotlin, Go, Rust, C/C++, Ruby, PHP, Swift, C#, Shell | Top-level import statements only; no call graph |
+
+- **Size:** Best effort on repos under 150k Lines of Code / 500 files.
 - **Clone-free:** We do not `git clone`. We pull file trees via the GitHub API to preserve speed and avoid cloning massive `.git` histories, processing everything entirely in memory.
+
 
 ## Grounded Accuracy Benchmark (Phase 4)
 

@@ -1,3 +1,4 @@
+import asyncio
 import httpx
 import logging
 import re
@@ -6,6 +7,7 @@ from pydantic import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
 from llm_key_pool import llm_key_pool
 from key_pool import key_pool
+from prompt_guard import sanitize_content
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -238,7 +240,7 @@ class ContributionDrafter:
         scored.sort(key=lambda i: i["_score"])
         return scored
 
-    def draft_contribution_guide(
+    async def draft_contribution_guide(
         self,
         issue: Dict[str, Any],
         graph: Dict[str, Any],
@@ -260,7 +262,8 @@ class ContributionDrafter:
         file_snippets = ""
         for f in relevant_files[:8]:
             file_snippets += f"\n--- {f['path']} ---\n"
-            file_snippets += f["content"][:3000]  # 3000 chars per file for contribution context
+            # Sanitize file content before injecting into the LLM prompt
+            file_snippets += sanitize_content(f["content"][:3000])
         
         # Build graph summary for the LLM
         graph_summary = {
@@ -359,11 +362,11 @@ Generate a complete ContributionGuide. Be honest about what you know and don't k
                         confidence="low",
                         confidence_reason="AI service was unavailable during generation. The file discovery above is still valid — check those files for the fix."
                     )
-                import time
-                time.sleep(backoff)
+                import asyncio
+                await asyncio.sleep(backoff)
                 backoff = min(backoff * 2, 10.0)
 
-    def draft_patch(self, issue: Dict[str, Any], graph: Dict[str, Any], downloaded_files: List[Dict[str, str]], session_token: str | None = None) -> DraftPatch:
+    async def draft_patch(self, issue: Dict[str, Any], graph: Dict[str, Any], downloaded_files: List[Dict[str, str]], session_token: str | None = None) -> DraftPatch:
         """
         Legacy method kept for backwards compatibility with /api/draft action path.
         Now uses issue-targeted file discovery instead of random top-5.
@@ -418,16 +421,28 @@ Provide the patch, test code, and PR description.
         file_snippets = ""
         for f in relevant_files[:6]:
             file_snippets += f"\n--- {f['path']} ---\n{f['content'][:2000]}\n"
-            
-        llm = llm_key_pool.get_llm(session_token, temperature=0.2)
-        structured_llm = llm.with_structured_output(DraftPatch)
-        chain = prompt | structured_llm
-        
-        result: DraftPatch = chain.invoke({
-            "title": issue.get("title", ""),
-            "body": issue.get("body", "No description provided."),
-            "graph_summary": graph_summary,
-            "files": file_snippets
-        })
-        
-        return result
+
+        max_retries = 3
+        backoff = 2.0
+        for attempt in range(1, max_retries + 1):
+            try:
+                llm = llm_key_pool.get_llm(session_token, temperature=0.2)
+                structured_llm = llm.with_structured_output(DraftPatch)
+                chain = prompt | structured_llm
+                result: DraftPatch = chain.invoke({
+                    "title": issue.get("title", ""),
+                    "body": issue.get("body", "No description provided."),
+                    "graph_summary": graph_summary,
+                    "files": file_snippets
+                })
+                return result
+            except Exception as e:
+                error_str = str(e).lower()
+                if "429" in error_str or "rate limit" in error_str or "quota" in error_str:
+                    llm_key_pool.mark_rate_limit_for_llm(llm)
+                logger.warning(f"draft_patch attempt {attempt} failed: {e}")
+                if attempt == max_retries:
+                    logger.error("All draft_patch retries exhausted.")
+                    raise
+                await asyncio.sleep(backoff)
+                backoff = min(backoff * 2, 10.0)
