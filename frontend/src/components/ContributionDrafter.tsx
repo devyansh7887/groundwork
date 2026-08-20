@@ -174,7 +174,7 @@ function QAPanel({
     try {
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (sessionToken) headers["Authorization"] = `Bearer ${sessionToken}`;
-      const res = await fetch("https://groundwork-api-6bnh.onrender.com/api/draft/qa", {
+      const res = await fetch("${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/draft/qa", {
         method: "POST",
         headers,
         body: JSON.stringify({
@@ -578,7 +578,7 @@ export function ContributionDrafter({
     try {
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (sessionToken) headers["Authorization"] = `Bearer ${sessionToken}`;
-      const res = await fetch("https://groundwork-api-6bnh.onrender.com/api/issues", {
+      const res = await fetch("${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/issues", {
         method: "POST",
         headers,
         body: JSON.stringify({ repo_url: repoUrl }),
@@ -603,7 +603,7 @@ export function ContributionDrafter({
     try {
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (sessionToken) headers["Authorization"] = `Bearer ${sessionToken}`;
-      const res = await fetch("https://groundwork-api-6bnh.onrender.com/api/draft", {
+      const res = await fetch("${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/draft", {
         method: "POST",
         headers,
         body: JSON.stringify({ repo_url: repoUrl, issue }),
