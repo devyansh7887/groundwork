@@ -80,7 +80,8 @@ app = FastAPI(title="Groundwork API", lifespan=lifespan)
 _CORS_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3001",
-    "https://groundwork-three.vercel.app",  # replace with your real Vercel URL
+    "https://groundworkapp-git-main-devyansh7887s-projects.vercel.app",
+    "https://groundwork-6l6zlwnmp-devyansh7887s-projects.vercel.app"
 ]
 
 app.add_middleware(
