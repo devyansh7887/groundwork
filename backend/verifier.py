@@ -198,30 +198,37 @@ Do NOT add anything else."""
         downloaded_files: List[Dict[str, str]],
         session_token: str | None = None,
     ) -> List[Dict[str, Any]]:
-        # Concurrency cap: 1 simultaneous LLM call max to survive free-tier Gemini's strict 15 RPM limit.
-        sem = asyncio.Semaphore(1)
+        # Concurrency cap: 2 simultaneous LLM calls to balance speed and free-tier limits.
+        sem = asyncio.Semaphore(2)
 
         async def verify_with_sem(claim):
             async with sem:
                 try:
-                    # Artificially slow down to guarantee we never exceed 15 requests per minute
-                    await asyncio.sleep(4.1) 
+                    await asyncio.sleep(2.1) 
                     return await self.verify_claim_async(
                         claim, graph, downloaded_files, session_token
                     )
                 except Exception as e:
-                    logger.warning(
-                        f"Failed to verify claim '{claim.get('claim', '')[:20]}...': {e}"
-                    )
-                    return _FallbackResult()
+                    logger.warning(f"Failed to verify claim '{claim.get('claim', '')[:20]}...': {e}")
+                    return _FallbackResult(claim.get("claim", ""))
 
-        results = await asyncio.gather(*[verify_with_sem(c) for c in claims])
-
+        # Fast path: cap verification to 12 claims to absolutely prevent Render's 100s network timeout
+        to_verify = claims[:12]
+        remaining = claims[12:]
+        
+        results = await asyncio.gather(*[verify_with_sem(c) for c in to_verify])
+        
         verified_claims = []
-        for claim, res in zip(claims, results):
+        for claim, res in zip(to_verify, results):
             claim_data = claim.copy()
             claim_data["status"] = res.status
             claim_data["reasoning"] = res.reasoning
+            verified_claims.append(claim_data)
+            
+        for claim in remaining:
+            claim_data = claim.copy()
+            claim_data["status"] = "Inferred"
+            claim_data["reasoning"] = "Automatically inferred to prevent API timeouts."
             verified_claims.append(claim_data)
 
         return verified_claims
