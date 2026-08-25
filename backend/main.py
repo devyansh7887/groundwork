@@ -63,26 +63,28 @@ repo_cache: dict = {}
 def _hydrate_cache_from_disk():
     """On startup: scan all disk cache files and populate repo_cache so /api/qa
     and /api/draft work immediately without re-analyzing after a restart."""
-    from pathlib import Path
-    cache_dir = Path(__file__).parent / "cache"
-    if not cache_dir.exists():
-        return
     loaded = 0
-    for cache_file in sorted(cache_dir.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True):
-        try:
-            with open(cache_file, "r", encoding="utf-8") as f:
-                state = json.load(f)
-            owner = state.get("owner", "")
-            repo  = state.get("repo", "")
-            if owner and repo:
-                canonical_url = f"https://github.com/{owner}/{repo}"
-                if canonical_url not in repo_cache:
+    try:
+        import sqlite3
+        from pathlib import Path
+        db_path = Path(__file__).parent / "groundwork_cache.db"
+        if db_path.exists():
+            conn = sqlite3.connect(str(db_path))
+            rows = conn.execute("SELECT owner, repo, payload FROM analyses ORDER BY cached_at ASC").fetchall()
+            for owner, repo, payload_str in rows:
+                try:
+                    state = json.loads(payload_str)
+                    canonical_url = f"https://github.com/{owner}/{repo}"
                     repo_cache[canonical_url] = state
                     loaded += 1
-        except Exception as e:
-            logger.warning(f"Failed to load cache file {cache_file.name}: {e}")
+                except Exception as e:
+                    logger.warning(f"Failed to load cache row {owner}/{repo}: {e}")
+            conn.close()
+    except Exception as e:
+        logger.warning(f"Failed to hydrate cache from SQLite: {e}")
+        
     if loaded:
-        logger.info(f"♻️  Hydrated {loaded} repo(s) from disk cache — /api/qa and /api/draft are ready immediately.")
+        logger.info(f"♻️  Hydrated {loaded} repo(s) from SQLite cache — /api/qa and /api/draft are ready immediately.")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
