@@ -453,16 +453,23 @@ function ContributionWizardPanel({
 
               {/* What needs to change */}
               <div className="bg-[#161b22] border border-[#30363d] rounded-lg p-4">
-                <div className="text-xs font-jetbrains text-[#a371f7] uppercase tracking-wider mb-2">What needs to change</div>
-                <p className="text-sm text-[#c9d1d9] leading-relaxed">{guide.what_needs_to_change}</p>
+                <div className="text-xs font-jetbrains text-[#a371f7] uppercase tracking-wider mb-2">Step-by-Step Instructions</div>
+                <div className="text-sm text-[#c9d1d9] leading-relaxed prose prose-invert prose-p:my-2 prose-ul:my-2 prose-li:my-1 max-w-none">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{guide.what_needs_to_change}</ReactMarkdown>
+                </div>
               </div>
 
               {/* Diff */}
               {guide.diff && (
-                <div>
-                  <div className="text-xs font-jetbrains text-[#8b949e] uppercase tracking-wider mb-2">AI Drafted Patch</div>
-                  <DiffBlock diff={guide.diff} />
-                </div>
+                <details className="group border border-[#30363d] rounded-lg bg-[#0d1117] overflow-hidden">
+                  <summary className="px-4 py-3 text-xs font-jetbrains text-[#8b949e] uppercase tracking-wider cursor-pointer hover:bg-[#161b22] transition-colors flex items-center justify-between">
+                    <span>Advanced: View Raw Diff Patch</span>
+                    <span className="group-open:rotate-180 transition-transform">▼</span>
+                  </summary>
+                  <div className="border-t border-[#30363d]">
+                    <DiffBlock diff={guide.diff} />
+                  </div>
+                </details>
               )}
 
               {/* Test code */}

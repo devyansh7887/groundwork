@@ -339,10 +339,7 @@ async def analyze_repo(req: AnalyzeRequest, request: Request):
                 except (TypeError, ValueError):
                     yield f"data: {json.dumps({'log': str(msg)})}\n\n"
             except asyncio.TimeoutError:
-                # Render/Nginx sometimes ignores X-Accel-Buffering. 
-                # We pad the heartbeat with a 4KB SSE comment (ignored by browser) to force the proxy buffer to flush instantly.
-                padding = ": " + (" " * 4096) + "\n"
-                yield f"{padding}data: {json.dumps({'log': '⏳  AI agents are working... hang tight'})}\n\n"
+                yield f"data: {json.dumps({'log': '⏳  AI agents are working... hang tight'})}\n\n"
 
         while not q.empty():
             try:
