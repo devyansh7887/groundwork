@@ -37,7 +37,7 @@ export function OnboardingSection({ role, setRole, level, setLevel, pathLoading,
         disabled={pathLoading}
         className="w-full px-4 py-2.5 border border-[#30363d] text-sm font-bold font-ibm rounded-md text-[#c9d1d9] bg-[#21262d] hover:bg-[#30363d] hover:border-[#8b949e] transition-colors mb-6 flex justify-center items-center"
       >
-        {pathLoading && <span className="mr-2 animate-pulse text-[#58a6ff]">>_</span>}
+        {pathLoading && <span className="mr-2 animate-pulse text-[#58a6ff]">&gt;_</span>}
         Generate Reading Path
       </button>
       

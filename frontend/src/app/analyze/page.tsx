@@ -771,7 +771,7 @@ export default function AnalyzePage() {
       <header className="border-b border-[#30363d] bg-[#161b22] sticky top-0 z-50">
         <div className="max-w-[90rem] mx-auto px-4 py-3 flex items-center">
           <div className="w-8 h-8 bg-[#0d1117] border border-[#30363d] rounded flex items-center justify-center mr-3">
-            <span className="text-[#c9d1d9] w-4 h-4">>_</span>
+            <span className="text-[#c9d1d9] w-4 h-4">&gt;_</span>
           </div>
           <div>
             <h1 className="font-space text-lg font-bold text-[#c9d1d9] tracking-tight leading-none">Groundwork</h1>
