@@ -65,7 +65,7 @@ export function ExplorerPanel({ graph, fileSizes, fileLocs = {}, colorBy = "fold
               colorBy === "folder" ? "bg-[#21262d] border-[#30363d] text-[#3fb950]" : "border-transparent text-[#8b949e] hover:bg-[#161b22]"
             }`}
           >
-            <span className="w-4 h-4">[/]</span> Folder
+            <span>[/]</span> Folder
           </button>
           <button 
             onClick={() => onColorByChange?.("type")}
@@ -73,7 +73,7 @@ export function ExplorerPanel({ graph, fileSizes, fileLocs = {}, colorBy = "fold
               colorBy === "type" ? "bg-[#21262d] border-[#30363d] text-[#3fb950]" : "border-transparent text-[#8b949e] hover:bg-[#161b22]"
             }`}
           >
-            <span className="w-4 h-4">[L]</span> Type (Layer)
+            <span>[L]</span> Type (Layer)
           </button>
           <button 
             onClick={() => onColorByChange?.("author")}
@@ -81,7 +81,7 @@ export function ExplorerPanel({ graph, fileSizes, fileLocs = {}, colorBy = "fold
               colorBy === "author" ? "bg-[#21262d] border-[#30363d] text-[#3fb950]" : "border-transparent text-[#8b949e] hover:bg-[#161b22]"
             }`}
           >
-            <span className="w-4 h-4">[A]</span> Author (Churn)
+            <span>[A]</span> Author (Churn)
           </button>
         </div>
       </div>
@@ -121,7 +121,7 @@ export function ExplorerPanel({ graph, fileSizes, fileLocs = {}, colorBy = "fold
             <div key={folder} className="group">
               <div className="flex items-center justify-between py-1.5 px-2 hover:bg-[#161b22] rounded cursor-pointer transition-colors">
                 <div className="flex items-center gap-2">
-                  <span className="w-3.5 h-3.5 text-[#8b949e]">[/]</span>
+                  <span className="text-[#8b949e]">[/]</span>
                   <span className="text-sm font-jetbrains text-[#c9d1d9]">{folder}</span>
                 </div>
                 <div className="text-xs text-[#484f58] font-jetbrains bg-[#21262d] px-1.5 rounded">{files.length}</div>

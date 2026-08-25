@@ -214,7 +214,7 @@ export function DiagramCanvas({ mermaidChart = "", graph, fileSizes, colorBy = "
       </div>
 
       {/* Content */}
-      <div className="w-full flex-1 overflow-hidden relative">
+      <div className="w-full flex-1 overflow-hidden relative" ref={containerRef}>
         {activeTab === "Flow" && <MermaidView chart={mermaidChart} />}
 
         {activeTab === "Graph" && forceData.nodes.length > 0 && (
