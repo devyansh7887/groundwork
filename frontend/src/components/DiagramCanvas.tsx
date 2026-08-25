@@ -146,7 +146,7 @@ export function DiagramCanvas({ mermaidChart = "", graph, fileSizes, colorBy = "
     });
     observer.observe(containerRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [isMaximized, activeTab]);
 
   const forceData = useMemo(() => buildForceData(graph, fileSizes, colorBy), [graph, fileSizes, colorBy]);
 
@@ -208,7 +208,7 @@ export function DiagramCanvas({ mermaidChart = "", graph, fileSizes, colorBy = "
             className="text-[#8b949e] hover:text-[#c9d1d9] transition-colors p-1 rounded hover:bg-[#30363d]"
             title={isMaximized ? "Restore" : "Maximize"}
           >
-            {isMaximized ? <span className="w-4 h-4">[_]</span> : <span className="w-4 h-4">[^]</span>}
+            {isMaximized ? <span>[_]</span> : <span>[^]</span>}
           </button>
         </div>
       </div>

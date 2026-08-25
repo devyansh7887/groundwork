@@ -186,7 +186,7 @@ export function InsightsPanel({ graph, fileSizes, fileLocs = {}, claims, readme,
             className="text-[#8b949e] hover:text-[#c9d1d9] flex items-center justify-center transition-colors bg-[#21262d] border border-[#30363d] rounded p-1"
             title={isExpanded ? "Minimize" : "Expand"}
           >
-            {isExpanded ? <span className="w-4 h-4">[_]</span> : <span className="w-4 h-4">[^]</span>}
+            {isExpanded ? <span>[_]</span> : <span>[^]</span>}
           </button>
         </div>
       </div>

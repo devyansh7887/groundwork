@@ -112,7 +112,7 @@ export function RateLimitModal({ isOpen, onClose, onSubmit }: Props) {
           </label>
           <div className="relative mb-3">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span className="w-4 h-4 text-[#8b949e]">[k]</span>
+              <span className="text-[#8b949e]">[k]</span>
             </div>
             <input
               type="password"
