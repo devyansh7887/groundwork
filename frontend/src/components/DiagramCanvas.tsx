@@ -137,6 +137,17 @@ export function DiagramCanvas({ mermaidChart = "", graph, fileSizes, colorBy = "
   const [activeTab, setActiveTab] = useState<Tab>("Flow");
   const [isMaximized, setIsMaximized] = useState(false);
   const fgRef = useRef<any>(null);
+  const [dimensions, setDimensions] = useState({ width: 800, height: 504 });
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) setDimensions({ width: entry.contentRect.width, height: entry.contentRect.height });
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   const forceData = useMemo(() => buildForceData(graph, fileSizes, colorBy), [graph, fileSizes, colorBy]);
 
@@ -266,8 +277,8 @@ export function DiagramCanvas({ mermaidChart = "", graph, fileSizes, colorBy = "
               const label = colorBy === "author" ? `${node.name} (${node.author})` : node.name;
               ctx.fillText(label, node.x + 6, node.y + 3);
             }}
-            width={typeof window !== "undefined" ? window.innerWidth * 0.62 : 800}
-            height={504}
+            width={dimensions.width}
+            height={dimensions.height}
           />
         )}
 
@@ -300,44 +311,44 @@ export function DiagramCanvas({ mermaidChart = "", graph, fileSizes, colorBy = "
             }}
             linkColor={() => "#30363d"}
             backgroundColor="#0d1117"
-            width={typeof window !== "undefined" ? window.innerWidth * (isMaximized ? 0.95 : 0.62) : 800}
-            height={isMaximized ? (typeof window !== "undefined" ? window.innerHeight - 80 : 800) : 504}
+            width={dimensions.width}
+            height={dimensions.height}
           />
         )}
 
         {activeTab === "Treemap" && (
           <div className="w-full h-full overflow-hidden">
-            <TreemapView graph={graph} fileSizes={fileSizes} colorMap={colorMap} width={typeof window !== "undefined" ? window.innerWidth * (isMaximized ? 0.95 : 0.62) : 800} height={isMaximized ? (typeof window !== "undefined" ? window.innerHeight - 80 : 800) : 504} />
+            <TreemapView graph={graph} fileSizes={fileSizes} colorMap={colorMap} width={dimensions.width} height={dimensions.height} />
           </div>
         )}
 
         {activeTab === "Tree" && (
           <div className="w-full h-full overflow-auto">
-            <TreeView graph={graph} fileSizes={fileSizes} colorMap={colorMap} width={typeof window !== "undefined" ? window.innerWidth * (isMaximized ? 0.95 : 0.62) : 800} height={isMaximized ? (typeof window !== "undefined" ? window.innerHeight - 80 : 800) : 504} />
+            <TreeView graph={graph} fileSizes={fileSizes} colorMap={colorMap} width={dimensions.width} height={dimensions.height} />
           </div>
         )}
 
         {activeTab === "Cluster" && (
           <div className="w-full h-full overflow-auto">
-            <ClusterView graph={graph} fileSizes={fileSizes} colorMap={colorMap} width={typeof window !== "undefined" ? window.innerWidth * (isMaximized ? 0.95 : 0.62) : 800} height={isMaximized ? (typeof window !== "undefined" ? window.innerHeight - 80 : 800) : 504} />
+            <ClusterView graph={graph} fileSizes={fileSizes} colorMap={colorMap} width={dimensions.width} height={dimensions.height} />
           </div>
         )}
 
         {activeTab === "Matrix" && (
           <div className="w-full h-full overflow-auto">
-            <MatrixView graph={graph} fileSizes={fileSizes} colorMap={colorMap} width={typeof window !== "undefined" ? window.innerWidth * (isMaximized ? 0.95 : 0.62) : 800} height={isMaximized ? (typeof window !== "undefined" ? window.innerHeight - 80 : 800) : 504} />
+            <MatrixView graph={graph} fileSizes={fileSizes} colorMap={colorMap} width={dimensions.width} height={dimensions.height} />
           </div>
         )}
 
         {activeTab === "Bundle" && (
           <div className="w-full h-full overflow-hidden flex items-center justify-center">
-            <BundleView graph={graph} fileSizes={fileSizes} colorMap={colorMap} width={typeof window !== "undefined" ? window.innerWidth * (isMaximized ? 0.8 : 0.5) : 800} height={isMaximized ? (typeof window !== "undefined" ? window.innerHeight - 80 : 800) : 504} />
+            <BundleView graph={graph} fileSizes={fileSizes} colorMap={colorMap} width={dimensions.width} height={dimensions.height} />
           </div>
         )}
 
         {activeTab === "Block Diagram" && (
           <div className="w-full h-full overflow-auto p-4 bg-[#0d1117]">
-            <BlockDiagramView graph={graph} fileSizes={fileSizes} colorMap={colorMap} width={typeof window !== "undefined" ? window.innerWidth * (isMaximized ? 0.95 : 0.62) : 800} height={isMaximized ? (typeof window !== "undefined" ? window.innerHeight - 80 : 800) : 504} />
+            <BlockDiagramView graph={graph} fileSizes={fileSizes} colorMap={colorMap} width={dimensions.width} height={dimensions.height} />
           </div>
         )}
 
