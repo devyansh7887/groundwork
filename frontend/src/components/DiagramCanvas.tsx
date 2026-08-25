@@ -297,17 +297,6 @@ export function DiagramCanvas({ mermaidChart = "", graph, fileSizes, colorBy = "
             `}
             nodeColor={(n: any) => n.color}
             nodeVal={(n: any) => n.val}
-            nodeThreeObjectExtend={true}
-            nodeThreeObject={(node: any) => {
-              const sprite = new SpriteText(node.name);
-              sprite.color = node.color;
-              sprite.textHeight = 4;
-              sprite.backgroundColor = "transparent";
-              sprite.padding = 0;
-              // offset text so it hovers above the node
-              sprite.position.y = Math.max(3, node.val) + 2;
-              return sprite;
-            }}
             linkColor={() => "#30363d"}
             backgroundColor="#0d1117"
             width={dimensions.width}
