@@ -222,6 +222,7 @@ export function DiagramCanvas({ mermaidChart = "", graph, fileSizes, colorBy = "
             ref={fgRef}
             key={colorBy}
             graphData={{ nodes: forceData.nodes, links: forceData.links }}
+            nodeRelSize={8}
             nodeLabel={(node: any) => `
               <div style="background: rgba(13,17,23,0.95); border: 1px solid #30363d; border-radius: 8px; padding: 12px; font-family: monospace; text-align: left; min-width: 180px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);">
                 <div style="color: ${node.color}; font-weight: bold; margin-bottom: 2px; font-size: 14px;">${node.name}</div>
@@ -286,6 +287,7 @@ export function DiagramCanvas({ mermaidChart = "", graph, fileSizes, colorBy = "
           <ForceGraph3D
             key={colorBy}
             graphData={{ nodes: forceData.nodes, links: forceData.links }}
+            nodeRelSize={8}
             nodeLabel={(node: any) => `
               <div style="background: rgba(13,17,23,0.95); border: 1px solid #30363d; border-radius: 8px; padding: 12px; font-family: monospace; text-align: left; min-width: 180px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);">
                 <div style="color: ${node.color}; font-weight: bold; margin-bottom: 2px; font-size: 14px;">${node.name}</div>
