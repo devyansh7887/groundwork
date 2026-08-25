@@ -273,7 +273,7 @@ function ContributionWizardPanel({
   const GIT_STEPS = [
     {
       id: 0,
-      icon: GitFork,
+      icon: () => <span className="w-4 h-4 text-center block">Y</span>,
       title: "Fork & Clone",
       color: "text-[#3fb950]",
       content: (
@@ -295,7 +295,7 @@ function ContributionWizardPanel({
     },
     {
       id: 1,
-      icon: GitBranch,
+      icon: () => <span className="w-4 h-4 text-center block">-&gt;</span>,
       title: "Create Branch",
       color: "text-[#58a6ff]",
       content: (
@@ -313,7 +313,7 @@ function ContributionWizardPanel({
     },
     {
       id: 2,
-      icon: Code,
+      icon: () => <span className="w-4 h-4 text-center block">&lt;/&gt;</span>,
       title: "Make Changes",
       color: "text-[#a371f7]",
       content: (
@@ -341,7 +341,7 @@ function ContributionWizardPanel({
     },
     {
       id: 3,
-      icon: GitCommit,
+      icon: () => <span className="w-4 h-4 text-center block">#</span>,
       title: "Commit & Push",
       color: "text-[#f97316]",
       content: (
@@ -360,7 +360,7 @@ function ContributionWizardPanel({
     },
     {
       id: 4,
-      icon: GitPullRequest,
+      icon: () => <span className="w-4 h-4 text-center block">PR</span>,
       title: "Open PR",
       color: "text-[#ec4899]",
       content: (
