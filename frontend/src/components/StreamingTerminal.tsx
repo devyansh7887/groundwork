@@ -5,25 +5,25 @@ interface StreamingTerminalProps {
 }
 
 const IDLE_MESSAGES = [
-  "⏳  AI is deep in thought...",
-  "🔎  Cross-referencing dependencies...",
-  "🧩  Connecting the dots in the codebase...",
-  "📖  Reading through the source files...",
-  "🤔  Making sense of the architecture...",
-  "⚙️   Checking how the pieces fit together...",
-  "🧠  Running language model inference...",
-  "🔬  Verifying claims against the code...",
+  "  AI is deep in thought...",
+  "  Cross-referencing dependencies...",
+  "  Connecting the dots in the codebase...",
+  "  Reading through the source files...",
+  "  Making sense of the architecture...",
+  "   Checking how the pieces fit together...",
+  "  Running language model inference...",
+  "  Verifying claims against the code...",
 ];
 
 function humanize(log: string): string {
   // Map raw backend messages to something nicer
   const map: [RegExp, string][] = [
-    [/Calling Synthesizer/i, "🧠  AI is studying the architecture..."],
+    [/Calling Synthesizer/i, "  AI is studying the architecture..."],
     [/AFC is enabled/i, ""],  // suppress completely
-    [/Retrying google/i, "⏳  Waiting for AI service, retrying..."],
-    [/Verifier found issues/i, "⚠️   Some claims need correction — re-running AI..."],
-    [/Proceeding to Diagram/i, "🎨  Moving on to diagram generation..."],
-    [/Rate limit hit/i, "🔄  GitHub rate limit hit — switching to backup key..."],
+    [/Retrying google/i, "  Waiting for AI service, retrying..."],
+    [/Verifier found issues/i, "   Some claims need correction - re-running AI..."],
+    [/Proceeding to Diagram/i, "  Moving on to diagram generation..."],
+    [/Rate limit hit/i, "  GitHub rate limit hit - switching to backup key..."],
   ];
 
   for (const [pattern, replacement] of map) {
@@ -59,8 +59,8 @@ export function StreamingTerminal({ logs }: StreamingTerminalProps) {
     /^(Parsing AST for).*/i,
     /^(Analyzing node).*/i,
     /^(Fetching issue).*/i,
-    /^(📥\s*Fetching file).*/i,
-    /^(🗺️\s*\[CARTOGRAPHER\] Parsing AST).*/i
+    /^(\s*Fetching file).*/i,
+    /^(\s*\[CARTOGRAPHER\] Parsing AST).*/i
   ];
 
   logs.map(humanize).filter(l => l !== "").forEach((log) => {
@@ -88,7 +88,7 @@ export function StreamingTerminal({ logs }: StreamingTerminalProps) {
 
   return (
     <div className="flex items-center justify-center min-h-[70vh] w-full p-4">
-      <div className="w-full max-w-3xl bg-[#0d1117] rounded-xl border border-[#30363d] shadow-2xl overflow-hidden flex flex-col" style={{ height: 420 }}>
+      <div className="w-full max-w-3xl bg-[#0d1117] rounded-xl border border-[#30363d] overflow-hidden flex flex-col" style={{ height: 420 }}>
         {/* Terminal chrome */}
         <div className="flex items-center px-4 py-2.5 bg-[#161b22] border-b border-[#30363d] flex-shrink-0">
           <div className="flex space-x-1.5">
@@ -96,13 +96,13 @@ export function StreamingTerminal({ logs }: StreamingTerminalProps) {
             <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
             <div className="w-3 h-3 rounded-full bg-[#27c93f]" />
           </div>
-          <span className="mx-auto text-xs font-mono text-[#8b949e] font-semibold tracking-widest pr-14">
-            GROUNDWORK — analysis running
+          <span className="mx-auto text-xs font-jetbrains text-[#8b949e] font-semibold tracking-widest pr-14">
+            GROUNDWORK - analysis running
           </span>
         </div>
 
         {/* Terminal body */}
-        <div className="flex-1 p-5 overflow-y-auto font-mono text-sm leading-relaxed">
+        <div className="flex-1 p-5 overflow-y-auto font-jetbrains text-sm leading-relaxed">
           {/* Static opening line */}
           <div className="text-[#58a6ff] mb-3 flex gap-3">
             <span className="text-[#30363d] select-none">$</span>
@@ -119,10 +119,10 @@ export function StreamingTerminal({ logs }: StreamingTerminalProps) {
           {collapsedLogs.map((item, i) => {
             const { text: log, isProgressing } = item;
             let colorClass = "text-[#8b949e]";
-            if (/✅|🎉|⚡|💾/.test(log)) colorClass = "text-[#3fb950]";
-            else if (/🔍|📡|🌿|📁|🗺️|🧠|🎨|📝|📦|🔬/.test(log)) colorClass = "text-[#58a6ff]";
-            else if (/⚠️|🔄|⏳|🔁/.test(log)) colorClass = "text-[#d29922]";
-            else if (/🚀|🆕|🔎/.test(log)) colorClass = "text-[#bc8cff]";
+            if (/|||/.test(log)) colorClass = "text-[#3fb950]";
+            else if (/|||||||||/.test(log)) colorClass = "text-[#58a6ff]";
+            else if (/|||/.test(log)) colorClass = "text-[#d29922]";
+            else if (/||/.test(log)) colorClass = "text-[#bc8cff]";
 
             return (
               <div key={i} className={`${colorClass} mb-1.5 flex gap-3`}>
@@ -135,7 +135,7 @@ export function StreamingTerminal({ logs }: StreamingTerminalProps) {
             );
           })}
 
-          {/* Idle ticker — shows when no new logs coming */}
+          {/* Idle ticker - shows when no new logs coming */}
           <div className="text-[#484f58] flex gap-3 mt-1 animate-pulse">
             <span className="text-[#30363d] select-none">›</span>
             <span>{IDLE_MESSAGES[idleIdx]}</span>

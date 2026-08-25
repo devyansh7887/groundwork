@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic";
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import mermaid from "mermaid";
-import { Maximize2, Minimize2 } from "lucide-react";
 import { polygonHull } from "d3-polygon";
 
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), { ssr: false });
@@ -119,8 +118,8 @@ function MermaidView({ chart }: { chart: string }) {
       }
     }).catch(e => setErr(e.message));
   }, [chart]);
-  if (err) return <div className="text-red-400 p-4 text-sm font-mono">{err}</div>;
-  return <div className="w-full h-full overflow-auto cursor-grab active:cursor-grabbing border border-[#30363d] rounded bg-[#0d1117] p-8 shadow-inner"><div ref={ref} className="min-w-fit min-h-fit origin-top-left hover:scale-[1.02] transition-transform duration-300" /></div>;
+  if (err) return <div className="text-red-400 p-4 text-sm font-jetbrains">{err}</div>;
+  return <div className="w-full h-full overflow-auto cursor-grab active:cursor-grabbing border border-[#30363d] rounded bg-[#0d1117] p-8"><div ref={ref} className="min-w-fit min-h-fit origin-top-left hover:scale-[1.02] transition-transform duration-300" /></div>;
 }
 
 // ─── Main DiagramCanvas ───────────────────────────────────────────────────────
@@ -191,25 +190,25 @@ export function DiagramCanvas({ mermaidChart = "", graph, fileSizes, colorBy = "
                 : "text-[#8b949e] hover:text-[#c9d1d9] hover:bg-[#21262d]"
             }`}
           >
-            {tab === "Flow" ? "📐 Flow" :
-             tab === "Graph" ? "🕸️ Graph" : 
-             tab === "3D Graph" ? "🌐 3D Graph" : 
-             tab === "Treemap" ? "📦 Treemap" : 
-             tab === "Matrix" ? "🧮 Matrix" : 
-             tab === "Tree" ? "🌳 Tree" : 
-             tab === "Cluster" ? "✨ Cluster" : 
-             tab === "Bundle" ? "🔗 Bundle" : 
-             tab === "Block Diagram" ? "🧱 Block Diagram" : tab}
+            {tab === "Flow" ? " Flow" :
+             tab === "Graph" ? " Graph" : 
+             tab === "3D Graph" ? " 3D Graph" : 
+             tab === "Treemap" ? " Treemap" : 
+             tab === "Matrix" ? " Matrix" : 
+             tab === "Tree" ? " Tree" : 
+             tab === "Cluster" ? " Cluster" : 
+             tab === "Bundle" ? " Bundle" : 
+             tab === "Block Diagram" ? " Block Diagram" : tab}
           </button>
         ))}
         <div className="ml-auto flex items-center gap-3">
-          <span className="text-[10px] text-[#484f58] font-mono">{nodeCount} files · {forceData.links.length} edges</span>
+          <span className="text-[10px] text-[#484f58] font-jetbrains">{nodeCount} files · {forceData.links.length} edges</span>
           <button 
             onClick={() => setIsMaximized(!isMaximized)}
             className="text-[#8b949e] hover:text-[#c9d1d9] transition-colors p-1 rounded hover:bg-[#30363d]"
             title={isMaximized ? "Restore" : "Maximize"}
           >
-            {isMaximized ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            {isMaximized ? <span className="w-4 h-4">[_]</span> : <span className="w-4 h-4">[^]</span>}
           </button>
         </div>
       </div>
@@ -353,7 +352,7 @@ export function DiagramCanvas({ mermaidChart = "", graph, fileSizes, colorBy = "
         )}
 
         {["Graph", "3D Graph"].includes(activeTab) && forceData.nodes.length === 0 && (
-          <div className="flex items-center justify-center h-full text-[#484f58] text-sm font-mono">
+          <div className="flex items-center justify-center h-full text-[#484f58] text-sm font-jetbrains">
             No file graph data available for this repository.
           </div>
         )}
@@ -363,8 +362,8 @@ export function DiagramCanvas({ mermaidChart = "", graph, fileSizes, colorBy = "
 
   if (isMaximized) {
     return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-8">
-        <div className="w-full h-full max-w-[85vw] max-h-[85vh] flex shadow-2xl animate-in fade-in zoom-in-95 duration-200 bg-[#0d1117] rounded-xl border border-[#30363d] overflow-hidden">
+      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 md:p-8">
+        <div className="w-full h-full max-w-[85vw] max-h-[85vh] flex animate-in fade-in zoom-in-95 duration-200 bg-[#0d1117] rounded-xl border border-[#30363d] overflow-hidden">
           {content}
         </div>
       </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { Folder, Layers, Activity } from "lucide-react";
 
 interface GraphData {
   files: string[];
@@ -54,7 +53,7 @@ export function ExplorerPanel({ graph, fileSizes, fileLocs = {}, colorBy = "fold
   const unusedCount = 0; // Stub, would be calculated from graph logic
 
   return (
-    <div className="w-full h-full flex flex-col bg-[#0d1117] border-r border-[#30363d] overflow-hidden text-[#c9d1d9] font-sans">
+    <div className="w-full h-full flex flex-col bg-[#0d1117] border-r border-[#30363d] overflow-hidden text-[#c9d1d9] font-ibm">
       
       {/* Top Toggle area (matches Codeflow screenshot) */}
       <div className="p-4 border-b border-[#30363d]">
@@ -66,7 +65,7 @@ export function ExplorerPanel({ graph, fileSizes, fileLocs = {}, colorBy = "fold
               colorBy === "folder" ? "bg-[#21262d] border-[#30363d] text-[#3fb950]" : "border-transparent text-[#8b949e] hover:bg-[#161b22]"
             }`}
           >
-            <Folder className="w-4 h-4" /> Folder
+            <span className="w-4 h-4">[/]</span> Folder
           </button>
           <button 
             onClick={() => onColorByChange?.("type")}
@@ -74,7 +73,7 @@ export function ExplorerPanel({ graph, fileSizes, fileLocs = {}, colorBy = "fold
               colorBy === "type" ? "bg-[#21262d] border-[#30363d] text-[#3fb950]" : "border-transparent text-[#8b949e] hover:bg-[#161b22]"
             }`}
           >
-            <Layers className="w-4 h-4" /> Type (Layer)
+            <span className="w-4 h-4">[L]</span> Type (Layer)
           </button>
           <button 
             onClick={() => onColorByChange?.("author")}
@@ -82,7 +81,7 @@ export function ExplorerPanel({ graph, fileSizes, fileLocs = {}, colorBy = "fold
               colorBy === "author" ? "bg-[#21262d] border-[#30363d] text-[#3fb950]" : "border-transparent text-[#8b949e] hover:bg-[#161b22]"
             }`}
           >
-            <Activity className="w-4 h-4" /> Author (Churn)
+            <span className="w-4 h-4">[A]</span> Author (Churn)
           </button>
         </div>
       </div>
@@ -91,25 +90,25 @@ export function ExplorerPanel({ graph, fileSizes, fileLocs = {}, colorBy = "fold
       <div className="p-4 border-b border-[#30363d]">
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="border border-[#30363d] bg-[#161b22] rounded-md p-3 text-center flex flex-col justify-center">
-            <div className="text-[#58a6ff] text-xl font-bold font-mono">{totalFiles}</div>
+            <div className="text-[#58a6ff] text-xl font-bold font-jetbrains">{totalFiles}</div>
             <div className="text-[10px] text-[#8b949e] font-bold uppercase tracking-widest mt-1">Analyzed Files</div>
           </div>
           <div className="border border-[#30363d] bg-[#161b22] rounded-md p-3 text-center flex flex-col justify-center">
-            <div className="text-[#58a6ff] text-xl font-bold font-mono">{totalFunctions.toLocaleString()}</div>
+            <div className="text-[#58a6ff] text-xl font-bold font-jetbrains">{totalFunctions.toLocaleString()}</div>
             <div className="text-[10px] text-[#8b949e] font-bold uppercase tracking-widest mt-1">Exported Fns</div>
           </div>
           <div className="border border-[#30363d] bg-[#161b22] rounded-md p-3 text-center flex flex-col justify-center">
-            <div className="text-[#3fb950] text-xl font-bold font-mono">{totalLinks.toLocaleString()}</div>
+            <div className="text-[#3fb950] text-xl font-bold font-jetbrains">{totalLinks.toLocaleString()}</div>
             <div className="text-[10px] text-[#8b949e] font-bold uppercase tracking-widest mt-1">Import Links</div>
           </div>
           <div className="border border-[#30363d] bg-[#161b22] rounded-md p-3 text-center flex flex-col justify-center">
-            <div className="text-[#8b949e] text-xl font-bold font-mono">{graph.calls?.length?.toLocaleString() ?? 0}</div>
+            <div className="text-[#8b949e] text-xl font-bold font-jetbrains">{graph.calls?.length?.toLocaleString() ?? 0}</div>
             <div className="text-[10px] text-[#8b949e] font-bold uppercase tracking-widest mt-1">Call Edges</div>
           </div>
         </div>
 
         <div className="border border-[#30363d] bg-[#161b22] rounded-md p-4 text-center">
-          <div className="text-[#3fb950] text-2xl font-bold font-mono">{totalLoc.toLocaleString()}</div>
+          <div className="text-[#3fb950] text-2xl font-bold font-jetbrains">{totalLoc.toLocaleString()}</div>
           <div className="text-[10px] text-[#8b949e] font-bold uppercase tracking-widest mt-1">Lines of Code</div>
         </div>
       </div>
@@ -122,10 +121,10 @@ export function ExplorerPanel({ graph, fileSizes, fileLocs = {}, colorBy = "fold
             <div key={folder} className="group">
               <div className="flex items-center justify-between py-1.5 px-2 hover:bg-[#161b22] rounded cursor-pointer transition-colors">
                 <div className="flex items-center gap-2">
-                  <Folder className="w-3.5 h-3.5 text-[#8b949e]" />
-                  <span className="text-sm font-mono text-[#c9d1d9]">{folder}</span>
+                  <span className="w-3.5 h-3.5 text-[#8b949e]">[/]</span>
+                  <span className="text-sm font-jetbrains text-[#c9d1d9]">{folder}</span>
                 </div>
-                <div className="text-xs text-[#484f58] font-mono bg-[#21262d] px-1.5 rounded">{files.length}</div>
+                <div className="text-xs text-[#484f58] font-jetbrains bg-[#21262d] px-1.5 rounded">{files.length}</div>
               </div>
             </div>
           ))}

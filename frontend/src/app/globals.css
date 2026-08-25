@@ -20,8 +20,9 @@
   --color-success: var(--success);
   --color-danger: var(--danger);
   --color-warning: var(--warning);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-jetbrains: var(--font-jetbrains-mono);
+  --font-ibm: var(--font-ibm-plex-mono);
+  --font-space: var(--font-space-mono);
 }
 
 body {

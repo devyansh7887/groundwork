@@ -1,12 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import {
-  MessageSquare, GitPullRequest, Terminal, Maximize2, Minimize2, Loader2,
-  ChevronRight, Search, Filter, Star, Clock, TrendingUp, HelpCircle,
-  CheckCircle2, GitBranch, GitFork, Code, GitCommit, X, Send,
-  AlertTriangle, Info, Zap
-} from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -52,15 +46,15 @@ interface QAMessage {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const DIFFICULTY_CONFIG = {
-  easy: { color: "text-emerald-400", bg: "bg-emerald-400/10 border-emerald-400/30", icon: "🌱", label: "Easy" },
-  medium: { color: "text-amber-400", bg: "bg-amber-400/10 border-amber-400/30", icon: "🌿", label: "Medium" },
-  hard: { color: "text-red-400", bg: "bg-red-400/10 border-red-400/30", icon: "🌳", label: "Hard" },
+  easy: { color: "text-emerald-400", bg: "bg-emerald-400/10 border-emerald-400/30", icon: "", label: "Easy" },
+  medium: { color: "text-amber-400", bg: "bg-amber-400/10 border-amber-400/30", icon: "", label: "Medium" },
+  hard: { color: "text-red-400", bg: "bg-red-400/10 border-red-400/30", icon: "", label: "Hard" },
 };
 
 const CONFIDENCE_CONFIG = {
-  high: { color: "text-emerald-400", bg: "bg-emerald-400/10 border-emerald-400/30", icon: "✅", label: "High Confidence" },
-  partial: { color: "text-amber-400", bg: "bg-amber-400/10 border-amber-400/30", icon: "⚠️", label: "Partial — Review Needed" },
-  low: { color: "text-red-400", bg: "bg-red-400/10 border-red-400/30", icon: "🚨", label: "Low — Human Judgment Required" },
+  high: { color: "text-emerald-400", bg: "bg-emerald-400/10 border-emerald-400/30", icon: "", label: "High Confidence" },
+  partial: { color: "text-amber-400", bg: "bg-amber-400/10 border-amber-400/30", icon: "", label: "Partial - Review Needed" },
+  low: { color: "text-red-400", bg: "bg-red-400/10 border-red-400/30", icon: "", label: "Low - Human Judgment Required" },
 };
 
 const GFI_LABELS = ["good first issue", "good-first-issue", "beginner", "starter", "easy"];
@@ -99,12 +93,12 @@ function DiffBlock({ diff }: { diff: string }) {
   return (
     <div className="relative group rounded-lg overflow-hidden border border-[#30363d] bg-[#0d1117]">
       <div className="flex items-center justify-between px-4 py-2 bg-[#161b22] border-b border-[#30363d]">
-        <span className="text-xs font-mono text-[#8b949e] uppercase tracking-wider">Unified Diff Patch</span>
+        <span className="text-xs font-jetbrains text-[#8b949e] uppercase tracking-wider">Unified Diff Patch</span>
         <button onClick={copy} className="text-xs px-2 py-1 rounded bg-[#21262d] hover:bg-[#30363d] text-[#8b949e] hover:text-[#c9d1d9] transition-colors">
           {copied ? "Copied!" : "Copy"}
         </button>
       </div>
-      <pre className="overflow-x-auto p-4 text-xs font-mono max-h-96">
+      <pre className="overflow-x-auto p-4 text-xs font-jetbrains max-h-96">
         {lines.map((line, i) => {
           let cls = "text-[#c9d1d9]";
           if (line.startsWith("+") && !line.startsWith("+++")) cls = "text-emerald-400 bg-emerald-400/5";
@@ -128,12 +122,12 @@ function CodeBlock({ code, label = "bash" }: { code: string; label?: string }) {
   return (
     <div className="relative group rounded-lg overflow-hidden border border-[#30363d] bg-[#0d1117]">
       <div className="flex items-center justify-between px-4 py-2 bg-[#161b22] border-b border-[#30363d]">
-        <span className="text-xs font-mono text-[#8b949e] uppercase">{label}</span>
+        <span className="text-xs font-jetbrains text-[#8b949e] uppercase">{label}</span>
         <button onClick={copy} className="text-xs px-2 py-1 rounded bg-[#21262d] hover:bg-[#30363d] text-[#8b949e] hover:text-[#c9d1d9] transition-colors">
           {copied ? "Copied!" : "Copy"}
         </button>
       </div>
-      <pre className="overflow-x-auto p-4 text-xs font-mono text-[#c9d1d9] max-h-64">
+      <pre className="overflow-x-auto p-4 text-xs font-jetbrains text-[#c9d1d9] max-h-64">
         <code>{code}</code>
       </pre>
     </div>
@@ -154,7 +148,7 @@ function QAPanel({
   onClose: () => void;
 }) {
   const [messages, setMessages] = useState<QAMessage[]>([
-    { role: "ai", text: "👋 Hi! I'm here to help you understand this contribution. What's confusing you?" }
+    { role: "ai", text: " Hi! I'm here to help you understand this contribution. What's confusing you?" }
   ]);
   const [input, setInput] = useState("");
   const [asking, setAsking] = useState(false);
@@ -199,11 +193,11 @@ function QAPanel({
     <div className="flex flex-col h-full bg-[#0d1117] border-l border-[#30363d]">
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#30363d] bg-[#161b22]">
         <div className="flex items-center gap-2">
-          <HelpCircle className="w-4 h-4 text-[#a371f7]" />
+          <span className="w-4 h-4 text-[#a371f7]">[?]</span>
           <span className="text-sm font-semibold text-[#c9d1d9]">Ask a Question</span>
         </div>
         <button onClick={onClose} className="text-[#8b949e] hover:text-[#c9d1d9] transition-colors">
-          <X className="w-4 h-4" />
+          <span className="w-4 h-4">[*]</span>
         </button>
       </div>
 
@@ -217,8 +211,8 @@ function QAPanel({
             }`}>
               {msg.text}
               {msg.cited_file && (
-                <div className="mt-2 text-xs font-mono text-[#8b949e] border-t border-[#30363d] pt-2">
-                  📄 {msg.cited_file}
+                <div className="mt-2 text-xs font-jetbrains text-[#8b949e] border-t border-[#30363d] pt-2">
+                   {msg.cited_file}
                 </div>
               )}
             </div>
@@ -227,7 +221,7 @@ function QAPanel({
         {asking && (
           <div className="flex justify-start">
             <div className="bg-[#161b22] border border-[#30363d] rounded-xl px-4 py-3 flex items-center gap-2 text-sm text-[#8b949e]">
-              <Loader2 className="w-3 h-3 animate-spin" /> Thinking...
+              <span className="w-3 h-3 animate-spin">...</span> Thinking...
             </div>
           </div>
         )}
@@ -247,7 +241,7 @@ function QAPanel({
             disabled={!input.trim() || asking}
             className="p-2 bg-[#1f6feb] hover:bg-[#388bfd] disabled:opacity-50 text-white rounded-lg transition-colors"
           >
-            <Send className="w-4 h-4" />
+            <span className="w-4 h-4">[*]</span>
           </button>
         </form>
       </div>
@@ -284,10 +278,10 @@ function ContributionWizardPanel({
       color: "text-[#3fb950]",
       content: (
         <div className="space-y-3">
-          <div className="bg-[#161b22] border-l-4 border-[#3fb950] p-4 rounded-r-lg">
-            <p className="text-xs font-bold text-[#3fb950] mb-1">👨‍🏫 What is a Fork?</p>
+          <div className="bg-[#161b22] border border-[#3fb950] p-4 rounded-lg">
+            <p className="text-xs font-bold text-[#3fb950] mb-1"> What is a Fork?</p>
             <p className="text-sm text-[#8b949e] leading-relaxed">
-              You can't edit the original project directly — it's not yours. A <strong className="text-[#c9d1d9]">Fork</strong> copies the project to your GitHub account.
+              You can't edit the original project directly - it's not yours. A <strong className="text-[#c9d1d9]">Fork</strong> copies the project to your GitHub account.
               Once forked, you own that copy and can edit it freely.
             </p>
           </div>
@@ -306,10 +300,10 @@ function ContributionWizardPanel({
       color: "text-[#58a6ff]",
       content: (
         <div className="space-y-3">
-          <div className="bg-[#161b22] border-l-4 border-[#58a6ff] p-4 rounded-r-lg">
-            <p className="text-xs font-bold text-[#58a6ff] mb-1">👨‍🏫 Why branch?</p>
+          <div className="bg-[#161b22] border border-[#58a6ff] p-4 rounded-lg">
+            <p className="text-xs font-bold text-[#58a6ff] mb-1"> Why branch?</p>
             <p className="text-sm text-[#8b949e] leading-relaxed">
-              Think of <code className="bg-[#0d1117] px-1 rounded text-[#c9d1d9]">main</code> as a published book. You don't scribble on the original pages —
+              Think of <code className="bg-[#0d1117] px-1 rounded text-[#c9d1d9]">main</code> as a published book. You don't scribble on the original pages -
               you make a copy of relevant pages (a branch), work on them, then ask the authors to include your changes.
             </p>
           </div>
@@ -324,8 +318,8 @@ function ContributionWizardPanel({
       color: "text-[#a371f7]",
       content: (
         <div className="space-y-3">
-          <div className="bg-[#161b22] border-l-4 border-[#a371f7] p-4 rounded-r-lg">
-            <p className="text-xs font-bold text-[#a371f7] mb-1">📁 Files to edit:</p>
+          <div className="bg-[#161b22] border border-[#a371f7] p-4 rounded-lg">
+            <p className="text-xs font-bold text-[#a371f7] mb-1"> Files to edit:</p>
             <div className="flex flex-wrap gap-2 mt-2">
               {guide.target_files.length > 0 ? guide.target_files.map(f => (
                 <code key={f} className="text-xs bg-[#0d1117] px-2 py-1 rounded border border-[#30363d] text-[#c9d1d9]">{f.split("/").slice(-2).join("/")}</code>
@@ -340,7 +334,7 @@ function ContributionWizardPanel({
             onClick={() => setShowQA(true)}
             className="text-sm text-[#a371f7] hover:text-[#c084fc] flex items-center gap-1 transition-colors"
           >
-            <HelpCircle className="w-3.5 h-3.5" /> I don't understand something
+            <span className="w-3.5 h-3.5">[?]</span> I don't understand something
           </button>
         </div>
       )
@@ -352,8 +346,8 @@ function ContributionWizardPanel({
       color: "text-[#f97316]",
       content: (
         <div className="space-y-3">
-          <div className="bg-[#161b22] border-l-4 border-[#f97316] p-4 rounded-r-lg">
-            <p className="text-xs font-bold text-[#f97316] mb-1">👨‍🏫 Save vs Commit vs Push?</p>
+          <div className="bg-[#161b22] border border-[#f97316] p-4 rounded-lg">
+            <p className="text-xs font-bold text-[#f97316] mb-1"> Save vs Commit vs Push?</p>
             <p className="text-sm text-[#8b949e] leading-relaxed">
               <code className="text-[#c9d1d9]">git add</code> = tell Git which files to save.<br />
               <code className="text-[#c9d1d9]">git commit</code> = actually save a snapshot with a message.<br />
@@ -371,8 +365,8 @@ function ContributionWizardPanel({
       color: "text-[#ec4899]",
       content: (
         <div className="space-y-3">
-          <div className="bg-[#161b22] border-l-4 border-[#ec4899] p-4 rounded-r-lg">
-            <p className="text-xs font-bold text-[#ec4899] mb-1">👨‍🏫 What is a Pull Request?</p>
+          <div className="bg-[#161b22] border border-[#ec4899] p-4 rounded-lg">
+            <p className="text-xs font-bold text-[#ec4899] mb-1"> What is a Pull Request?</p>
             <p className="text-sm text-[#8b949e] leading-relaxed">
               You've fixed the bug in your Fork. Now you need to formally ask the maintainers: "Hey, please pull my changes into your project!"
               That's a <strong className="text-[#c9d1d9]">Pull Request</strong> (PR).
@@ -380,12 +374,12 @@ function ContributionWizardPanel({
           </div>
           <div className="bg-[#0d1117] border border-[#30363d] rounded-lg p-4 space-y-3">
             <div>
-              <div className="text-xs text-[#8b949e] font-mono mb-1">PR Title</div>
+              <div className="text-xs text-[#8b949e] font-jetbrains mb-1">PR Title</div>
               <div className="text-sm text-[#c9d1d9] font-medium">{guide.pr_title}</div>
             </div>
             <div>
-              <div className="text-xs text-[#8b949e] font-mono mb-1">PR Description (copy this)</div>
-              <div className="text-xs text-[#8b949e] max-h-40 overflow-y-auto font-mono whitespace-pre-wrap">
+              <div className="text-xs text-[#8b949e] font-jetbrains mb-1">PR Description (copy this)</div>
+              <div className="text-xs text-[#8b949e] max-h-40 overflow-y-auto font-jetbrains whitespace-pre-wrap">
                 {guide.pr_description}
               </div>
             </div>
@@ -396,7 +390,7 @@ function ContributionWizardPanel({
             rel="noreferrer"
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#238636] hover:bg-[#2ea043] text-white text-sm font-semibold rounded-lg transition-colors"
           >
-            <GitPullRequest className="w-4 h-4" /> Open PR on GitHub
+            <span className="w-4 h-4">-></span> Open PR on GitHub
           </a>
         </div>
       )
@@ -423,8 +417,8 @@ function ContributionWizardPanel({
         {/* Tab bar: Code Solution | How to Submit */}
         <div className="flex border-b border-[#30363d] mx-4 mt-4 gap-1">
           {[
-            { id: "code", label: "💻 Code Solution", desc: "The exact code change" },
-            { id: "steps", label: "🗺️ How to Submit", desc: "Fork → PR step-by-step" },
+            { id: "code", label: " Code Solution", desc: "The exact code change" },
+            { id: "steps", label: " How to Submit", desc: "Fork → PR step-by-step" },
           ].map(tab => (
             <button
               key={tab.id}
@@ -443,7 +437,7 @@ function ContributionWizardPanel({
             onClick={() => setShowQA(!showQA)}
             className={`px-3 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${showQA ? "text-[#a371f7]" : "text-[#8b949e] hover:text-[#a371f7]"}`}
           >
-            <HelpCircle className="w-4 h-4" /> Ask
+            <span className="w-4 h-4">[?]</span> Ask
           </button>
         </div>
 
@@ -453,20 +447,20 @@ function ContributionWizardPanel({
             <>
               {/* Understanding */}
               <div className="bg-[#161b22] border border-[#30363d] rounded-lg p-4">
-                <div className="text-xs font-mono text-[#58a6ff] uppercase tracking-wider mb-2">What this issue is about</div>
+                <div className="text-xs font-jetbrains text-[#58a6ff] uppercase tracking-wider mb-2">What this issue is about</div>
                 <p className="text-sm text-[#c9d1d9] leading-relaxed">{guide.understanding}</p>
               </div>
 
               {/* What needs to change */}
               <div className="bg-[#161b22] border border-[#30363d] rounded-lg p-4">
-                <div className="text-xs font-mono text-[#a371f7] uppercase tracking-wider mb-2">What needs to change</div>
+                <div className="text-xs font-jetbrains text-[#a371f7] uppercase tracking-wider mb-2">What needs to change</div>
                 <p className="text-sm text-[#c9d1d9] leading-relaxed">{guide.what_needs_to_change}</p>
               </div>
 
               {/* Diff */}
               {guide.diff && (
                 <div>
-                  <div className="text-xs font-mono text-[#8b949e] uppercase tracking-wider mb-2">AI Drafted Patch</div>
+                  <div className="text-xs font-jetbrains text-[#8b949e] uppercase tracking-wider mb-2">AI Drafted Patch</div>
                   <DiffBlock diff={guide.diff} />
                 </div>
               )}
@@ -474,7 +468,7 @@ function ContributionWizardPanel({
               {/* Test code */}
               {guide.test_code && (
                 <div>
-                  <div className="text-xs font-mono text-[#8b949e] uppercase tracking-wider mb-2">Verification Test</div>
+                  <div className="text-xs font-jetbrains text-[#8b949e] uppercase tracking-wider mb-2">Verification Test</div>
                   <CodeBlock code={guide.test_code} label="test" />
                 </div>
               )}
@@ -499,7 +493,7 @@ function ContributionWizardPanel({
                         }`}
                       >
                         <div className={`shrink-0 ${done ? "text-[#3fb950]" : active ? step.color : "text-[#484f58]"}`}>
-                          {done ? <CheckCircle2 className="w-4 h-4" /> : <Icon className="w-4 h-4" />}
+                          {done ? <span className="w-4 h-4">[+]</span> : <Icon className="w-4 h-4" />}
                         </div>
                         <span className={`text-xs font-semibold ${active ? "text-[#c9d1d9]" : done ? "text-[#8b949e]" : "text-[#484f58]"}`}>
                           {step.title}
@@ -512,7 +506,7 @@ function ContributionWizardPanel({
 
               {/* Step content */}
               <div className="flex-1">
-                <div className="text-xs text-[#8b949e] font-mono mb-3">
+                <div className="text-xs text-[#8b949e] font-jetbrains mb-3">
                   Step {activeStep + 1} of {GIT_STEPS.length} · {GIT_STEPS[activeStep].title}
                 </div>
                 {GIT_STEPS[activeStep].content}
@@ -529,7 +523,7 @@ function ContributionWizardPanel({
                       onClick={() => setActiveStep(s => s + 1)}
                       className="px-4 py-2 bg-[#21262d] hover:bg-[#30363d] text-[#c9d1d9] text-xs font-semibold rounded-lg flex items-center gap-1 transition-colors"
                     >
-                      Next <ChevronRight className="w-3.5 h-3.5" />
+                      Next <span className="w-3.5 h-3.5">»</span>
                     </button>
                   )}
                 </div>
@@ -627,7 +621,7 @@ export function ContributionDrafter({
   });
 
   const containerCls = isMaximized
-    ? "fixed inset-4 z-50 bg-[#0d1117] border border-[#30363d] rounded-xl shadow-2xl flex flex-col overflow-hidden"
+    ? "fixed inset-4 z-50 bg-[#0d1117] border border-[#30363d] rounded-xl  flex flex-col overflow-hidden"
     : "w-full h-full bg-[#0d1117] border border-[#30363d] rounded-xl flex flex-col overflow-hidden";
 
   const easyCount = issues.filter(i => i._difficulty === "easy").length;
@@ -639,14 +633,14 @@ export function ContributionDrafter({
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#30363d] bg-[#161b22] flex-none">
         <div className="flex items-center gap-2">
-          <Terminal size={14} className="text-[#58a6ff]" />
+          <span className="text-[#58a6ff]">>_</span>
           <span className="text-sm font-semibold text-[#c9d1d9]">Contribution Drafter</span>
-          <span className="text-xs px-2 py-0.5 rounded-full bg-[#238636]/20 text-[#3fb950] border border-[#238636]/30 font-mono">
+          <span className="text-xs px-2 py-0.5 rounded-full bg-[#238636] text-[#3fb950] border border-[#238636]/30 font-jetbrains">
             {issues.length} open issues
           </span>
         </div>
         <button onClick={() => setIsMaximized(m => !m)} className="text-[#8b949e] hover:text-[#c9d1d9] transition-colors">
-          {isMaximized ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+          {isMaximized ? <span>[_]</span> : <span>[^]</span>}
         </button>
       </div>
 
@@ -656,14 +650,14 @@ export function ContributionDrafter({
           {/* Filter bar */}
           <div className="p-3 border-b border-[#30363d] space-y-2">
             <div className="flex items-center gap-1.5 text-xs text-[#8b949e]">
-              <Filter size={12} /> Filter issues
+              <span>[*]</span> Filter issues
             </div>
             <div className="flex flex-wrap gap-1.5">
               {[
                 { id: "all", label: "All", count: issues.length },
-                { id: "easy", label: "🌱 Easy", count: easyCount },
-                { id: "gfi", label: "👋 GFI", count: gfiCount },
-                { id: "bugs", label: "🐛 Bugs", count: bugCount },
+                { id: "easy", label: " Easy", count: easyCount },
+                { id: "gfi", label: " GFI", count: gfiCount },
+                { id: "bugs", label: " Bugs", count: bugCount },
               ].map(f => (
                 <button
                   key={f.id}
@@ -684,8 +678,8 @@ export function ContributionDrafter({
           <div className="flex-1 overflow-y-auto">
             {loading && (
               <div className="p-6 text-center text-sm text-[#8b949e] flex flex-col items-center gap-2">
-                <Loader2 className="w-5 h-5 animate-spin" />
-                Loading issues...
+                <span className="w-5 h-5 animate-spin">...</span>
+                Fetching open issues...
               </div>
             )}
             {error && <div className="p-4 text-xs text-red-400 bg-red-400/5 m-3 rounded-lg">{error}</div>}
@@ -702,7 +696,7 @@ export function ContributionDrafter({
                   key={issue.number}
                   onClick={() => handleSelectIssue(issue)}
                   className={`w-full text-left p-3 border-b border-[#30363d] transition-colors hover:bg-[#161b22] ${
-                    isSelected ? "bg-[#1f6feb]/10 border-l-2 border-l-[#58a6ff]" : ""
+                    isSelected ? "bg-[#1f6feb] border border-l-[#58a6ff]" : ""
                   }`}
                 >
                   <div className="flex items-start gap-2">
@@ -715,19 +709,19 @@ export function ContributionDrafter({
                           {dc.icon} {dc.label}
                         </span>
                         {isGoodFirstIssue(issue.labels) && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-[#238636]/40 bg-[#238636]/10 text-[#3fb950] font-semibold">GFI</span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-[#238636]/40 bg-[#238636] text-[#3fb950] font-semibold">GFI</span>
                         )}
                         {isHelpWanted(issue.labels) && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-[#58a6ff]/40 bg-[#58a6ff]/10 text-[#58a6ff] font-semibold">Help Wanted</span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-[#58a6ff]/40 bg-[#58a6ff] text-[#58a6ff] font-semibold">Help Wanted</span>
                         )}
                       </div>
-                      <div className="flex items-center gap-2 mt-1.5 text-[10px] text-[#8b949e] font-mono">
+                      <div className="flex items-center gap-2 mt-1.5 text-[10px] text-[#8b949e] font-jetbrains">
                         <span>#{issue.number}</span>
-                        {issue.comments > 0 && <span>💬 {issue.comments}</span>}
+                        {issue.comments > 0 && <span> {issue.comments}</span>}
                         {issue.created_at && <span>{timeAgo(issue.created_at)}</span>}
                       </div>
                     </div>
-                    {isSelected && drafting && <Loader2 className="w-3 h-3 animate-spin text-[#58a6ff] mt-0.5 shrink-0" />}
+                    {isSelected && drafting && <span className="w-3 h-3 animate-spin text-[#58a6ff] mt-0.5 shrink-0">...</span>}
                   </div>
                 </button>
               );
@@ -740,16 +734,16 @@ export function ContributionDrafter({
           {!selectedIssue ? (
             <div className="flex-1 flex flex-col items-center justify-center text-[#8b949e] p-8 text-center">
               <div className="w-16 h-16 rounded-full bg-[#161b22] border border-[#30363d] flex items-center justify-center mb-4">
-                <GitPullRequest size={24} className="opacity-50" />
+                <span className="opacity-50">-></span>
               </div>
-              <h3 className="text-lg font-bold text-[#c9d1d9] mb-2">Select an Issue to Start</h3>
+              <h3 className="font-space text-lg font-bold text-[#c9d1d9] mb-2">Select an Issue to Start</h3>
               <p className="text-sm max-w-sm leading-relaxed">
                 Pick any issue from the left panel. Groundwork will analyze the codebase, find the relevant files,
                 and generate a step-by-step contribution guide.
               </p>
               <div className="mt-4 flex items-center gap-2 text-xs text-[#3fb950]">
-                <Zap className="w-3.5 h-3.5" />
-                Start with a <strong>🌱 Easy</strong> issue if this is your first contribution
+                <span className="w-3.5 h-3.5 shrink-0">[*]</span>
+                <span>Start with a <strong> Easy</strong> issue if this is your first contribution</span>
               </div>
             </div>
           ) : (
@@ -758,7 +752,7 @@ export function ContributionDrafter({
               <div className="px-5 py-4 border-b border-[#30363d] bg-[#161b22] flex-none">
                 <div className="flex items-start gap-3">
                   <div className="flex-1 min-w-0">
-                    <h2 className="text-base font-bold text-[#c9d1d9] leading-snug line-clamp-2">
+                    <h2 className="font-space text-base font-bold text-[#c9d1d9] leading-snug line-clamp-2">
                       {selectedIssue.title}
                       <span className="text-[#8b949e] font-normal ml-2">#{selectedIssue.number}</span>
                     </h2>
@@ -775,7 +769,7 @@ export function ContributionDrafter({
                           rel="noreferrer"
                           className="text-xs text-[#58a6ff] hover:underline flex items-center gap-0.5"
                         >
-                          View on GitHub <ChevronRight className="w-3 h-3" />
+                          View on GitHub <span className="w-3 h-3">»</span>
                         </a>
                       )}
                     </div>
@@ -787,10 +781,10 @@ export function ContributionDrafter({
               <div className="flex-1 overflow-hidden">
                 {drafting && (
                   <div className="flex flex-col items-center justify-center h-full text-[#8b949e] gap-4">
-                    <Loader2 className="w-8 h-8 animate-spin text-[#58a6ff]" />
+                    <span className="text-2xl animate-pulse text-[#58a6ff]">>_</span>
                     <div className="text-sm text-center">
                       <p className="font-semibold text-[#c9d1d9]">Analyzing codebase...</p>
-                      <p className="text-xs mt-1">Finding relevant files and generating your contribution guide</p>
+                      <p className="text-xs mt-1 font-jetbrains text-[#8b949e]">Awaiting response from Drafter Agent</p>
                     </div>
                   </div>
                 )}
