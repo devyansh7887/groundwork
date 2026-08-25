@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { Maximize2, Minimize2 } from "lucide-react";
 
 interface GraphData {
   files: string[];
@@ -90,11 +89,11 @@ export function InsightsPanel({ graph, fileSizes, fileLocs = {}, claims, readme,
   const issuesCount = (graph.action_findings?.length || 0);
 
   const tabs: { id: InsightTab; label: string; count?: number }[] = [
-    { id: "OVERVIEW", label: "📊 OVERVIEW" },
-    { id: "PATTERNS", label: "🧩 PATTERNS", count: patterns.length },
-    { id: "SECURITY", label: "🔒 SECURITY", count: security.filter(s => s.severity !== "info").length },
-    { id: "ACTIONS", label: "⚡ ACTIONS", count: actionsCount },
-    ...(graph.authors ? [{ id: "EXPERTS", label: "🧑‍💻 Experts" } as const] : []),
+    { id: "OVERVIEW", label: " OVERVIEW" },
+    { id: "PATTERNS", label: " PATTERNS", count: patterns.length },
+    { id: "SECURITY", label: " SECURITY", count: security.filter(s => s.severity !== "info").length },
+    { id: "ACTIONS", label: " ACTIONS", count: actionsCount },
+    ...(graph.authors ? [{ id: "EXPERTS", label: " Experts" } as const] : []),
   ];
 
   // Health score
@@ -159,7 +158,7 @@ export function InsightsPanel({ graph, fileSizes, fileLocs = {}, claims, readme,
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-4 text-xs font-mono">
+          <div className="flex flex-wrap gap-4 text-xs font-jetbrains">
             {[
               { label: "Files", val: totalFiles },
               { label: "Symbols", val: totalNodes },
@@ -177,7 +176,7 @@ export function InsightsPanel({ graph, fileSizes, fileLocs = {}, claims, readme,
         <div className="flex flex-wrap gap-4 items-center justify-end">
           <div className="flex gap-2">
             {Object.entries(langMap).map(([lang, count]) => (
-              <span key={lang} className="text-[10px] font-mono bg-[#21262d] border border-[#30363d] px-2 py-0.5 rounded text-[#8b949e]">
+              <span key={lang} className="text-[10px] font-jetbrains bg-[#21262d] border border-[#30363d] px-2 py-0.5 rounded text-[#8b949e]">
                 {lang}: {count}
               </span>
             ))}
@@ -187,7 +186,7 @@ export function InsightsPanel({ graph, fileSizes, fileLocs = {}, claims, readme,
             className="text-[#8b949e] hover:text-[#c9d1d9] flex items-center justify-center transition-colors bg-[#21262d] border border-[#30363d] rounded p-1"
             title={isExpanded ? "Minimize" : "Expand"}
           >
-            {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            {isExpanded ? <span className="w-4 h-4">[_]</span> : <span className="w-4 h-4">[^]</span>}
           </button>
         </div>
       </div>
@@ -215,10 +214,10 @@ export function InsightsPanel({ graph, fileSizes, fileLocs = {}, claims, readme,
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               {[
-                { title: "Architecture Pattern", val: totalFiles > 50 ? "Multi-layer Monolith" : "Modular Single-app", icon: "🏗️" },
-                { title: "Primary Language", val: Object.entries(langMap).sort((a,b) => b[1]-a[1])[0]?.[0] ?? "Unknown", icon: "💻" },
-                { title: "Lines of Code", val: totalLoc.toLocaleString(), icon: "📏" },
-                { title: "Entry Points", val: `${entryCount} detected`, icon: "🚪" },
+                { title: "Architecture Pattern", val: totalFiles > 50 ? "Multi-layer Monolith" : "Modular Single-app", icon: "" },
+                { title: "Primary Language", val: Object.entries(langMap).sort((a,b) => b[1]-a[1])[0]?.[0] ?? "Unknown", icon: "" },
+                { title: "Lines of Code", val: totalLoc.toLocaleString(), icon: "" },
+                { title: "Entry Points", val: `${entryCount} detected`, icon: "" },
               ].map(card => (
                 <div key={card.title} className="rounded-lg bg-[#161b22] border border-[#30363d] p-3">
                   <div className="text-base">{card.icon}</div>
@@ -231,7 +230,7 @@ export function InsightsPanel({ graph, fileSizes, fileLocs = {}, claims, readme,
               <p className="text-[10px] text-[#484f58] mb-1">Most connected files (high centrality)</p>
               <div className="flex flex-wrap gap-1">
                 {graph.files.slice(0, 8).map(f => (
-                  <span key={f} className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#21262d] text-[#58a6ff]">
+                  <span key={f} className="text-[10px] font-jetbrains px-2 py-0.5 rounded bg-[#21262d] text-[#58a6ff]">
                     {f.split("/").pop()}
                   </span>
                 ))}
@@ -243,13 +242,13 @@ export function InsightsPanel({ graph, fileSizes, fileLocs = {}, claims, readme,
         {activeTab === "PATTERNS" && (
           <div className="space-y-2">
             {patterns.length === 0 ? (
-              <div className="text-center text-[#484f58] py-8 text-sm">✅ No anti-patterns detected</div>
+              <div className="text-center text-[#484f58] py-8 text-sm"> No anti-patterns detected</div>
             ) : patterns.map((p, i) => (
               <div key={i} className="rounded-lg p-3 border text-xs"
                 style={{ borderColor: SEVERITY_COLORS[p.severity] + "44", background: SEVERITY_BG[p.severity] }}>
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-bold" style={{ color: SEVERITY_COLORS[p.severity] }}>{p.type}</span>
-                  <span className="font-mono text-[#484f58]">{p.file.split("/").pop()}</span>
+                  <span className="font-jetbrains text-[#484f58]">{p.file.split("/").pop()}</span>
                 </div>
                 <p className="text-[#8b949e]">{p.detail}</p>
               </div>
@@ -260,12 +259,12 @@ export function InsightsPanel({ graph, fileSizes, fileLocs = {}, claims, readme,
         {activeTab === "SECURITY" && (
           <div className="space-y-2">
             {security.length === 0 ? (
-              <div className="text-center text-[#484f58] py-8 text-sm">✅ No security issues found</div>
+              <div className="text-center text-[#484f58] py-8 text-sm"> No security issues found</div>
             ) : (() => {
               const weight: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1, info: 0 };
               const sorted = [...security].sort((a, b) => (weight[b.severity] || 0) - (weight[a.severity] || 0));
               return sorted.map((s, i) => (
-                <div key={i} className="rounded-lg p-3 border text-xs font-mono"
+                <div key={i} className="rounded-lg p-3 border text-xs font-jetbrains"
                   style={{ borderColor: SEVERITY_COLORS[s.severity] + "44", background: SEVERITY_BG[s.severity] }}>
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-bold" style={{ color: SEVERITY_COLORS[s.severity] }}>
@@ -279,13 +278,13 @@ export function InsightsPanel({ graph, fileSizes, fileLocs = {}, claims, readme,
                   {s.impact && (
                     <div className="mt-3 text-[#ff7b72] bg-[#161b22] p-2.5 rounded border border-[#da3633]/30">
                       <strong className="text-[#ff7b72] uppercase text-[10px] block mb-1">Impact & Consequences:</strong>
-                      <span className="font-sans text-sm block leading-relaxed">{s.impact}</span>
+                      <span className="font-ibm text-sm block leading-relaxed">{s.impact}</span>
                     </div>
                   )}
                   {s.remediation && (
                     <div className="mt-2 text-[#3fb950] bg-[#161b22] p-2.5 rounded border border-[#3fb950]/30">
                       <strong className="text-[#3fb950] uppercase text-[10px] block mb-1">How to fix (Remediation):</strong>
-                      <span className="font-sans text-sm block leading-relaxed">{s.remediation}</span>
+                      <span className="font-ibm text-sm block leading-relaxed">{s.remediation}</span>
                     </div>
                   )}
                 </div>
@@ -307,24 +306,24 @@ export function InsightsPanel({ graph, fileSizes, fileLocs = {}, claims, readme,
                   </span>
                 </div>
                 <p className="text-xs text-[#8b949e] mb-2">{act.description}</p>
-                <div className="text-xs border-t border-[#30363d] pt-2 mt-2 text-[#484f58] font-mono">
+                <div className="text-xs border-t border-[#30363d] pt-2 mt-2 text-[#484f58] font-jetbrains">
                   Target: {act.target_file.split("/").pop()}
                 </div>
               </div>
             ))}
 
             {claims.filter(c => c.status === "Unverified").map((c, i) => (
-              <div key={`u-${i}`} className="rounded-lg p-3 border border-[#da3633]/30 bg-[#da3633]/5 text-xs">
-                <p className="font-semibold text-[#ff7b72] mb-1">⚠️ Unverified Claim</p>
+              <div key={`u-${i}`} className="rounded-lg p-3 border border-[#da3633]/30 bg-[#da3633] text-xs">
+                <p className="font-semibold text-[#ff7b72] mb-1"> Unverified Claim</p>
                 <p className="text-[#c9d1d9]">{c.claim}</p>
                 {c.cited_file && (
-                  <p className="text-[#484f58] mt-1 font-mono">{c.cited_file}{c.cited_symbol ? `:${c.cited_symbol}` : ""}</p>
+                  <p className="text-[#484f58] mt-1 font-jetbrains">{c.cited_file}{c.cited_symbol ? `:${c.cited_symbol}` : ""}</p>
                 )}
               </div>
             ))}
             
             {actionsCount === 0 && (
-               <div className="text-center text-[#484f58] py-8 text-sm">✅ Codebase is perfectly healthy</div>
+               <div className="text-center text-[#484f58] py-8 text-sm"> Codebase is perfectly healthy</div>
             )}
           </div>
         )}
@@ -375,12 +374,12 @@ export function InsightsPanel({ graph, fileSizes, fileLocs = {}, claims, readme,
                   <div key={author} className="rounded-lg bg-[#161b22] border border-[#30363d] p-4 overflow-hidden">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                       <div className="flex items-center gap-2 max-w-full">
-                        <div className="w-6 h-6 rounded-full bg-[#58a6ff]/20 text-[#58a6ff] flex items-center justify-center font-bold text-xs uppercase flex-shrink-0">
+                        <div className="w-6 h-6 rounded-full bg-[#58a6ff] text-[#58a6ff] flex items-center justify-center font-bold text-xs uppercase flex-shrink-0">
                           {author.slice(0, 2)}
                         </div>
                         <span className="font-bold text-[#c9d1d9] truncate" title={author}>{author}</span>
                       </div>
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-mono bg-[#0d1117] px-3 py-1.5 rounded-md border border-[#30363d]">
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-jetbrains bg-[#0d1117] px-3 py-1.5 rounded-md border border-[#30363d]">
                         <span className="text-[#8b949e]" title="Total commits by this author on their primary files">{data.totalCommits} commits</span>
                         <span className="text-[#58a6ff]" title="Total dependent files relying on this author's code">Centrality: {data.totalCentrality}</span>
                         <span style={{ color: riskColor }} title="Risk of project stall if this author leaves">Risk: {busFactorRisk}</span>
@@ -389,12 +388,12 @@ export function InsightsPanel({ graph, fileSizes, fileLocs = {}, claims, readme,
                     <div className="text-xs font-semibold text-[#8b949e] mb-2 uppercase tracking-wider">Domain Expertise</div>
                     <div className="flex flex-wrap gap-1.5">
                       {data.files.slice(0, 8).map(f => (
-                        <span key={f} className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#0d1117] border border-[#30363d] text-[#c9d1d9]" title={`${f} (Centrality: ${fileCentrality[f] || 0})`}>
+                        <span key={f} className="text-[10px] font-jetbrains px-2 py-0.5 rounded bg-[#0d1117] border border-[#30363d] text-[#c9d1d9]" title={`${f} (Centrality: ${fileCentrality[f] || 0})`}>
                           {f.split("/").pop()}
                         </span>
                       ))}
                       {data.files.length > 8 && (
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#0d1117] border border-[#30363d] text-[#484f58]">
+                        <span className="text-[10px] font-jetbrains px-2 py-0.5 rounded bg-[#0d1117] border border-[#30363d] text-[#484f58]">
                           +{data.files.length - 8} more
                         </span>
                       )}
@@ -411,8 +410,8 @@ export function InsightsPanel({ graph, fileSizes, fileLocs = {}, claims, readme,
 
   if (isExpanded) {
     return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-8">
-        <div className="w-full h-full max-w-[85vw] max-h-[85vh] flex shadow-2xl animate-in fade-in zoom-in-95 duration-200 bg-[#0d1117] rounded-xl border border-[#30363d] overflow-hidden">
+      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 md:p-8">
+        <div className="w-full h-full max-w-[85vw] max-h-[85vh] flex animate-in fade-in zoom-in-95 duration-200 bg-[#0d1117] rounded-xl border border-[#30363d] overflow-hidden">
           {content}
         </div>
       </div>

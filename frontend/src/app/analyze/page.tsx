@@ -5,7 +5,6 @@ import { useSearchParams, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import mermaid from "mermaid";
-import { Loader2, Search, CheckCircle, HelpCircle, XCircle, Terminal, Copy, GitBranch, ArrowLeft, ZoomIn, ZoomOut, Maximize2, Move, ChevronUp, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
@@ -82,8 +81,8 @@ function Mermaid({ chart }: { chart: string }) {
   if (renderError) {
     return (
       <div className="bg-[#0d1117] border border-[#30363d] rounded-md p-4">
-        <div className="text-[#da3633] text-sm font-mono mb-2">Failed to render diagram: {renderError}</div>
-        <pre className="text-xs overflow-auto text-[#8b949e] font-mono">{chart}</pre>
+        <div className="text-[#da3633] text-sm font-jetbrains mb-2">Failed to render diagram: {renderError}</div>
+        <pre className="text-xs overflow-auto text-[#8b949e] font-jetbrains">{chart}</pre>
       </div>
     );
   }
@@ -92,19 +91,19 @@ function Mermaid({ chart }: { chart: string }) {
     <div className="relative">
       {/* Toolbar */}
       <div className="flex items-center gap-2 mb-3">
-        <button onClick={() => zoom(1.2)} className="flex items-center gap-1.5 px-3 py-1.5 bg-[#21262d] border border-[#30363d] hover:bg-[#30363d] text-[#c9d1d9] rounded text-xs font-mono transition-colors">
-          <ZoomIn className="w-3.5 h-3.5" /> Zoom In
+        <button onClick={() => zoom(1.2)} className="flex items-center gap-1.5 px-3 py-1.5 bg-[#21262d] border border-[#30363d] hover:bg-[#30363d] text-[#c9d1d9] rounded text-xs font-jetbrains transition-colors">
+          <span className="w-3.5 h-3.5">[+]</span> Zoom In
         </button>
-        <button onClick={() => zoom(0.8)} className="flex items-center gap-1.5 px-3 py-1.5 bg-[#21262d] border border-[#30363d] hover:bg-[#30363d] text-[#c9d1d9] rounded text-xs font-mono transition-colors">
-          <ZoomOut className="w-3.5 h-3.5" /> Zoom Out
+        <button onClick={() => zoom(0.8)} className="flex items-center gap-1.5 px-3 py-1.5 bg-[#21262d] border border-[#30363d] hover:bg-[#30363d] text-[#c9d1d9] rounded text-xs font-jetbrains transition-colors">
+          <span className="w-3.5 h-3.5">[-]</span> Zoom Out
         </button>
-        <button onClick={reset} className="flex items-center gap-1.5 px-3 py-1.5 bg-[#21262d] border border-[#30363d] hover:bg-[#30363d] text-[#c9d1d9] rounded text-xs font-mono transition-colors">
-          <Maximize2 className="w-3.5 h-3.5" /> Reset
+        <button onClick={reset} className="flex items-center gap-1.5 px-3 py-1.5 bg-[#21262d] border border-[#30363d] hover:bg-[#30363d] text-[#c9d1d9] rounded text-xs font-jetbrains transition-colors">
+          <span className="w-3.5 h-3.5">[^]</span> Reset
         </button>
-        <span className="ml-auto text-[#8b949e] text-xs font-mono flex items-center gap-1.5">
-          <Move className="w-3 h-3" /> Drag to pan · Scroll to zoom
+        <span className="ml-auto text-[#8b949e] text-xs font-jetbrains flex items-center gap-1.5">
+          <span className="w-3 h-3">[M]</span> Drag to pan · Scroll to zoom
         </span>
-        <span className="text-[#58a6ff] text-xs font-mono bg-[#0d1117] border border-[#30363d] px-2 py-1 rounded">
+        <span className="text-[#58a6ff] text-xs font-jetbrains bg-[#0d1117] border border-[#30363d] px-2 py-1 rounded">
           {Math.round(scale * 100)}%
         </span>
       </div>
@@ -240,7 +239,7 @@ function AnalyzeContent() {
     // If we have results already, use the fast resynthesize endpoint (no GitHub calls)
     if (status === "success") {
       setStatus("loading");
-      setLogs([`🔄  Switching to ${newMode === 'eli5' ? 'ELI5' : newMode === 'tldr' ? 'TLDR' : 'Technical'} mode...`]);
+      setLogs([`  Switching to ${newMode === 'eli5' ? 'ELI5' : newMode === 'tldr' ? 'TLDR' : 'Technical'} mode...`]);
       try {
         const headers: any = { "Content-Type": "application/json" };
         if (sessionToken) headers["Authorization"] = `Bearer ${sessionToken}`;
@@ -250,7 +249,7 @@ function AnalyzeContent() {
           body: JSON.stringify({ repo_url: repoUrl, mode: newMode })
         });
         if (!res.ok) {
-          // Cache miss — fall back to full analysis
+          // Cache miss - fall back to full analysis
           handleAnalyze(repoUrl, sessionToken, newMode);
           return;
         }
@@ -259,7 +258,7 @@ function AnalyzeContent() {
         setReadme(cleanReadme);
         setClaims(data.claims || []);
         setStatus("success");
-        setLogs([`✅  Mode switched to ${newMode}`]);
+        setLogs([`  Mode switched to ${newMode}`]);
       } catch (err) {
         // Fallback to full analysis on error
         handleAnalyze(repoUrl, sessionToken, newMode);
@@ -350,7 +349,7 @@ function AnalyzeContent() {
                    setPatterns(parsed.result.patterns || []);
                    receivedResult = true;
                    if (parsed.result.from_cache) {
-                     setLogs(prev => [...prev, "⚡  Loaded from cache — instant results!"]);
+                     setLogs(prev => [...prev, "  Loaded from cache - instant results!"]);
                    }
                    setStatus("success");
                    // Check for drift after loading
@@ -448,19 +447,19 @@ function AnalyzeContent() {
   };
 
   const Badge = ({ status }: { status: string }) => {
-    if (status === "Verified") return <span className="inline-flex items-center px-2 py-1 rounded-[4px] text-xs font-mono font-bold bg-green-500/10 text-green-400 border border-green-500/30"><CheckCircle className="w-3 h-3 mr-1" /> VERIFIED</span>;
-    if (status === "Inferred") return <span className="inline-flex items-center px-2 py-1 rounded-[4px] text-xs font-mono font-bold bg-yellow-500/10 text-yellow-400 border border-yellow-500/30"><HelpCircle className="w-3 h-3 mr-1" /> INFERRED</span>;
-    return <span className="inline-flex items-center px-2 py-1 rounded-[4px] text-xs font-mono font-bold bg-red-500/10 text-red-400 border border-red-500/30"><XCircle className="w-3 h-3 mr-1" /> UNVERIFIED</span>;
+    if (status === "Verified") return <span className="inline-flex items-center px-2 py-1 rounded-[4px] text-xs font-jetbrains font-bold bg-green-500/10 text-green-400 border border-green-500/30"><span className="w-3 h-3 mr-1">[+]</span> VERIFIED</span>;
+    if (status === "Inferred") return <span className="inline-flex items-center px-2 py-1 rounded-[4px] text-xs font-jetbrains font-bold bg-yellow-500/10 text-yellow-400 border border-yellow-500/30"><span className="w-3 h-3 mr-1">[?]</span> INFERRED</span>;
+    return <span className="inline-flex items-center px-2 py-1 rounded-[4px] text-xs font-jetbrains font-bold bg-red-500/10 text-red-400 border border-red-500/30"><span className="w-3 h-3 mr-1">[x]</span> UNVERIFIED</span>;
   };
 
   const CitationChip = ({ text }: { text: string }) => {
     return (
       <span 
         onClick={() => navigator.clipboard.writeText(text)}
-        className="inline-flex items-center gap-1 bg-[#0d1117] border border-[#30363d] text-[#58a6ff] font-mono text-[11px] px-2 py-0.5 rounded-[4px] mx-1 cursor-pointer hover:bg-[#161b22] hover:border-[#8b949e] transition-colors relative -top-0.5"
+        className="inline-flex items-center gap-1 bg-[#0d1117] border border-[#30363d] text-[#58a6ff] font-jetbrains text-[11px] px-2 py-0.5 rounded-[4px] mx-1 cursor-pointer hover:bg-[#161b22] hover:border-[#8b949e] transition-colors relative -top-0.5"
         title="Copy path"
       >
-        {text} <Copy className="w-3 h-3 opacity-70" />
+        {text} <span className="w-3 h-3 opacity-70">[c]</span>
       </span>
     );
   };
@@ -469,8 +468,8 @@ function AnalyzeContent() {
     return (
       <>
         {!backendReady && (
-          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-[#d29922]/10 border border-[#d29922]/40 text-[#d29922] px-4 py-2 rounded-full text-xs font-mono font-bold flex items-center z-50 shadow-sm backdrop-blur-sm">
-            <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" /> Backend warming up...
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-[#d29922] border border-[#d29922]/40 text-[#d29922] px-4 py-2 rounded-full text-xs font-jetbrains font-bold flex items-center z-50">
+            <span className="w-3.5 h-3.5 mr-2 animate-spin">...</span> Backend warming up...
           </div>
         )}
         <StreamingTerminal logs={logs} />
@@ -491,19 +490,19 @@ function AnalyzeContent() {
     return (
       <>
         <div className="max-w-3xl mx-auto mt-20 p-6 bg-[#161b22] border border-[#da3633] rounded-md">
-          <h2 className="text-[#da3633] font-mono text-xl font-bold mb-4 flex items-center">
-            <XCircle className="w-6 h-6 mr-3" /> ERR_ANALYSIS_FAILED
+          <h2 className="font-space text-[#da3633] font-jetbrains text-xl font-bold mb-4 flex items-center">
+            <span className="w-6 h-6 mr-3">[x]</span> ERR_ANALYSIS_FAILED
           </h2>
-          <pre className="text-[#8b949e] font-mono text-sm bg-[#0d1117] p-4 border border-[#30363d] rounded whitespace-pre-wrap">
+          <pre className="text-[#8b949e] font-jetbrains text-sm bg-[#0d1117] p-4 border border-[#30363d] rounded whitespace-pre-wrap">
             {errorMsg}
           </pre>
           <div className="mt-6 flex items-center gap-4">
-            <Link href="/" className="inline-flex items-center text-[#8b949e] hover:text-[#c9d1d9] transition-colors font-mono text-sm">
-              <ArrowLeft className="w-4 h-4 mr-2" /> Return to input
+            <Link href="/" className="inline-flex items-center text-[#8b949e] hover:text-[#c9d1d9] transition-colors font-jetbrains text-sm">
+              <span className="w-4 h-4 mr-2">«</span> Return to input
             </Link>
             <button 
               onClick={() => handleAnalyze(repoUrl)}
-              className="inline-flex items-center px-4 py-2 bg-[#21262d] text-[#c9d1d9] border border-[#30363d] rounded-md hover:bg-[#30363d] transition-colors font-mono text-sm font-bold shadow-sm"
+              className="inline-flex items-center px-4 py-2 bg-[#21262d] text-[#c9d1d9] border border-[#30363d] rounded-md hover:bg-[#30363d] transition-colors font-jetbrains text-sm font-bold"
             >
               Retry Analysis
             </button>
@@ -524,28 +523,28 @@ function AnalyzeContent() {
 
   return (
     <div className="w-full h-screen flex flex-col bg-[#0d1117]">
-      <div className="flex-none flex items-center justify-between bg-[#161b22] border-b border-[#30363d] px-4 py-3 shadow-sm z-10">
+      <div className="flex-none flex items-center justify-between bg-[#161b22] border-b border-[#30363d] px-4 py-3 z-10">
         <div>
-          <Link href="/" className="inline-flex items-center text-[#8b949e] hover:text-[#58a6ff] font-mono text-xs mb-4 uppercase tracking-wider transition-colors">
-            <ArrowLeft className="w-3 h-3 mr-1" /> New Analysis
+          <Link href="/" className="inline-flex items-center text-[#8b949e] hover:text-[#58a6ff] font-jetbrains text-xs mb-4 uppercase tracking-wider transition-colors">
+            <span className="w-3 h-3 mr-1">«</span> New Analysis
           </Link>
-          <h1 className="text-2xl font-bold text-[#c9d1d9] flex items-center tracking-tight">
-            <GitBranch className="w-6 h-6 mr-3 text-[#8b949e]" />
+          <h1 className="font-space text-2xl font-bold text-[#c9d1d9] flex items-center tracking-tight">
+            <span className="w-6 h-6 mr-3 text-[#8b949e]">|-</span>
             {repoUrl.replace("https://github.com/", "")}
           </h1>
         </div>
-        <div className="mt-4 md:mt-0 font-mono text-xs text-[#8b949e] flex items-center bg-[#0d1117] px-3 py-1.5 rounded border border-[#30363d]">
+        <div className="mt-4 md:mt-0 font-jetbrains text-xs text-[#8b949e] flex items-center bg-[#0d1117] px-3 py-1.5 rounded border border-[#30363d]">
           <span className="w-2 h-2 rounded-full bg-[#238636] mr-2 shadow-[0_0_8px_rgba(35,134,54,0.6)]"></span> STATIC_ANALYSIS_COMPLETE
         </div>
       </div>
 
       {/* Drift Alert Banner */}
       {driftInfo && driftInfo.stale && (
-        <div className="flex-none flex items-center justify-between bg-[#d29922]/10 border-b border-[#d29922]/40 px-4 py-2 text-[#d29922]">
+        <div className="flex-none flex items-center justify-between bg-[#d29922] border-b border-[#d29922]/40 px-4 py-2 text-[#d29922]">
           <div className="flex items-center gap-3">
-            <span className="text-xl">⚠️</span>
+            <span className="text-xl"></span>
             <div>
-              <h3 className="font-bold text-sm">Repository Drift Detected</h3>
+              <h3 className="font-space font-bold text-sm">Repository Drift Detected</h3>
               <p className="text-xs text-[#d29922]/80 mt-0.5">
                 New commits have been pushed since this analysis was generated.
               </p>
@@ -553,7 +552,7 @@ function AnalyzeContent() {
           </div>
           <button 
             onClick={() => handleAnalyze(repoUrl, sessionToken, mode, true)}
-            className="px-4 py-1.5 bg-[#d29922]/20 hover:bg-[#d29922]/30 border border-[#d29922]/50 text-[#d29922] font-semibold text-xs rounded transition-colors"
+            className="px-4 py-1.5 bg-[#d29922] hover:bg-[#d29922] border border-[#d29922]/50 text-[#d29922] font-semibold text-xs rounded transition-colors"
           >
             Re-analyze
           </button>
@@ -579,63 +578,63 @@ function AnalyzeContent() {
         <div className="flex-1 flex flex-col overflow-y-auto p-4 space-y-4">
           
           {/* Analysis Mode Toggle */}
-          <div className="flex items-center gap-2 bg-[#161b22] border border-[#30363d] p-1 rounded-full w-fit shadow-sm">
-             <button onClick={() => handleModeChange("technical")} className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${mode === "technical" ? "bg-[#30363d] text-white" : "text-[#8b949e] hover:text-[#c9d1d9]"}`}>⚡ Technical</button>
-             <button onClick={() => handleModeChange("eli5")} className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${mode === "eli5" ? "bg-[#30363d] text-white" : "text-[#8b949e] hover:text-[#c9d1d9]"}`}>🧒 ELI5</button>
-             <button onClick={() => handleModeChange("tldr")} className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${mode === "tldr" ? "bg-[#30363d] text-white" : "text-[#8b949e] hover:text-[#c9d1d9]"}`}>🏷 TLDR</button>
+          <div className="flex items-center gap-2 bg-[#161b22] border border-[#30363d] p-1 rounded-full w-fit">
+             <button onClick={() => handleModeChange("technical")} className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${mode === "technical" ? "bg-[#30363d] text-white" : "text-[#8b949e] hover:text-[#c9d1d9]"}`}> Technical</button>
+             <button onClick={() => handleModeChange("eli5")} className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${mode === "eli5" ? "bg-[#30363d] text-white" : "text-[#8b949e] hover:text-[#c9d1d9]"}`}> ELI5</button>
+             <button onClick={() => handleModeChange("tldr")} className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${mode === "tldr" ? "bg-[#30363d] text-white" : "text-[#8b949e] hover:text-[#c9d1d9]"}`}> TLDR</button>
           </div>
 
           {/* Result Segmented Control */}
-          <div className="flex bg-[#161b22] border border-[#30363d] rounded-lg p-1 w-full max-w-2xl mx-auto shadow-sm">
+          <div className="flex bg-[#161b22] border border-[#30363d] rounded-lg p-1 w-full max-w-2xl mx-auto">
             <button 
               onClick={() => setActiveResultTab("narrative")} 
               className={`flex-1 py-2 px-4 rounded-md text-sm font-bold flex items-center justify-center gap-2 transition-all ${
                 activeResultTab === "narrative" 
-                  ? "bg-[#21262d] text-[#c9d1d9] shadow-sm border border-[#30363d]" 
+                  ? "bg-[#21262d] text-[#c9d1d9]  border border-[#30363d]" 
                   : "text-[#8b949e] hover:text-[#c9d1d9] border border-transparent"
               }`}
             >
-              📝 Architecture Narrative
+               Architecture Narrative
             </button>
             <button 
               onClick={() => setActiveResultTab("diagram")} 
               className={`flex-1 py-2 px-4 rounded-md text-sm font-bold flex items-center justify-center gap-2 transition-all ${
                 activeResultTab === "diagram" 
-                  ? "bg-[#21262d] text-[#58a6ff] shadow-sm border border-[#30363d]" 
+                  ? "bg-[#21262d] text-[#58a6ff]  border border-[#30363d]" 
                   : "text-[#8b949e] hover:text-[#58a6ff] border border-transparent"
               }`}
             >
-              📊 Component Diagram
+               Component Diagram
             </button>
             <button 
               onClick={() => setActiveResultTab("wizard")} 
               className={`flex-1 py-2 px-3 rounded-md text-sm font-bold flex items-center justify-center gap-1.5 transition-all ${
                 activeResultTab === "wizard" 
-                  ? "bg-[#21262d] text-[#3fb950] shadow-sm border border-[#30363d]" 
+                  ? "bg-[#21262d] text-[#3fb950]  border border-[#30363d]" 
                   : "text-[#8b949e] hover:text-[#3fb950] border border-transparent"
               }`}
             >
-              🎓 Mentor
+               Mentor
             </button>
             <button 
               onClick={() => setActiveResultTab("qa")} 
               className={`flex-1 py-2 px-3 rounded-md text-sm font-bold flex items-center justify-center gap-1.5 transition-all ${
                 activeResultTab === "qa" 
-                  ? "bg-[#21262d] text-[#a371f7] shadow-sm border border-[#30363d]" 
+                  ? "bg-[#21262d] text-[#a371f7]  border border-[#30363d]" 
                   : "text-[#8b949e] hover:text-[#a371f7] border border-transparent"
               }`}
             >
-              🤖 Q&A
+               Q&A
             </button>
             <button 
               onClick={() => setActiveResultTab("issues")} 
               className={`flex-1 py-2 px-3 rounded-md text-sm font-bold flex items-center justify-center gap-1.5 transition-all ${
                 activeResultTab === "issues" 
-                  ? "bg-[#21262d] text-[#238636] shadow-sm border border-[#30363d]" 
+                  ? "bg-[#21262d] text-[#238636]  border border-[#30363d]" 
                   : "text-[#8b949e] hover:text-[#238636] border border-transparent"
               }`}
             >
-              🛠️ Issues & Contribute
+               Issues & Contribute
             </button>
           </div>
 
@@ -646,7 +645,7 @@ function AnalyzeContent() {
 
           {/* Diagram Canvas */}
           {activeResultTab === "diagram" && diagram && graphData && (
-            <section className="bg-[#161b22] border border-[#30363d] rounded-md p-6 shadow-sm mt-2">
+            <section className="bg-[#161b22] border border-[#30363d] rounded-md p-6 mt-2">
               <DiagramCanvas 
                 mermaidChart={diagram} 
                 graph={graphData} 
@@ -661,10 +660,10 @@ function AnalyzeContent() {
             <div className="flex-1 w-full mt-2">
               {!selectedAction ? (
                 <div className="flex flex-col items-center justify-center h-[500px] bg-[#161b22] border border-[#30363d] rounded-md text-center p-8">
-                  <div className="text-6xl mb-6">🎓</div>
-                  <h3 className="text-2xl font-bold text-[#c9d1d9] mb-4">Contribution Mentor</h3>
+                  <div className="text-6xl mb-6"></div>
+                  <h3 className="font-space text-2xl font-bold text-[#c9d1d9] mb-4">Contribution Mentor</h3>
                   <p className="text-[#8b949e] max-w-md text-lg leading-relaxed">
-                    Ready to make an impact? To begin, select any specific issue from the <strong className="text-[#c9d1d9]">⚡ ACTIONS</strong> tab in the right-hand Insights Panel.
+                    Ready to make an impact? To begin, select any specific issue from the <strong className="text-[#c9d1d9]"> ACTIONS</strong> tab in the right-hand Insights Panel.
                   </p>
                   <p className="text-[#8b949e] max-w-md text-lg leading-relaxed mt-4">
                     The Contribution Mentor will then automatically generate a draft PR, step-by-step guidance, and relevant codebase context to help you solve it!
@@ -768,22 +767,22 @@ function AnalyzeContent() {
 
 export default function AnalyzePage() {
   return (
-    <div className="min-h-screen bg-[#0d1117] text-[#c9d1d9] font-sans">
-      <header className="border-b border-[#30363d] bg-[#161b22] sticky top-0 z-50 shadow-sm">
+    <div className="min-h-screen bg-[#0d1117] text-[#c9d1d9] font-ibm">
+      <header className="border-b border-[#30363d] bg-[#161b22] sticky top-0 z-50">
         <div className="max-w-[90rem] mx-auto px-4 py-3 flex items-center">
-          <div className="w-8 h-8 bg-[#0d1117] border border-[#30363d] rounded flex items-center justify-center mr-3 shadow-inner">
-            <Terminal className="text-[#c9d1d9] w-4 h-4" />
+          <div className="w-8 h-8 bg-[#0d1117] border border-[#30363d] rounded flex items-center justify-center mr-3">
+            <span className="text-[#c9d1d9] w-4 h-4">>_</span>
           </div>
           <div>
-            <h1 className="text-lg font-bold text-[#c9d1d9] tracking-tight leading-none">Groundwork</h1>
-            <p className="text-[10px] font-mono text-[#8b949e] mt-1">VERIFIABLE_CODEBASE_AGENT</p>
+            <h1 className="font-space text-lg font-bold text-[#c9d1d9] tracking-tight leading-none">Groundwork</h1>
+            <p className="text-[10px] font-jetbrains text-[#8b949e] mt-1">VERIFIABLE_CODEBASE_AGENT</p>
           </div>
         </div>
       </header>
       
       <Suspense fallback={
         <div className="flex items-center justify-center min-h-[70vh]">
-          <Loader2 className="w-8 h-8 animate-spin text-[#8b949e]" />
+          <span className="w-8 h-8 animate-spin text-[#8b949e]">...</span>
         </div>
       }>
         <AnalyzeContent />
