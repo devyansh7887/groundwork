@@ -491,7 +491,7 @@ function AnalyzeContent() {
       <>
         <div className="max-w-3xl mx-auto mt-20 p-6 bg-[#161b22] border border-[#da3633] rounded-md">
           <h2 className="font-space text-[#da3633] font-jetbrains text-xl font-bold mb-4 flex items-center">
-            <span className="w-6 h-6 mr-3">[x]</span> ERR_ANALYSIS_FAILED
+            <span className="mr-3">[x]</span> ERR_ANALYSIS_FAILED
           </h2>
           <pre className="text-[#8b949e] font-jetbrains text-sm bg-[#0d1117] p-4 border border-[#30363d] rounded whitespace-pre-wrap">
             {errorMsg}
