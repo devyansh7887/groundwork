@@ -190,7 +190,7 @@ class ContributionQARequest(BaseModel):
     question: str
     issue_title: str = ""
     understanding: str = ""
-    what_needs_to_change: str = ""
+    modifications: list[dict] = []
     target_files: list[str] = []
 
     @field_validator("repo_url")
@@ -625,7 +625,7 @@ async def contribution_qa_endpoint(req: ContributionQARequest, request: Request)
         question=req.question,
         issue_title=req.issue_title,
         understanding=req.understanding,
-        what_needs_to_change=req.what_needs_to_change,
+        modifications=req.modifications,
         target_files=req.target_files,
         relevant_file_contents=relevant_contents,
         session_token=session_token

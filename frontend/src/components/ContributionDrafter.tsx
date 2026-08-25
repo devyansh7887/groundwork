@@ -21,6 +21,13 @@ interface Issue {
   _score?: number;
 }
 
+interface FileModification {
+  file_path: string;
+  where_to_put_it: string;
+  what_to_remove: string;
+  what_to_add: string;
+}
+
 interface ContributionGuide {
   issue_title: string;
   issue_url: string;
@@ -28,7 +35,7 @@ interface ContributionGuide {
   difficulty_reason: string;
   target_files: string[];
   understanding: string;
-  what_needs_to_change: string;
+  modifications: FileModification[];
   diff: string;
   test_code: string;
   pr_title: string;
@@ -176,7 +183,7 @@ function QAPanel({
           question: q,
           issue_title: guide.issue_title,
           understanding: guide.understanding,
-          what_needs_to_change: guide.what_needs_to_change,
+          modifications: guide.modifications,
           target_files: guide.target_files,
         }),
       });
@@ -451,13 +458,33 @@ function ContributionWizardPanel({
                 <p className="text-sm text-[#c9d1d9] leading-relaxed">{guide.understanding}</p>
               </div>
 
-              {/* What needs to change */}
-              <div className="bg-[#161b22] border border-[#30363d] rounded-lg p-4">
-                <div className="text-xs font-jetbrains text-[#a371f7] uppercase tracking-wider mb-2">Step-by-Step Instructions</div>
-                <div className="text-sm text-[#c9d1d9] leading-relaxed prose prose-invert prose-p:my-2 prose-ul:my-2 prose-li:my-1 max-w-none">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{guide.what_needs_to_change}</ReactMarkdown>
+              {/* Modifications */}
+              {guide.modifications?.map((mod, idx) => (
+                <div key={idx} className="bg-[#161b22] border border-[#30363d] rounded-lg overflow-hidden">
+                  <div className="bg-[#0d1117] border-b border-[#30363d] px-4 py-2 flex items-center gap-2">
+                    <span className="text-[#a371f7] text-xs font-jetbrains">File:</span>
+                    <code className="text-xs text-[#c9d1d9] bg-[#161b22] px-1.5 py-0.5 rounded border border-[#30363d]">{mod.file_path}</code>
+                  </div>
+                  <div className="p-4 space-y-4">
+                    <div>
+                      <div className="text-xs font-jetbrains text-[#8b949e] uppercase tracking-wider mb-1">Where to put it</div>
+                      <p className="text-sm text-[#c9d1d9] leading-relaxed">{mod.where_to_put_it}</p>
+                    </div>
+                    {mod.what_to_remove && (
+                      <div>
+                        <div className="text-xs font-jetbrains text-[#f85149] uppercase tracking-wider mb-1">What to remove</div>
+                        <CodeBlock code={mod.what_to_remove} label="Remove" />
+                      </div>
+                    )}
+                    {mod.what_to_add && (
+                      <div>
+                        <div className="text-xs font-jetbrains text-[#3fb950] uppercase tracking-wider mb-1">What to add</div>
+                        <CodeBlock code={mod.what_to_add} label="Add" />
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              ))}
 
               {/* Diff */}
               {guide.diff && (
