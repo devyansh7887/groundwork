@@ -85,16 +85,17 @@ Please answer their question in a beginner-friendly way, citing specific files/f
                 "file_context": file_context or "No file contents available.",
                 "question": question,
             })
-                     if hasattr(result, "content"):
-             if isinstance(result.content, str):
-                 answer_text = result.content
-             elif isinstance(result.content, list):
-                 answer_text = "".join(b.get("text", "") if isinstance(b, dict) else str(b) for b in result.content)
-             else:
-                 answer_text = str(result.content)
-         else:
-             answer_text = str(result)
-
+            
+            if hasattr(result, "content"):
+                if isinstance(result.content, str):
+                    answer_text = result.content
+                elif isinstance(result.content, list):
+                    answer_text = "".join(b.get("text", "") if isinstance(b, dict) else str(b) for b in result.content)
+                else:
+                    answer_text = str(result.content)
+            else:
+                answer_text = str(result)
+                
             return {
                 "answer": answer_text,
                 "cited_file": target_files[0] if target_files else None
