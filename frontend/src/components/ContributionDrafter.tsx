@@ -228,7 +228,7 @@ function QAPanel({
         {asking && (
           <div className="flex justify-start">
             <div className="bg-[#161b22] border border-[#30363d] rounded-xl px-4 py-3 flex items-center gap-2 text-sm text-[#8b949e]">
-              <span className="animate-spin">...</span> Thinking...
+              <span className="w-3.5 h-3.5 border-2 border-[#8b949e] border-t-transparent rounded-full animate-spin mr-1" /> Thinking...
             </div>
           </div>
         )}
@@ -755,7 +755,7 @@ export function ContributionDrafter({
                         {issue.created_at && <span>{timeAgo(issue.created_at)}</span>}
                       </div>
                     </div>
-                    {isSelected && drafting && <span className="w-3 h-3 animate-spin text-[#58a6ff] mt-0.5 shrink-0">...</span>}
+                    {isSelected && drafting && <span className="w-3.5 h-3.5 border-2 border-[#58a6ff] border-t-transparent rounded-full animate-spin mt-0.5 shrink-0" />}
                   </div>
                 </button>
               );

@@ -93,8 +93,8 @@ export function QASection({ qaHistory, asking, qaError, question, setQuestion, s
           ))
         )}
         {asking && (
-          <div className="flex justify-center py-4">
-            <span className="w-5 h-5 animate-spin text-[#8b949e]">...</span>
+          <div className="flex justify-start">
+            <span className="w-4 h-4 border-2 border-[#8b949e] border-t-transparent rounded-full animate-spin" />
           </div>
         )}
       </div>
