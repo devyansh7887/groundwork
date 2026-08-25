@@ -34,7 +34,7 @@ class ContributionGuide(BaseModel):
     difficulty_reason: str = Field(description="One sentence explaining why this difficulty was assigned.")
     target_files: List[str] = Field(description="List of exact file paths that need to be changed.")
     understanding: str = Field(description="Plain English explanation of what this issue is about and why it exists. Written for a beginner.")
-    what_needs_to_change: str = Field(description="Specific, concrete description of what code changes are needed and where.")
+    what_needs_to_change: str = Field(description="A clear, numbered step-by-step tutorial (1, 2, 3...) written for an absolute beginner. Tell them exactly which file to open, what line to go to, and what exact code to copy-paste. Be EXTREMELY prescriptive and hand-holding.")
     diff: str = Field(description="Unified diff patch (--- a/file, +++ b/file format). If confidence is low, provide the closest best attempt with a comment.")
     test_code: str = Field(description="A test to verify the fix works. Can be empty string if not applicable.")
     pr_title: str = Field(description="Suggested PR title.")

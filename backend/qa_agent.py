@@ -1,5 +1,4 @@
 import logging
-import chromadb
 from typing import Dict, Any, List
 from pydantic import BaseModel, Field
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
@@ -23,106 +22,40 @@ class QAResponse(BaseModel):
 
 class QAAgent:
     def __init__(self):
-        self.chroma_client = chromadb.PersistentClient(path="./chroma_db")
         self.verifier = Verifier()
 
-    def _get_embeddings(self, session_token: str | None = None):
-        # Prefer session token if it's Gemini
-        if session_token and session_token.startswith("AIza"):
-            return GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-2", google_api_key=session_token)
-        
-        # Fallback to pool
-        gemini_keys = [k["token"] for k in llm_key_pool.keys if k["type"] == "gemini"]
-        if gemini_keys:
-            return GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-2", google_api_key=gemini_keys[0])
-            
-        raise ValueError("No Gemini key available for embeddings. Please provide a Gemini session token.")
-
     def index_repository(self, repo_name: str, files: List[Dict[str, str]], generated_docs: str, session_token: str | None = None):
-        """Chunks and indexes the code and generated docs into ChromaDB."""
-        collection_name = repo_name.replace("/", "_").replace(".", "_")
-        try:
-            self.chroma_client.delete_collection(collection_name)
-        except:
-            pass
-        
-        try:
-            embed_fn = self._get_embeddings(session_token)
-            collection = self.chroma_client.create_collection(
-                name=collection_name, 
-                embedding_function=embed_fn
-            )
-        except ValueError as e:
-            logging.warning(f"Skipping vector DB indexing: {e}")
-            return
-        except Exception:
-            collection = self.chroma_client.get_or_create_collection(name=collection_name)
-        
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-        
-        docs = []
-        metadatas = []
-        ids = []
-        
-        # Index Code
-        for f in files:
-            chunks = text_splitter.split_text(f["content"])
-            for i, chunk in enumerate(chunks):
-                docs.append(chunk)
-                metadatas.append({"source": f["path"], "type": "code"})
-                ids.append(f"{f['path']}_chunk_{i}")
-                
-        # Index Docs
-        if generated_docs:
-            doc_chunks = text_splitter.split_text(generated_docs)
-            for i, chunk in enumerate(doc_chunks):
-                docs.append(chunk)
-                metadatas.append({"source": "generated_docs", "type": "doc"})
-                ids.append(f"doc_chunk_{i}")
-                
-        # Compute embeddings using Gemini Embeddings
-        if docs:
-            embeddings_model = self._get_embeddings(session_token)
-            embedded_docs = embeddings_model.embed_documents(docs)
-            collection.add(
-                embeddings=embedded_docs,
-                documents=docs,
-                metadatas=metadatas,
-                ids=ids
-            )
-        logger.info(f"Indexed {len(docs)} chunks for repo {repo_name}.")
+        """No-op. We no longer use ChromaDB to avoid rate limits on large repos."""
+        pass
 
     async def answer_question(self, repo_name: str, question: str, graph: Dict[str, Any], downloaded_files: List[Dict[str, str]], session_token: str | None = None) -> Dict[str, Any]:
-        """Answers a question, citing files and verifying the claims."""
-        collection_name = repo_name.replace("/", "_").replace(".", "_")
-        try:
-            collection = self.chroma_client.get_collection(name=collection_name)
-        except Exception:
-            return {"error": "Repository not indexed."}
-            
-        # Retrieve
-        try:
-            embeddings_model = self._get_embeddings(session_token)
-            query_embedding = embeddings_model.embed_query(question)
-        except Exception as e:
-            return {"error": f"Failed to initialize AI embeddings. Please provide a valid Gemini key or Session Token. Details: {e}"}
-            
-        results = collection.query(query_embeddings=[query_embedding], n_results=5)
+        """Answers a question using the graph summary as context."""
         
-        context_chunks = results["documents"][0]
-        context_sources = [m["source"] for m in results["metadatas"][0]]
-        
-        context_text = ""
-        for i, chunk in enumerate(context_chunks):
-            context_text += f"\n--- Source: {context_sources[i]} ---\n{chunk}\n"
+        # Build context from graph summary
+        context_text = f"Repository: {repo_name}\n"
+        if "summary" in graph:
+            context_text += f"Architecture Summary:\n{graph['summary']}\n\n"
+        else:
+            context_text += "Architecture summary not available.\n\n"
             
+        context_text += "Top Files by dependents:\n"
+        # Just list the top 15 files to give the LLM some file context
+        sorted_files = sorted(
+            graph.get("nodes", []), 
+            key=lambda x: x.get("dependents_count", 0), 
+            reverse=True
+        )[:15]
+        for f in sorted_files:
+            context_text += f"- {f.get('id', 'Unknown')} (Dependents: {f.get('dependents_count', 0)})\n"
+
         # Generate Answer
         prompt = ChatPromptTemplate.from_messages([
             ("system", """You are a codebase Q&A assistant.
-Use the provided context to answer the user's question.
+Use the provided architectural context to answer the user's question.
 You MUST output a structured list of claims made in your answer, citing the exact file path from the context.
 CRITICAL: You MUST also inject inline citations directly into your `answer` text immediately after the sentence they support.
 Format the inline citation exactly as `[filename]` (e.g. `[src/app.py]`) where filename is the cited file. Do not put citations at the end of the paragraph, inject them inline.
+If the context doesn't contain enough specific details to fully answer the question, state what you DO know based on the architecture summary, and acknowledge what you cannot see.
 """),
             ("human", """Context:
 {context}
@@ -135,7 +68,7 @@ Question: {question}
             llm = llm_key_pool.get_llm(session_token, temperature=0.0)
             structured_llm = llm.with_structured_output(QAResponse)
             chain = prompt | structured_llm
-            logger.info("Generating Q&A response...")
+            logger.info("Generating Q&A response from graph context...")
             qa_res: QAResponse = await chain.ainvoke({"context": context_text, "question": question})
         except Exception as e:
             logger.warning(f"Failed to generate QA response: {e}")
