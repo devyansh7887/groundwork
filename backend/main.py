@@ -331,23 +331,22 @@ async def analyze_repo(req: AnalyzeRequest, request: Request):
             )
         )
 
+        padding = ": " + (" " * 4096) + "\n\n"
+        
         while not task.done():
             try:
                 msg = await asyncio.wait_for(q.get(), timeout=4.0)
                 try:
-                    yield f"data: {json.dumps({'log': msg})}\n\n"
+                    yield f"{padding}data: {json.dumps({'log': msg})}\n\n"
                 except (TypeError, ValueError):
-                    yield f"data: {json.dumps({'log': str(msg)})}\n\n"
+                    yield f"{padding}data: {json.dumps({'log': str(msg)})}\n\n"
             except asyncio.TimeoutError:
-                # Render/Nginx sometimes ignores X-Accel-Buffering. 
-                # We pad the heartbeat with a 4KB SSE comment (ignored by browser) to force the proxy buffer to flush instantly.
-                padding = ": " + (" " * 4096) + "\n"
                 yield f"{padding}data: {json.dumps({'log': '⏳  AI agents are working... hang tight'})}\n\n"
 
         while not q.empty():
             try:
                 msg = q.get_nowait()
-                yield f"data: {json.dumps({'log': str(msg)})}\n\n"
+                yield f"{padding}data: {json.dumps({'log': str(msg)})}\n\n"
             except Exception:
                 pass
 
@@ -399,7 +398,7 @@ async def analyze_repo(req: AnalyzeRequest, request: Request):
                     for f in final_state.get("downloaded_files", [])
                 },
             }
-            yield f"data: {json.dumps({'result': result})}\n\n"
+            yield f"{padding}data: {json.dumps({'result': result})}\n\n"
         except BaseException as e:
             # Catch BaseException (not just Exception) to also handle
             # asyncio.CancelledError, asyncio.TimeoutError, MemoryError, etc.
@@ -409,7 +408,7 @@ async def analyze_repo(req: AnalyzeRequest, request: Request):
             is_timeout = "timed out" in error_msg.lower() or isinstance(e, asyncio.TimeoutError)
             if is_timeout:
                 error_msg = "Analysis timed out — repository may be too large or AI services are under heavy load. Please try again or try a smaller repository."
-            yield f"data: {json.dumps({'error': error_msg, 'rate_limit': is_rate_limit})}\n\n"
+            yield f"{padding}data: {json.dumps({'error': error_msg, 'rate_limit': is_rate_limit})}\n\n"
 
     return StreamingResponse(
         event_generator(),
