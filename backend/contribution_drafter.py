@@ -321,7 +321,7 @@ Generate a complete ContributionGuide. Be honest about what you know and don't k
         structured_llm = llm.with_structured_output(ContributionGuide)
         chain = prompt | structured_llm
 
-        max_retries = 3
+        max_retries = 6
         backoff = 2.0
         
         for attempt in range(1, max_retries + 1):
@@ -420,7 +420,7 @@ Provide the patch, test code, and PR description.
         for f in relevant_files[:6]:
             file_snippets += f"\n--- {f['path']} ---\n{f['content'][:2000]}\n"
 
-        max_retries = 3
+        max_retries = 6
         backoff = 2.0
         for attempt in range(1, max_retries + 1):
             try:

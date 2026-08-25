@@ -148,13 +148,26 @@ Respond with exactly one of:
 Do NOT add anything else."""
 
         def _call_llm():
-            try:
-                llm = llm_key_pool.get_llm(session_token=session_token, temperature=0.0)
-                from langchain_core.messages import HumanMessage
-                response = llm.invoke([HumanMessage(content=prompt)])
-                return response.content.strip()
-            except Exception as e:
-                raise RuntimeError(f"LLM call failed: {e}") from e
+            max_retries = 6
+            for attempt in range(1, max_retries + 1):
+                try:
+                    llm = llm_key_pool.get_llm(session_token=session_token, temperature=0.0)
+                    from langchain_core.messages import HumanMessage
+                    response = llm.invoke([HumanMessage(content=prompt)])
+                    return response.content.strip()
+                except Exception as e:
+                    error_str = str(e).lower()
+                    if "429" in error_str or "rate limit" in error_str or "quota" in error_str or "exhausted" in error_str:
+                        try:
+                            llm_key_pool.mark_rate_limit_for_llm(llm)
+                        except Exception:
+                            pass
+                    
+                    if attempt == max_retries:
+                        raise RuntimeError(f"LLM call failed after {max_retries} attempts: {e}") from e
+                    
+                    import time
+                    time.sleep(1.0)
 
         raw = await asyncio.to_thread(_call_llm)
 
@@ -185,13 +198,14 @@ Do NOT add anything else."""
         downloaded_files: List[Dict[str, str]],
         session_token: str | None = None,
     ) -> List[Dict[str, Any]]:
-        # Concurrency cap: 3 simultaneous LLM calls max.
-        # For large repos (many claims), this prevents hammering rate limits.
-        sem = asyncio.Semaphore(3)
+        # Concurrency cap: 1 simultaneous LLM call max to survive free-tier Gemini's strict 15 RPM limit.
+        sem = asyncio.Semaphore(1)
 
         async def verify_with_sem(claim):
             async with sem:
                 try:
+                    # Artificially slow down to guarantee we never exceed 15 requests per minute
+                    await asyncio.sleep(4.1) 
                     return await self.verify_claim_async(
                         claim, graph, downloaded_files, session_token
                     )

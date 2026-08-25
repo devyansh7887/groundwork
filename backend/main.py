@@ -60,31 +60,31 @@ logger = logging.getLogger(__name__)
 _CACHE_MAX_ENTRIES = 20
 repo_cache: dict = {}
 
-def _hydrate_cache_from_disk():
-    """On startup: scan all disk cache files and populate repo_cache so /api/qa
-    and /api/draft work immediately without re-analyzing after a restart."""
-    loaded = 0
+def _get_repo_state(repo_url: str) -> dict | None:
+    """Dynamically loads repo state from in-memory cache or SQLite disk cache."""
+    if repo_url in repo_cache:
+        return repo_cache[repo_url]
+    
     try:
-        import sqlite3
-        from pathlib import Path
-        db_path = Path(__file__).parent / "groundwork_cache.db"
-        if db_path.exists():
-            conn = sqlite3.connect(str(db_path))
-            rows = conn.execute("SELECT owner, repo, payload FROM analyses ORDER BY cached_at ASC").fetchall()
-            for owner, repo, payload_str in rows:
-                try:
-                    state = json.loads(payload_str)
-                    canonical_url = f"https://github.com/{owner}/{repo}"
-                    repo_cache[canonical_url] = state
-                    loaded += 1
-                except Exception as e:
-                    logger.warning(f"Failed to load cache row {owner}/{repo}: {e}")
-            conn.close()
+        from urllib.parse import urlparse
+        parts = urlparse(repo_url).path.strip("/").split("/")
+        if len(parts) >= 2:
+            owner, repo = parts[-2], parts[-1]
+            state = cache_manager.find_any_cached(owner, repo)
+            if state:
+                # Add to in-memory cache and evict if needed
+                if len(repo_cache) >= _CACHE_MAX_ENTRIES:
+                    oldest_key = next(iter(repo_cache))
+                    del repo_cache[oldest_key]
+                repo_cache[repo_url] = state
+                return state
     except Exception as e:
-        logger.warning(f"Failed to hydrate cache from SQLite: {e}")
-        
-    if loaded:
-        logger.info(f"♻️  Hydrated {loaded} repo(s) from SQLite cache — /api/qa and /api/draft are ready immediately.")
+        logger.warning(f"Failed to dynamically load cache for {repo_url}: {e}")
+    return None
+
+def _hydrate_cache_from_disk():
+    # No longer eagerly loading all states into memory to prevent OOM
+    pass
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -451,10 +451,10 @@ async def resynthesize(req: ResynthesizeRequest, request: Request):
 @app.get("/api/drift")
 async def check_drift(repo_url: str):
     """Check if the cached analysis is stale vs current HEAD SHA."""
-    if repo_url not in repo_cache:
+    state = _get_repo_state(repo_url)
+    if not state:
         raise HTTPException(status_code=404, detail="Repository not in cache.")
 
-    state = repo_cache[repo_url]
     owner = state["repo_metadata"].get("owner", "")
     repo_name = state["repo_metadata"].get("repo", "")
     branch = state["repo_metadata"].get("default_branch", "main")
@@ -471,9 +471,9 @@ async def check_drift(repo_url: str):
 @app.post("/api/qa")
 async def ask_question(req: QARequest, request: Request):
     session_token = extract_token(request)
-    if req.repo_url not in repo_cache:
+    state = _get_repo_state(req.repo_url)
+    if not state:
         raise HTTPException(status_code=400, detail="Repository not analyzed yet.")
-    state = repo_cache[req.repo_url]
     repo_name = state["repo_metadata"].get("repo", "")
     res = await qa_agent.answer_question(repo_name, req.question, state["graph"], state.get("downloaded_files", []), session_token)
     if "error" in res:
@@ -483,19 +483,18 @@ async def ask_question(req: QARequest, request: Request):
 @app.post("/api/onboard")
 async def generate_path(req: OnboardRequest, request: Request):
     session_token = extract_token(request)
-    if req.repo_url not in repo_cache:
+    state = _get_repo_state(req.repo_url)
+    if not state:
         raise HTTPException(status_code=400, detail="Repository not analyzed yet.")
-    state = repo_cache[req.repo_url]
     path = await onboarding_agent.generate_path(req.role, req.level, state["graph"], state.get("narrative", ""), session_token)
     return path.model_dump()
 
 @app.post("/api/draft")
 async def draft_contribution(req: DraftRequest, request: Request):
     session_token = extract_token(request)
-    if req.repo_url not in repo_cache:
+    state = _get_repo_state(req.repo_url)
+    if not state:
         raise HTTPException(status_code=400, detail="Repository not analyzed yet.")
-    
-    state = repo_cache[req.repo_url]
     
     if req.action:
         # Action-specific draft: use the LLM to generate a real diff patch
@@ -589,9 +588,9 @@ Include:
 @app.post("/api/issues")
 async def get_issues(req: IssuesRequest, request: Request):
     session_token = extract_token(request)
-    if req.repo_url not in repo_cache:
+    state = _get_repo_state(req.repo_url)
+    if not state:
         raise HTTPException(status_code=400, detail="Repository not analyzed yet.")
-    state = repo_cache[req.repo_url]
     owner = state["repo_metadata"].get("owner", "")
     repo = state["repo_metadata"].get("repo", "")
     if not owner or not repo:
@@ -612,10 +611,9 @@ async def get_issues(req: IssuesRequest, request: Request):
 async def contribution_qa_endpoint(req: ContributionQARequest, request: Request):
     """In-wizard Q&A: answers beginner questions about their contribution."""
     session_token = extract_token(request)
-    if req.repo_url not in repo_cache:
+    state = _get_repo_state(req.repo_url)
+    if not state:
         raise HTTPException(status_code=400, detail="Repository not analyzed yet.")
-    
-    state = repo_cache[req.repo_url]
     downloaded = state.get("downloaded_files", [])
     
     # Find relevant files for this contribution context

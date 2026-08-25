@@ -215,7 +215,7 @@ verified against the graph and file contents above.""")
         else:
             logger.info("Calling Synthesizer for initial architecture pass...")
 
-        max_retries = 3
+        max_retries = 6
         backoff = 2.0
         
         for attempt in range(1, max_retries + 1):
