@@ -81,7 +81,7 @@ LANGUAGE_EXTENSIONS = {
 MODEL_REGISTRY = {
     # Groq — fast inference, used as default fallback
     "gemini": os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
-    "groq": os.getenv("GROQ_MODEL", "openai/gpt-oss-20b"),
+    "groq": os.getenv("GROQ_MODEL", "llama-3.1-8b-instant"),
 
     # OpenAI — highest quality, used when an openai key is in the pool
     "openai": os.getenv("OPENAI_MODEL", "gpt-4o"),

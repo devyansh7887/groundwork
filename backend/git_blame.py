@@ -19,7 +19,7 @@ class GitBlameAnalyzer:
         from key_pool import key_pool
         url = f"https://api.github.com/repos/{owner}/{repo}/commits?path={path}&per_page=10"
         
-        max_retries = 3
+        max_retries = 6
         for attempt in range(max_retries):
             token = self.session_token or key_pool.get_best_key()
             headers = {

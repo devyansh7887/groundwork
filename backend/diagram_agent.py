@@ -201,7 +201,7 @@ class DiagramAgent:
         logger.info(f"Diagram Agent: generating component diagram from {len(all_files)} files → targeting 8-15 components")
 
         # Exponential backoff retry loop
-        max_retries = 3
+        max_retries = 6
         backoff = 2.0
         diagram_output: Optional[ComponentDiagramOutput] = None
 

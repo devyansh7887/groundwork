@@ -17,7 +17,7 @@ class Ingestor:
     async def _fetch(self, url: str) -> httpx.Response:
         from key_pool import key_pool
         import time
-        max_retries = 3
+        max_retries = 6
         for attempt in range(max_retries):
             token = self.session_token or key_pool.get_best_key()
             headers = {
