@@ -30,6 +30,9 @@ walkthrough.md
 # ChromaDB
 backend/chroma_db/
 
+# SQLite cache database (persisted on server, not committed to git)
+backend/groundwork_cache.db
+
 !backend/cache/permissionlesstech_bitchat-android_094657efa0aa.json
 
 # Explicitly track the new test suite
