@@ -770,9 +770,9 @@ export default function AnalyzePage() {
     <div className="min-h-screen bg-[#0d1117] text-[#c9d1d9] font-ibm">
       <header className="border-b border-[#30363d] bg-[#161b22] sticky top-0 z-50">
         <div className="max-w-[90rem] mx-auto px-4 py-3 flex items-center">
-          <div className="w-8 h-8 bg-[#0d1117] border border-[#30363d] rounded flex items-center justify-center mr-3">
-            <span className="text-[#c9d1d9] w-4 h-4">&gt;_</span>
-          </div>
+          <Link href="/" className="w-8 h-8 bg-[#0d1117] border border-[#30363d] rounded flex items-center justify-center mr-3 hover:bg-[#21262d] transition-colors">
+            <span className="text-[#c9d1d9] font-jetbrains font-bold text-sm leading-none mt-0.5">&gt;_</span>
+          </Link>
           <div>
             <h1 className="font-space text-lg font-bold text-[#c9d1d9] tracking-tight leading-none">Groundwork</h1>
             <p className="text-[10px] font-jetbrains text-[#8b949e] mt-1">VERIFIABLE_CODEBASE_AGENT</p>
