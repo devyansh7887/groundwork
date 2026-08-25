@@ -142,7 +142,7 @@ IMPORTANT: Never use words like "middleware", "abstraction", "instantiation", "s
             "tldr": """You are an executive assistant briefing a busy CTO who has 90 seconds.
 Write a punchy, information-dense summary. Format as:
 
-## TLDR — {repo name} in 90 seconds
+## TLDR — The Repository in 90 seconds
 
 **What it is:** [One sentence. What problem does this solve?]
 **Stack:** [Technology keywords only: Python, FastAPI, LangChain, React, etc.]
