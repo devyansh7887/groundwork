@@ -43,7 +43,7 @@ export function QASection({ qaHistory, asking, qaError, question, setQuestion, s
     <div className={`flex-1 w-full flex flex-col bg-[#161b22] border border-[#30363d] rounded-md overflow-hidden  ${isExpanded ? 'h-full border-none' : 'h-[700px] mt-2'}`}>
       <div className="p-5 border-b border-[#30363d] bg-[#161b22] flex items-center justify-between">
         <div>
-          <h3 className="font-space text-lg font-bold text-[#c9d1d9] flex items-center"><span className="w-4 h-4 mr-2 text-[#8b949e]">>_</span> Grounded Q&A</h3>
+          <h3 className="font-space text-lg font-bold text-[#c9d1d9] flex items-center"><span className="w-4 h-4 mr-2 text-[#8b949e]">&gt;_</span> Grounded Q&A</h3>
           <p className="text-xs font-jetbrains text-[#8b949e] mt-1">Every claim verified via AST graph.</p>
         </div>
         <button 
@@ -58,7 +58,7 @@ export function QASection({ qaHistory, asking, qaError, question, setQuestion, s
       <div className="flex-1 overflow-y-auto p-5 space-y-6 bg-[#0d1117]">
         {qaHistory.length === 0 ? (
           <div className="text-sm font-jetbrains text-[#8b949e] text-center mt-32 px-4">
-            <span className="w-10 h-10 text-[#30363d] mx-auto mb-4">>_</span>
+            <span className="w-10 h-10 text-[#30363d] mx-auto mb-4">&gt;_</span>
             &gt;_ Ask a question about the architecture.<br/>Responses are fact-checked concurrently.
           </div>
         ) : (

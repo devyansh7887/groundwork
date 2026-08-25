@@ -390,7 +390,7 @@ function ContributionWizardPanel({
             rel="noreferrer"
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#238636] hover:bg-[#2ea043] text-white text-sm font-semibold rounded-lg transition-colors"
           >
-            <span className="w-4 h-4">-></span> Open PR on GitHub
+            <span className="w-4 h-4">-&gt;</span> Open PR on GitHub
           </a>
         </div>
       )
@@ -633,7 +633,7 @@ export function ContributionDrafter({
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#30363d] bg-[#161b22] flex-none">
         <div className="flex items-center gap-2">
-          <span className="text-[#58a6ff]">>_</span>
+          <span className="text-[#58a6ff]">&gt;_</span>
           <span className="text-sm font-semibold text-[#c9d1d9]">Contribution Drafter</span>
           <span className="text-xs px-2 py-0.5 rounded-full bg-[#238636] text-[#3fb950] border border-[#238636]/30 font-jetbrains">
             {issues.length} open issues
@@ -734,7 +734,7 @@ export function ContributionDrafter({
           {!selectedIssue ? (
             <div className="flex-1 flex flex-col items-center justify-center text-[#8b949e] p-8 text-center">
               <div className="w-16 h-16 rounded-full bg-[#161b22] border border-[#30363d] flex items-center justify-center mb-4">
-                <span className="opacity-50">-></span>
+                <span className="opacity-50">-&gt;</span>
               </div>
               <h3 className="font-space text-lg font-bold text-[#c9d1d9] mb-2">Select an Issue to Start</h3>
               <p className="text-sm max-w-sm leading-relaxed">
@@ -781,7 +781,7 @@ export function ContributionDrafter({
               <div className="flex-1 overflow-hidden">
                 {drafting && (
                   <div className="flex flex-col items-center justify-center h-full text-[#8b949e] gap-4">
-                    <span className="text-2xl animate-pulse text-[#58a6ff]">>_</span>
+                    <span className="text-2xl animate-pulse text-[#58a6ff]">&gt;_</span>
                     <div className="text-sm text-center">
                       <p className="font-semibold text-[#c9d1d9]">Analyzing codebase...</p>
                       <p className="text-xs mt-1 font-jetbrains text-[#8b949e]">Awaiting response from Drafter Agent</p>

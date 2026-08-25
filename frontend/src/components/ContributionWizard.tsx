@@ -20,12 +20,12 @@ interface Props {
 type Level = "beginner" | "intermediate" | "advanced";
 
 const STEPS = [
-  { id: "find", label: "Find Issue", icon: Search },
-  { id: "fork", label: "Fork & Clone", icon: GitFork },
-  { id: "branch", label: "Create Branch", icon: GitBranch },
-  { id: "code", label: "Make Changes", icon: Code },
-  { id: "commit", label: "Commit", icon: GitCommit },
-  { id: "pr", label: "Open PR", icon: GitPullRequest },
+  { id: "find", label: "Find Issue", icon: "[?]" },
+  { id: "fork", label: "Fork & Clone", icon: "Y" },
+  { id: "branch", label: "Create Branch", icon: "|-" },
+  { id: "code", label: "Make Changes", icon: "&lt;/&gt;" },
+  { id: "commit", label: "Commit", icon: "-o-" },
+  { id: "pr", label: "Open PR", icon: "-&gt;" },
 ];
 
 export function ContributionWizard({ repoUrl, action, onClose, onDraftRequest }: Props) {
@@ -109,7 +109,7 @@ export function ContributionWizard({ repoUrl, action, onClose, onDraftRequest }:
         className="absolute top-2 right-2 p-1.5 bg-[#21262d] border border-[#30363d] rounded text-[#8b949e] opacity-0 group-hover:opacity-100 transition-opacity hover:text-[#c9d1d9]"
         title="Copy to clipboard"
       >
-        <span className="w-4 h-4">>_</span>
+        <span className="w-4 h-4">&gt;_</span>
       </button>
     </div>
   );
@@ -251,7 +251,7 @@ export function ContributionWizard({ repoUrl, action, onClose, onDraftRequest }:
               rel="noreferrer"
               className="px-6 py-2.5 bg-[#238636] hover:bg-[#2ea043] text-white font-semibold rounded flex items-center gap-2"
             >
-              <span className="w-5 h-5">-></span> Open PR on GitHub
+              <span className="w-5 h-5">-&gt;</span> Open PR on GitHub
             </a>
           </div>
         </div>
@@ -287,7 +287,7 @@ export function ContributionWizard({ repoUrl, action, onClose, onDraftRequest }:
           <div className={`${isExpanded ? 'w-full md:w-80' : 'w-full md:w-64'} bg-[#161b22] border-r border-[#30363d] p-6 flex flex-col flex-shrink-0`}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-space text-lg font-bold text-[#c9d1d9] tracking-tight flex items-center gap-2">
-                <span className="w-5 h-5 text-[#58a6ff]"></></span>
+                <span className="w-5 h-5 text-[#58a6ff]">&lt;/&gt;</span>
                 Wizard
               </h2>
               <div className="flex items-center gap-3">
