@@ -237,9 +237,16 @@ verified against the graph and file contents above.""")
                 logger.warning(f"Synthesizer attempt {attempt} failed: {e}")
                 if attempt == max_retries:
                     logger.error("All retries exhausted for synthesizer. Returning fallback.")
+                    
+                    user_msg = "AI API limit exceeded."
+                    if "429" in error_str or "exhausted" in error_str:
+                        user_msg = "Free-tier AI rate limits exhausted across all available keys."
+                    else:
+                        user_msg = str(e).split("{")[0][:100] + "..."
+                        
                     return {
                         "claims": [],
-                        "narrative": f"⚠️ **Analysis Unavailable**: {str(e)} (Attempted {max_retries} times. Please provide a custom API token or wait for rate limits to reset.)"
+                        "narrative": f"⚠️ **Analysis Incomplete**\n\nThe codebase graph and file sizes were successfully analyzed, but the AI failed to generate the Architectural Narrative due to rate limits: **{user_msg}**\n\n*(To view the full narrative, click 'Provide Key' in the bottom-left to use a custom API token)*"
                     }
                 time.sleep(backoff)
                 backoff = min(backoff * 2, 10.0)
