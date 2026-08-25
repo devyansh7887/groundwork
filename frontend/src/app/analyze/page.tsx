@@ -468,8 +468,8 @@ function AnalyzeContent() {
     return (
       <>
         {!backendReady && (
-          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-[#d29922] border border-[#d29922]/40 text-[#d29922] px-4 py-2 rounded-full text-xs font-jetbrains font-bold flex items-center z-50">
-            <span className="w-3.5 h-3.5 mr-2 animate-spin">...</span> Backend warming up...
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-[#161b22] border border-[#d29922] text-[#d29922] px-4 py-2 rounded-full text-xs font-jetbrains font-bold flex items-center z-50 shadow-lg">
+            <span className="mr-2 animate-spin">...</span> Backend warming up...
           </div>
         )}
         <StreamingTerminal logs={logs} />
