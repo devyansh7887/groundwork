@@ -74,33 +74,52 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="flex justify-between items-center mt-4">
+            <div className="flex justify-between items-center mt-6">
               <div className="text-[11px] font-jetbrains text-[#8b949e]">
                 <span className="text-[#238636]">✓</span> Requires public repository
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row items-center gap-3">
                 <button
                   type="button"
                   onClick={(e) => {
                     e.preventDefault();
-                    setRepoUrl("https://github.com/encode/starlette");
-                    setMode("technical");
-                    router.push(`/analyze?url=${encodeURIComponent("https://github.com/encode/starlette")}&mode=technical`);
+                    if (!repoUrl) return;
+                    router.push(`/analyze?url=${encodeURIComponent(repoUrl)}&mode=${mode}`);
                   }}
-                  className="px-6 py-3 rounded-md font-bold font-ibm text-[#c9d1d9] bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] transition-colors flex items-center"
+                  className="px-6 py-3 rounded-md font-bold font-ibm text-white bg-[#238636] hover:bg-[#2ea043] border border-[rgba(240,246,252,0.1)] transition-colors w-full sm:w-auto text-center"
                 >
-                  Try a Demo
+                  Deep Architecture Analysis
                 </button>
                 <button
-                  type="submit"
-                  className="px-6 py-3 rounded-md font-bold font-ibm text-white bg-[#238636] hover:bg-[#2ea043] border border-[rgba(240,246,252,0.1)] transition-colors flex items-center"
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (!repoUrl) return;
+                    router.push(`/analyze?url=${encodeURIComponent(repoUrl)}&mode=${mode}&tab=issues`);
+                  }}
+                  className="px-6 py-3 rounded-md font-bold font-ibm text-white bg-[#8957e5] hover:bg-[#7b46d1] border border-[rgba(240,246,252,0.1)] transition-colors w-full sm:w-auto text-center"
                 >
-                  Run Analysis
+                  Contribution Drafter
                 </button>
               </div>
             </div>
           </form>
         </motion.div>
+        
+        <div className="mt-8">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              setRepoUrl("https://github.com/encode/starlette");
+              setMode("technical");
+              router.push(`/analyze?url=${encodeURIComponent("https://github.com/encode/starlette")}&mode=technical`);
+            }}
+            className="text-xs font-jetbrains text-[#8b949e] hover:text-[#58a6ff] transition-colors underline underline-offset-4"
+          >
+            Don't have a repo? Try the Starlette Demo
+          </button>
+        </div>
         
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="w-full max-w-5xl mt-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

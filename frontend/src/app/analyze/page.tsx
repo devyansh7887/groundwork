@@ -158,7 +158,9 @@ function AnalyzeContent() {
   const [security, setSecurity] = useState<any[]>([]);
   const [patterns, setPatterns] = useState<any[]>([]);
   const [driftInfo, setDriftInfo] = useState<{ stale: boolean; cached_sha: string; current_sha: string } | null>(null);
-  const [activeResultTab, setActiveResultTab] = useState<"narrative" | "diagram" | "wizard" | "qa" | "onboarding" | "issues">("narrative");
+  
+  const initialTab = (searchParams.get("tab") as "narrative" | "diagram" | "wizard" | "qa" | "onboarding" | "issues") || "narrative";
+  const [activeResultTab, setActiveResultTab] = useState<"narrative" | "diagram" | "wizard" | "qa" | "onboarding" | "issues">(initialTab);
   
   // Q&A
   const [question, setQuestion] = useState("");
