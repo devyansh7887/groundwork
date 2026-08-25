@@ -63,7 +63,7 @@ function buildForceData(graph: GraphData, fileSizes: Record<string, number>, col
   const nodes = graph.files.map(f => ({
     id: f,
     name: f.split("/").pop() ?? f,
-    val: Math.max(2, Math.min(20, (fileSizes[f] ?? 1000) / 500)),
+    val: Math.max(5, Math.min(40, (fileSizes[f] ?? 1000) / 150)),
     color: colorBy === "author" 
              ? (graph.authors?.[f]?.primary_author 
                  ? folderColor(graph.authors[f].primary_author, [...new Set(Object.values(graph.authors).map((a: any) => a.primary_author))])
