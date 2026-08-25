@@ -109,7 +109,7 @@ export function ContributionWizard({ repoUrl, action, onClose, onDraftRequest }:
         className="absolute top-2 right-2 p-1.5 bg-[#21262d] border border-[#30363d] rounded text-[#8b949e] opacity-0 group-hover:opacity-100 transition-opacity hover:text-[#c9d1d9]"
         title="Copy to clipboard"
       >
-        <span className="w-4 h-4">&gt;_</span>
+        <span>&gt;_</span>
       </button>
     </div>
   );
@@ -138,7 +138,7 @@ export function ContributionWizard({ repoUrl, action, onClose, onDraftRequest }:
           ) : (
             <div className="mt-6 border border-[#30363d] bg-[#161b22] rounded-lg p-5">
               <div className="flex items-center gap-2 text-[#58a6ff] mb-2 font-jetbrains text-sm">
-                <span className="w-4 h-4">[?]</span> Issue Selected
+                <span>[?]</span> Issue Selected
               </div>
               <h4 className="font-bold text-[#c9d1d9] text-lg">{draft.issue_title}</h4>
               <p className="text-[#8b949e] mt-2 text-sm">Target file: <span className="font-jetbrains bg-[#0d1117] px-1.5 py-0.5 rounded border border-[#30363d]">{draft.target_file}</span></p>
@@ -296,7 +296,7 @@ export function ContributionWizard({ repoUrl, action, onClose, onDraftRequest }:
                   className="text-[#8b949e] hover:text-[#c9d1d9] flex items-center justify-center transition-colors"
                   title={isExpanded ? "Minimize (Esc)" : "Expand"}
                 >
-                  {isExpanded ? <span className="w-4 h-4">[_]</span> : <span className="w-4 h-4">[^]</span>}
+                  {isExpanded ? <span>[_]</span> : <span>[^]</span>}
                 </button>
                 {onClose && (
                   <button onClick={onClose} className="text-[#8b949e] hover:text-[#c9d1d9] text-xs underline">
