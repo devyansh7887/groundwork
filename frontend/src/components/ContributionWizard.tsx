@@ -342,7 +342,7 @@ export function ContributionWizard({ repoUrl, action, onClose, onDraftRequest }:
                   >
                     {isCurrent && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#58a6ff] rounded-r" />}
                     <div className={`shrink-0 ${isCompleted ? "text-[#3fb950]" : isCurrent ? "text-[#58a6ff]" : "text-[#484f58]"}`}>
-                      {isCompleted ? <span className="w-5 h-5">[+]</span> : <Icon className="w-5 h-5" />}
+                      {isCompleted ? <span>[+]</span> : <Icon />}
                     </div>
                     <span className={`text-sm font-semibold ${isCurrent ? "text-[#c9d1d9]" : isCompleted ? "text-[#8b949e]" : "text-[#484f58]"}`}>
                       {step.label}

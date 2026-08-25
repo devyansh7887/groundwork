@@ -2,14 +2,29 @@ import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, JSONResponse
 from pydantic import BaseModel
 from pipeline import Pipeline
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 import contextvars
 import asyncio
 import json
 import os
 import re
+
+# ─── LangSmith Tracing ───────────────────────────────────────────────────────
+# Set LANGCHAIN_TRACING_V2=true and LANGCHAIN_API_KEY in your .env to enable.
+# Free tier at https://smith.langchain.com — gives you full agent call traces.
+if os.getenv("LANGCHAIN_TRACING_V2", "").lower() == "true":
+    os.environ.setdefault("LANGCHAIN_ENDPOINT", "https://api.smith.langchain.com")
+    os.environ.setdefault("LANGCHAIN_PROJECT", "groundwork")
+
+# ─── Rate Limiter ─────────────────────────────────────────────────────────────
+# Prevents a single user from exhausting the LLM key pool.
+# Limits: 3 analyses per user per 15 minutes; other endpoints are unrestricted.
+limiter = Limiter(key_func=get_remote_address, default_limits=[])
 
 # Configure logging first so logger is available everywhere below
 logging.basicConfig(level=logging.INFO)
@@ -75,6 +90,8 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(title="Groundwork API", lifespan=lifespan)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Explicit CORS origins — add your production frontend URL here instead of using "*"
 _CORS_ORIGINS = [
@@ -296,6 +313,7 @@ def key_status():
     return {"keys": keys}
 
 @app.post("/api/analyze")
+@limiter.limit("3/15minutes")
 async def analyze_repo(req: AnalyzeRequest, request: Request):
     session_token = extract_token(request)
     async def event_generator():
