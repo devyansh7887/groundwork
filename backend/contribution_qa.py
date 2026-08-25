@@ -22,7 +22,7 @@ class ContributionQA:
         question: str,
         issue_title: str,
         understanding: str,
-        what_needs_to_change: str,
+        modifications: List[Dict[str, Any]],
         target_files: List[str],
         relevant_file_contents: List[Dict[str, str]],
         session_token: Optional[str] = None
@@ -37,6 +37,9 @@ class ContributionQA:
         for f in relevant_file_contents[:5]:
             file_context += f"\n--- {f['path']} ---\n"
             file_context += f["content"][:2000]
+
+        import json
+        modifications_str = json.dumps(modifications, indent=2)
 
         prompt = ChatPromptTemplate.from_messages([
             ("system", """You are a blunt, highly technical mentor. You do not soften feedback to be encouraging. You are allergic to vague claims and filler text.
@@ -56,8 +59,8 @@ Issue: {issue_title}
 What the issue is about:
 {understanding}
 
-What needs to change:
-{what_needs_to_change}
+Proposed Modifications:
+{modifications}
 
 Files involved:
 {target_files}
@@ -79,7 +82,7 @@ Please answer their question in a beginner-friendly way, citing specific files/f
             result = chain.invoke({
                 "issue_title": issue_title,
                 "understanding": understanding,
-                "what_needs_to_change": what_needs_to_change,
+                "modifications": modifications_str,
                 "target_files": ", ".join(target_files) if target_files else "Not specified",
                 "file_context": file_context or "No file contents available.",
                 "question": question,

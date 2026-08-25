@@ -26,6 +26,12 @@ class DraftPatch(BaseModel):
     pr_description: str = Field(description="A detailed PR description explaining the fix.")
 
 
+class FileModification(BaseModel):
+    file_path: str = Field(description="The exact path to the file that needs to be changed.")
+    where_to_put_it: str = Field(description="Clear instructions on exactly where inside the file this change goes (e.g., 'Inside the parse() function, right after line 45').")
+    what_to_remove: str = Field(description="The exact code that should be deleted or replaced. Leave empty if you are only adding new code.")
+    what_to_add: str = Field(description="The exact new code that the user needs to copy and paste into the file.")
+
 class ContributionGuide(BaseModel):
     """Full guided contribution output — the core of the new Contribution Drafter."""
     issue_title: str = Field(description="Title of the GitHub issue being addressed.")
@@ -34,7 +40,7 @@ class ContributionGuide(BaseModel):
     difficulty_reason: str = Field(description="One sentence explaining why this difficulty was assigned.")
     target_files: List[str] = Field(description="List of exact file paths that need to be changed.")
     understanding: str = Field(description="Plain English explanation of what this issue is about and why it exists. Written for a beginner.")
-    what_needs_to_change: str = Field(description="A clear, numbered step-by-step tutorial (1, 2, 3...) written for an absolute beginner. Tell them exactly which file to open, what line to go to, and what exact code to copy-paste. Be EXTREMELY prescriptive and hand-holding.")
+    modifications: List[FileModification] = Field(description="A list of specific file modifications required to fix the issue. This completely replaces the old step-by-step tutorial format with strict, actionable code blocks.")
     diff: str = Field(description="Unified diff patch (--- a/file, +++ b/file format). If confidence is low, provide the closest best attempt with a comment.")
     test_code: str = Field(description="A test to verify the fix works. Can be empty string if not applicable.")
     pr_title: str = Field(description="Suggested PR title.")
@@ -352,7 +358,7 @@ Generate a complete ContributionGuide. Be honest about what you know and don't k
                         difficulty_reason=difficulty_reason,
                         target_files=[f["path"] for f in relevant_files[:3]],
                         understanding="I was unable to generate a full guide due to AI service rate limits. Please try again.",
-                        what_needs_to_change="Please try again in a moment.",
+                        modifications=[],
                         diff="# AI service unavailable. Please retry.",
                         test_code="",
                         pr_title=f"Fix: {issue.get('title', '')}",
