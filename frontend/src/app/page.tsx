@@ -22,7 +22,7 @@ export default function Home() {
       <header className="border-b border-[#30363d] bg-[#161b22] sticky top-0 z-50">
         <div className="max-w-[90rem] mx-auto px-4 py-3 flex items-center">
           <div className="w-8 h-8 bg-[#0d1117] border border-[#30363d] rounded flex items-center justify-center mr-3">
-            <span className="text-[#c9d1d9] w-4 h-4">&gt;_</span>
+            <span className="text-[#c9d1d9] font-jetbrains font-bold text-sm leading-none mt-0.5">&gt;_</span>
           </div>
           <div>
             <h1 className="font-space text-lg font-bold text-[#c9d1d9] tracking-tight leading-none">Groundwork</h1>
@@ -37,7 +37,7 @@ export default function Home() {
           className="text-center mb-12"
         >
           <div className="w-20 h-20 bg-[#161b22] border border-[#30363d] shadow-[#0d1117] rounded-xl flex items-center justify-center mx-auto mb-6">
-            <span className="w-10 h-10 text-[#c9d1d9]">|-</span>
+            <span className="text-[#c9d1d9] font-jetbrains font-bold text-3xl leading-none mt-1">&gt;_</span>
           </div>
           <h2 className="font-space text-4xl md:text-5xl font-bold mb-4 text-[#c9d1d9] tracking-tight">Verify what your codebase actually does.</h2>
           <p className="text-lg text-[#8b949e] font-jetbrains max-w-2xl mx-auto">
