@@ -57,8 +57,8 @@ jobs:
 
       - name: Run ESLint
         working-directory: frontend
-        run: npx eslint src/ --max-warnings 0 || true
+        run: npx eslint src/ --max-warnings 0
 
       - name: Type check (tsc)
         working-directory: frontend
-        run: npx tsc --noEmit || true
+        run: npx tsc --noEmit

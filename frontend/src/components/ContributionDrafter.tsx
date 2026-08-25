@@ -695,8 +695,8 @@ export function ContributionDrafter({
                 <button
                   key={issue.number}
                   onClick={() => handleSelectIssue(issue)}
-                  className={`w-full text-left p-3 border-b border-[#30363d] transition-colors hover:bg-[#161b22] ${
-                    isSelected ? "bg-[#1f6feb] border border-l-[#58a6ff]" : ""
+                  className={`w-full text-left p-3 pr-4 border-b border-[#30363d] transition-colors hover:bg-[#161b22] ${
+                    isSelected ? "bg-[#1f6feb] border-l-2 border-l-[#58a6ff]" : "border-l-2 border-l-transparent"
                   }`}
                 >
                   <div className="flex items-start gap-2">

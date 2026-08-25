@@ -56,9 +56,7 @@ class QAAgent:
             logging.warning(f"Skipping vector DB indexing: {e}")
             return
         except Exception:
-            pass
-            
-        collection = self.chroma_client.create_collection(name=collection_name)
+            collection = self.chroma_client.get_or_create_collection(name=collection_name)
         
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         
@@ -84,7 +82,7 @@ class QAAgent:
                 
         # Compute embeddings using Gemini Embeddings
         if docs:
-            embeddings_model = self._get_embeddings()
+            embeddings_model = self._get_embeddings(session_token)
             embedded_docs = embeddings_model.embed_documents(docs)
             collection.add(
                 embeddings=embedded_docs,
