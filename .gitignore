@@ -37,3 +37,4 @@ backend/groundwork_cache.db
 
 # Explicitly track the new test suite
 !backend/tests/
+!backend/cache/Kludex_starlette_d9ed5b0f98fd.json

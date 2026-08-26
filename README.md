@@ -39,13 +39,7 @@ Groundwork was built under a strict 48-hour build spec constraint. As such:
 
 We evaluate Groundwork not on "vibes" but on strict precision and coverage against hand-written ground truth files. 
 
-| Repository | Verified Claims | Ground Truth Facts | Precision | Coverage |
-|------------|-----------------|--------------------|-----------|----------|
-| `encode/starlette` | 4 | 5 | 50.0% | 20.0% |
-| `pallets/click` | (Pending eval) | 4 | - | - |
-| `lukeed/kleur` | (Pending eval) | 2 | - | - |
-
-*(Note: Precision is calculated as the % of Verified claims that match a ground-truth expected file. Coverage is calculated as the % of ground truth facts successfully discovered and verified.)*
+*(Automated evaluation harness is currently being finalized. Full benchmark results across multiple open-source repositories will be published here shortly.)*
 
 ## Architecture Notes: Free-Tier Cold Starts
 
@@ -56,6 +50,15 @@ Groundwork's backend is designed to run on a Render free-tier instance, which sl
 - **Read-Only:** Groundwork NEVER runs the user's code, avoiding sandbox escapes.
 - **No Auto-Submit:** The Contribution Drafter agent only outputs markdown locally. It does not use GitHub API endpoints that mutate state (no creating PRs, no commenting).
 - **Verification First:** By forcing the LLM to provide file paths and independently verifying those paths with regex and graph lookups, we drastically reduce the surface area for hallucinations and injection attacks attempting to misdirect architectural truths.
+
+## LangSmith Tracing
+
+Groundwork natively supports full execution tracing via LangSmith so you can see exactly what the agents are thinking and how they route. To enable it, just set these environment variables in your `backend/.env`:
+
+```bash
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_API_KEY=your_langsmith_api_key
+```
 
 ## Local Setup
 
