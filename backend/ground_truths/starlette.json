@@ -1,7 +1,10 @@
-[
-  {"fact":"Contains the main Starlette application class","expected_file":"starlette/applications.py"},
-  {"fact":"Contains the Router class for URL routing","expected_file":"starlette/routing.py"},
-  {"fact":"Contains the BaseHTTPMiddleware class","expected_file":"starlette/middleware/base.py"},
-  {"fact":"Contains the Request class","expected_file":"starlette/requests.py"},
-  {"fact":"Contains response classes like Response, JSONResponse","expected_file":"starlette/responses.py"}
-]
+{
+  "repo_url": "https://github.com/encode/starlette",
+  "facts": [
+    {"fact": "Contains the main Starlette application class", "expected_file": "starlette/applications.py"},
+    {"fact": "Contains the Router class for URL routing",     "expected_file": "starlette/routing.py"},
+    {"fact": "Contains the BaseHTTPMiddleware class",          "expected_file": "starlette/middleware/base.py"},
+    {"fact": "Contains the Request class",                    "expected_file": "starlette/requests.py"},
+    {"fact": "Contains response classes like Response, JSONResponse", "expected_file": "starlette/responses.py"}
+  ]
+}
