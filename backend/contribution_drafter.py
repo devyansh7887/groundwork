@@ -443,10 +443,11 @@ Provide the patch, test code, and PR description.
             except Exception as e:
                 error_str = str(e).lower()
                 if "429" in error_str or "rate limit" in error_str or "quota" in error_str:
-                    llm_key_pool.mark_rate_limit_for_llm(llm)
+                    llm_key_pool.mark_rate_limit_for_llm(llm, error_str=str(e))
                 logger.warning(f"draft_patch attempt {attempt} failed: {e}")
                 if attempt == max_retries:
                     logger.error("All draft_patch retries exhausted.")
                     raise
                 await asyncio.sleep(backoff)
                 backoff = min(backoff * 2, 10.0)
+

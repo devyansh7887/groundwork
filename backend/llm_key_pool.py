@@ -93,9 +93,10 @@ class LLMKeyPool:
             available_keys = [k for k in self.keys if (k["remaining"] > 0 or k["remaining"] == -1) and k["reset_time"] < now]
             
             if available_keys:
-                # Prioritize gemini due to massive rate limits and 1M context window
+                # Prefer Groq (generous free tier) over Gemini (20 req/day cap)
+                # Only prefer Gemini if no Groq key is available
                 def sort_key(k):
-                    type_score = 1 if k["type"] == "gemini" else 0
+                    type_score = 2 if k["type"] == "groq" else (1 if k["type"] == "gemini" else 0)
                     return (type_score, k["remaining"])
                 return sorted(available_keys, key=sort_key, reverse=True)[0]
                 
@@ -167,10 +168,14 @@ class LLMKeyPool:
         self._llm_to_token[id(llm)] = token_to_use
         return llm
 
-    def mark_rate_limit_for_llm(self, llm):
+    def mark_rate_limit_for_llm(self, llm, error_str: str = ""):
         token = getattr(self, "_llm_to_token", {}).get(id(llm))
         if token:
-            self.mark_rate_limit(token, retry_after=60)
+            # Detect daily quota exhaustion (Gemini free tier: 20 req/day)
+            # These must be marked for 24h, not 60s, or the pool wastes all retries.
+            is_daily = "per_day" in error_str.lower() or "PerDay" in error_str or "daily" in error_str.lower()
+            retry_after = 86400 if is_daily else 60
+            self.mark_rate_limit(token, retry_after=retry_after)
 
     def mark_rate_limit(self, token: str, retry_after: int = 60):
         """Marks a key as exhausted for a certain period."""
@@ -179,7 +184,10 @@ class LLMKeyPool:
                 if k["token"] == token:
                     k["remaining"] = 0
                     k["reset_time"] = time.time() + retry_after
-                    logger.warning(f"LLM Key marked as rate-limited. Resets in {retry_after}s.")
+                    if retry_after >= 86400:
+                        logger.warning(f"LLM Key hit DAILY quota limit. Marking exhausted for 24h — will fall through to next provider.")
+                    else:
+                        logger.warning(f"LLM Key marked as rate-limited. Resets in {retry_after}s.")
                     break
 
     def get_status(self):
