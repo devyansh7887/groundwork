@@ -1,0 +1,7 @@
+{
+  "repo_url": "https://github.com/lukeed/kleur",
+  "facts": [
+    {"fact": "Contains the color chain functions like red, green, blue", "expected_file": "index.js"},
+    {"fact": "Contains the TypeScript type definitions for kleur", "expected_file": "kleur.d.ts"}
+  ]
+}

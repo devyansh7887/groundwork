@@ -159,7 +159,7 @@ Do NOT add anything else."""
                     error_str = str(e).lower()
                     if "429" in error_str or "rate limit" in error_str or "quota" in error_str or "exhausted" in error_str:
                         try:
-                            llm_key_pool.mark_rate_limit_for_llm(llm)
+                            llm_key_pool.mark_rate_limit_for_llm(llm, error_str=str(e))
                         except Exception:
                             pass
                     
@@ -232,3 +232,4 @@ Do NOT add anything else."""
             verified_claims.append(claim_data)
 
         return verified_claims
+

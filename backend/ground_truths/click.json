@@ -1,0 +1,9 @@
+{
+  "repo_url": "https://github.com/pallets/click",
+  "facts": [
+    {"fact": "Contains the main click group and command decorator functions", "expected_file": "src/click/decorators.py"},
+    {"fact": "Contains the BaseCommand and Group classes", "expected_file": "src/click/core.py"},
+    {"fact": "Contains the Context class that holds state during command execution", "expected_file": "src/click/core.py"},
+    {"fact": "Contains the echo and prompt utility functions", "expected_file": "src/click/utils.py"}
+  ]
+}
