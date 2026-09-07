@@ -115,11 +115,11 @@ class LLMKeyPool:
             if not isinstance(session_token, str) or len(session_token) < 10:
                 raise HTTPException(status_code=400, detail="Malformed session token")
             
-            if session_token.startswith("gsk_") or session_token.startswith("AIza") or session_token.startswith("sk-"):
+            if session_token.startswith("gsk_") or session_token.startswith("AIza") or session_token.startswith("AQ.") or session_token.startswith("sk-"):
                 token_to_use = session_token
                 key_type = self._determine_key_type(token_to_use)
             else:
-                raise HTTPException(status_code=400, detail="Invalid session token prefix. Must be gsk_, AIza, sk-proj-, or sk-ant-")
+                raise HTTPException(status_code=400, detail="Invalid session token prefix. Must be gsk_, AIza, AQ., sk-proj-, or sk-ant-")
         else:
             best = self.get_best_key()
             if best:

@@ -17,11 +17,15 @@ if GROQ_API_KEY and "your_" in GROQ_API_KEY:
     GROQ_API_KEY = None
 
 # Hard Constraints
-MAX_FILES = 500          # Absolute hard cap — repos larger than this are truly too big
-MAX_LOC = 150000          # Max lines of code
+MAX_FILES = 1000        # Absolute hard cap — repos with >1000 source files are data repos, not codebases
+MAX_LOC = 150000        # Max lines of code
 
-# SMART_SAMPLE_LIMIT removed. We now read ALL files under MAX_FILES.
-# Smart-sampling was silently discarding ~48% of repos and producing fake results.
+# Smart Sampling
+# When a repo's filtered file count exceeds this, we intelligently prioritize files
+# rather than hard-rejecting. Entry points + core modules are always included.
+# The UI shows a transparent disclosure banner so results are never "fake".
+# This replaces the old SMART_SAMPLE_LIMIT which silently dropped files with no disclosure.
+SMART_SAMPLE_TARGET = 350  # Max files sent through the full analysis pipeline
 
 # AST parser file size limit — files larger than this are truncated (not skipped).
 # We always parse the first PARSE_SIZE_LIMIT bytes. Top of file = imports + class/function

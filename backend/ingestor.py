@@ -1,7 +1,7 @@
 import httpx
 import logging
 from typing import List, Dict, Any, Optional
-from config import GITHUB_TOKEN, MAX_FILES, MAX_LOC, SUPPORTED_LANGUAGES, LANGUAGE_EXTENSIONS, DEFAULT_BRANCH_ONLY, PUBLIC_REPOS_ONLY
+from config import GITHUB_TOKEN, MAX_FILES, MAX_LOC, SUPPORTED_LANGUAGES, LANGUAGE_EXTENSIONS, DEFAULT_BRANCH_ONLY, PUBLIC_REPOS_ONLY, SMART_SAMPLE_TARGET
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -154,6 +154,77 @@ class Ingestor:
         response.raise_for_status()
         return response.text
 
+    def _smart_sample(self, files: List[Dict[str, Any]], target: int) -> List[Dict[str, Any]]:
+        """
+        Picks the most architecturally important files up to `target` count.
+
+        Priority tiers (highest to lowest):
+          Tier 1 — Named entry points: main.*, index.*, app.*, server.*, __init__.py
+                   at the repo root or package root. These define the public surface.
+          Tier 2 — Root-level files: anything at depth 0 or 1. Config, setup, core modules.
+          Tier 3 — Core non-test files, sorted by size descending.
+                   Larger files = more code = more architecturally significant.
+          Tier 4 — Test/fixture files, sorted by size descending.
+                   Included last to fill any remaining budget.
+
+        This gives a principled, repeatable sample — not random. The same repo
+        always produces the same sample, so cached results remain valid.
+        """
+        ENTRY_POINT_STEMS = {
+            'main', 'index', 'app', 'server', 'application', '__init__',
+            'manage', 'cli', 'run', 'wsgi', 'asgi', 'setup', 'configure',
+            'start', 'launch', 'entrypoint', 'entry', 'init', 'bootstrap',
+        }
+        TEST_INDICATORS = [
+            '/test/', '/tests/', '/spec/', '/specs/', '/__tests__/',
+            '_test.', '.test.', '_spec.', '.spec.', '/fixtures/', '/mocks/',
+        ]
+
+        tier1, tier2, tier3, tier4 = [], [], [], []
+
+        for f in files:
+            path = f['path']
+            path_lower = path.lower()
+            depth = path.count('/')
+            stem = path_lower.split('/')[-1].rsplit('.', 1)[0]  # filename without extension
+            size = f.get('size', 0)
+
+            is_test = any(ind in f'/{path_lower}' for ind in TEST_INDICATORS)
+            is_entry = stem in ENTRY_POINT_STEMS
+            is_shallow = depth <= 1  # root or one directory deep
+
+            if is_entry:
+                tier1.append((size, path, f))
+            elif is_shallow and not is_test:
+                tier2.append((size, path, f))
+            elif not is_test:
+                tier3.append((size, path, f))
+            else:
+                tier4.append((size, path, f))
+
+        # Sort each tier by size descending (larger = more important)
+        for tier in (tier1, tier2, tier3, tier4):
+            tier.sort(key=lambda x: x[0], reverse=True)
+
+        selected = []
+        seen = set()
+        for tier in (tier1, tier2, tier3, tier4):
+            for size, path, f in tier:
+                if len(selected) >= target:
+                    break
+                if path not in seen:
+                    selected.append(f)
+                    seen.add(path)
+            if len(selected) >= target:
+                break
+
+        logger.info(
+            f"🎯  Smart sampled {len(selected)}/{len(files)} files "
+            f"({len(tier1)} entry points, {len(tier2)} shallow core, "
+            f"{len(tier3)} deep core, {len(tier4)} test files in full set)"
+        )
+        return selected
+
     async def ingest_repository(self, url: str) -> Dict[str, Any]:
         """Main entry point to ingest and validate a repository."""
         owner, repo = self.parse_github_url(url)
@@ -170,29 +241,46 @@ class Ingestor:
         # 3. Filter tree — returns dict with counts for accurate stats
         filter_result = self.filter_tree(tree)
         in_scope_files = filter_result["files"]
-        file_count = len(in_scope_files)
+        original_file_count = len(in_scope_files)
         
-        logger.info(f"📁  {file_count} source files in scope (out of {filter_result['total_blobs']} total blobs) — fetching contents...")
+        logger.info(f"📁  {original_file_count} source files in scope (out of {filter_result['total_blobs']} total blobs)")
         
-        # 4. Hard cap — truly massive repos (>500 files) are unsupported on free tier
-        if file_count > MAX_FILES:
+        # 4. Absolute hard cap — repos with >1000 source files are data/asset repos,
+        #    not codebases. Smart sampling cannot meaningfully represent them.
+        if original_file_count > MAX_FILES:
             raise RepoScopeError(
-                f"Repository is too large ({file_count} source files). Maximum supported is {MAX_FILES} files. "
-                f"Provide your own GitHub token to analyze larger repositories."
+                f"Repository has {original_file_count} source files — this looks like a data or "
+                f"monorepo rather than a single codebase (limit: {MAX_FILES}). "
+                f"Try analyzing a specific sub-package instead."
             )
         
-        # No smart sampling — we read EVERYTHING under the cap.
-        # The old SMART_SAMPLE_LIMIT=300 cap silently discarded ~48% of many repos.
+        # 5. Smart sampling — triggered when file count exceeds SMART_SAMPLE_TARGET.
+        #    We never silently drop files. Instead we rank by architectural importance
+        #    and surface this to the user via the 'sampled' flag in the response.
+        sampled = False
+        if original_file_count > SMART_SAMPLE_TARGET:
+            logger.info(
+                f"📊  {original_file_count} files exceeds target ({SMART_SAMPLE_TARGET}). "
+                f"Running smart sampler — prioritising entry points and core modules..."
+            )
+            in_scope_files = self._smart_sample(in_scope_files, SMART_SAMPLE_TARGET)
+            sampled = True
+            logger.info(f"✅  Smart sample complete — analysing {len(in_scope_files)} of {original_file_count} files")
+        else:
+            logger.info(f"📦  {original_file_count} files — fetching all contents...")
         
         return {
             "owner": owner,
             "repo": repo,
             "branch": branch,
             "files": in_scope_files,
-            "file_count": file_count,
+            "file_count": len(in_scope_files),
             # Accurate stats — never lie about what we read
             "total_blobs": filter_result["total_blobs"],
-            "in_scope_files": file_count,
+            "in_scope_files": original_file_count,     # total BEFORE sampling
+            "analysed_files": len(in_scope_files),      # total AFTER sampling
+            "sampled": sampled,
+            "original_file_count": original_file_count,
             "excluded_build_dirs": filter_result["excluded_by_dir"],
             "excluded_oversized": filter_result["excluded_by_size"],
             "repo_meta": metadata,

@@ -11,7 +11,15 @@ services:
         value: 3.11.0
       - key: GITHUB_TOKEN_1
         sync: false
+      - key: GITHUB_TOKEN_2
+        sync: false
+      - key: GITHUB_TOKEN_3
+        sync: false
+      - key: GITHUB_TOKEN_4
+        sync: false
       - key: GEMINI_API_KEY
         sync: false
       - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_API_KEY_2
         sync: false

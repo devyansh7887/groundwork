@@ -52,9 +52,6 @@ from contribution_qa import contribution_qa
 import cache_manager
 from ingestor import Ingestor
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 # In-memory cache (mirrors disk cache for fast access)
 # Hard cap: evict oldest entry when limit is reached to prevent OOM on long-running instances
 _CACHE_MAX_ENTRIES = 20
@@ -389,6 +386,9 @@ async def analyze_repo(req: AnalyzeRequest, request: Request):
                 "security": final_state.get("security_findings", []),
                 "patterns": final_state.get("pattern_findings", []),
                 "actions": final_state.get("actions", []),
+                "sampled": repo_meta.get("sampled", False),
+                "original_file_count": repo_meta.get("original_file_count", in_scope_files),
+                "analysed_file_count": repo_meta.get("analysed_files", in_scope_files),
                 "file_sizes": {
                     f.get("path", ""): len(f.get("content", ""))
                     for f in final_state.get("downloaded_files", [])

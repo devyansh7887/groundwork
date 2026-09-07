@@ -158,6 +158,7 @@ function AnalyzeContent() {
   const [security, setSecurity] = useState<any[]>([]);
   const [patterns, setPatterns] = useState<any[]>([]);
   const [driftInfo, setDriftInfo] = useState<{ stale: boolean; cached_sha: string; current_sha: string } | null>(null);
+  const [sampledInfo, setSampledInfo] = useState<{ sampled: boolean; original: number; analysed: number } | null>(null);
   
   const initialTab = (searchParams.get("tab") as "narrative" | "diagram" | "wizard" | "qa" | "onboarding" | "issues") || "narrative";
   const [activeResultTab, setActiveResultTab] = useState<"narrative" | "diagram" | "wizard" | "qa" | "onboarding" | "issues">(initialTab);
@@ -284,6 +285,7 @@ function AnalyzeContent() {
     setSecurity([]);
     setPatterns([]);
     setDriftInfo(null);
+    setSampledInfo(null);
     setLogs([]);
     setStatus("loading");
     setErrorMsg("");
@@ -349,6 +351,13 @@ function AnalyzeContent() {
                    setFileLocs(parsed.result.file_locs || {});
                    setSecurity(parsed.result.security || []);
                    setPatterns(parsed.result.patterns || []);
+                   if (parsed.result.sampled) {
+                     setSampledInfo({
+                       sampled: true,
+                       original: parsed.result.original_file_count,
+                       analysed: parsed.result.analysed_file_count,
+                     });
+                   }
                    receivedResult = true;
                    if (parsed.result.from_cache) {
                      setLogs(prev => [...prev, "  Loaded from cache - instant results!"]);
@@ -556,6 +565,27 @@ function AnalyzeContent() {
           <button 
             onClick={() => handleAnalyze(repoUrl, sessionToken, mode, true)}
             className="px-4 py-1.5 bg-[#d29922] hover:bg-[#d29922] border border-[#d29922]/50 text-[#d29922] font-semibold text-xs rounded transition-colors"
+          >
+            Re-analyze
+          </button>
+        </div>
+      )}
+
+      {/* Sampling Disclosure Banner */}
+      {sampledInfo && sampledInfo.sampled && (
+        <div className="flex-none flex items-center justify-between bg-[#161b22] border-b border-[#d29922]/40 px-4 py-2">
+          <div className="flex items-center gap-3">
+            <span className="text-[#d29922] font-jetbrains text-xs font-bold bg-[#d29922]/10 border border-[#d29922]/30 px-2 py-0.5 rounded">PARTIAL ANALYSIS</span>
+            <p className="text-[#8b949e] font-jetbrains text-xs">
+              This repo has <span className="text-[#c9d1d9] font-bold">{sampledInfo.original}</span> source files.
+              Analysed the top <span className="text-[#c9d1d9] font-bold">{sampledInfo.analysed}</span> by architectural importance
+              (entry points first, then core modules by size). Test files deprioritised.
+            </p>
+          </div>
+          <button
+            onClick={() => handleAnalyze(repoUrl, sessionToken, mode, true)}
+            className="ml-4 flex-none px-3 py-1 text-[#8b949e] hover:text-[#c9d1d9] border border-[#30363d] hover:border-[#8b949e] font-jetbrains text-xs rounded transition-colors"
+            title="Force re-analysis (same smart sample — counts are deterministic)"
           >
             Re-analyze
           </button>
