@@ -57,9 +57,14 @@ export function QASection({ qaHistory, asking, qaError, question, setQuestion, s
       
       <div className="flex-1 overflow-y-auto p-5 space-y-6 bg-[#0d1117]">
         {qaHistory.length === 0 ? (
-          <div className="text-sm font-jetbrains text-[#8b949e] text-center mt-32 px-4">
-            <span className="w-10 h-10 text-[#30363d] mx-auto mb-4">&gt;_</span>
-            &gt;_ Ask a question about the architecture.<br/>Responses are fact-checked concurrently.
+          <div className="flex flex-col items-center justify-center h-full text-center px-8 pb-16">
+            <div className="w-14 h-14 bg-[#161b22] border border-[#30363d] rounded-xl flex items-center justify-center mb-5">
+              <span className="text-[#8b949e] font-jetbrains font-bold text-2xl leading-none">&gt;_</span>
+            </div>
+            <p className="text-sm font-bold text-[#c9d1d9] font-jetbrains mb-2">Ask anything about this codebase</p>
+            <p className="text-xs font-jetbrains text-[#8b949e] max-w-xs leading-relaxed">
+              Every response is fact-checked against the AST graph in real time.
+            </p>
           </div>
         ) : (
           qaHistory.map((qa, i) => (
@@ -93,8 +98,12 @@ export function QASection({ qaHistory, asking, qaError, question, setQuestion, s
           ))
         )}
         {asking && (
-          <div className="flex justify-start">
-            <span className="w-4 h-4 border-2 border-[#8b949e] border-t-transparent rounded-full animate-spin" />
+          <div className="flex flex-col items-center justify-center gap-3 py-8">
+            <div className="relative w-8 h-8">
+              <span className="absolute inset-0 rounded-full border-2 border-[#30363d]" />
+              <span className="absolute inset-0 rounded-full border-2 border-t-[#58a6ff] border-r-transparent border-b-transparent border-l-transparent animate-spin" />
+            </div>
+            <span className="text-[#8b949e] font-jetbrains text-xs tracking-widest animate-pulse">THINKING...</span>
           </div>
         )}
       </div>
