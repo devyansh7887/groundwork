@@ -320,7 +320,7 @@ function AnalyzeContent() {
         const { value, done } = await reader.read();
         if (done) {
           if (!receivedResult) {
-            throw new Error("Connection dropped by the server before finishing (this usually means the API timed out or the repository is too large). Please try again or analyze a smaller repository.");
+            throw new Error("Connection dropped by the server before finishing. This happens when the server restarts (e.g. during a new deployment), runs out of memory on a massive repository, or the API times out. Please wait a minute for any active deployments to finish and try again.");
           }
           break;
         }
