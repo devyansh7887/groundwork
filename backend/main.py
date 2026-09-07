@@ -556,6 +556,7 @@ Include:
                 downloaded_files=state.get("downloaded_files", []),
                 owner=owner,
                 repo=repo,
+                branch=state.get("repo_metadata", {}).get("default_branch", "main"),
                 session_token=session_token
             )
             return guide.model_dump()

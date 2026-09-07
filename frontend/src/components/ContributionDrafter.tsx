@@ -592,9 +592,28 @@ export function ContributionDrafter({
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [isMaximized, setIsMaximized] = useState(false);
   const [drafting, setDrafting] = useState(false);
+  const [draftPhase, setDraftPhase] = useState("Analyzing issue and searching file tree...");
   const [guide, setGuide] = useState<ContributionGuide | null>(null);
   const [draftError, setDraftError] = useState("");
   const [filter, setFilter] = useState<"all" | "easy" | "gfi" | "bugs">("all");
+
+  useEffect(() => {
+    if (!drafting) return;
+    
+    const phases = [
+      "Analyzing issue and searching file tree...",
+      "Reading test files and definitions...",
+      "Writing patch and tests...",
+      "Verifying unified diff..."
+    ];
+    let idx = 0;
+    const interval = setInterval(() => {
+      idx = Math.min(idx + 1, phases.length - 1);
+      setDraftPhase(phases[idx]);
+    }, 4500);
+    
+    return () => clearInterval(interval);
+  }, [drafting]);
 
   useEffect(() => {
     fetchIssues();
@@ -626,6 +645,7 @@ export function ContributionDrafter({
     setSelectedIssue(issue);
     setGuide(null);
     setDraftError("");
+    setDraftPhase("Analyzing issue and searching file tree...");
     setDrafting(true);
 
     try {
@@ -817,8 +837,7 @@ export function ContributionDrafter({
                   <div className="flex flex-col items-center justify-center h-full text-[#8b949e] gap-4">
                     <span className="text-2xl animate-pulse text-[#58a6ff]">&gt;_</span>
                     <div className="text-sm text-center">
-                      <p className="font-semibold text-[#c9d1d9]">Analyzing codebase...</p>
-                      <p className="text-xs mt-1 font-jetbrains text-[#8b949e]">Awaiting response from Drafter Agent</p>
+                      <p className="font-semibold text-[#c9d1d9]">{draftPhase}</p>
                     </div>
                   </div>
                 )}

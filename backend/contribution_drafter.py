@@ -25,6 +25,10 @@ class DraftPatch(BaseModel):
     test_code: str = Field(description="Drafted test case for the patch.")
     pr_description: str = Field(description="A detailed PR description explaining the fix.")
 
+class ResearchRequest(BaseModel):
+    required_files: List[str] = Field(description="Exact file paths from the repository needed to write the code and tests. Must include the core files, definitions, and their corresponding test files.")
+    reasoning: str = Field(description="Why these files are needed.")
+
 
 class FileModification(BaseModel):
     file_path: str = Field(description="The exact path to the file that needs to be changed.")
@@ -253,29 +257,22 @@ class ContributionDrafter:
         downloaded_files: List[Dict[str, str]],
         owner: str,
         repo: str,
+        branch: str = "main",
         session_token: str | None = None
     ) -> ContributionGuide:
         """
         Generates a full ContributionGuide for a selected issue.
-        Uses issue-targeted file discovery to pass only the RELEVANT files to the LLM.
+        Uses a two-step agentic process: Research -> Draft.
         """
         logger.info(f"Drafting contribution guide for: {issue.get('title', '')[:60]}")
         
-        # Issue-targeted file discovery — NOT random top-5
-        relevant_files = find_relevant_files(issue, graph, downloaded_files)
+        # 1. Heuristic file discovery (Baseline)
+        heuristic_files = find_relevant_files(issue, graph, downloaded_files)
         
-        # Build file snippets (more content = better LLM output)
-        file_snippets = ""
-        for f in relevant_files[:8]:
-            file_snippets += f"\n--- {f['path']} ---\n"
-            # Sanitize file content before injecting into the LLM prompt
-            file_snippets += sanitize_content(f["content"][:3000])
-        
-        # Build graph summary for the LLM
         graph_summary = {
             "total_files": len(graph.get("files", [])),
             "total_functions": graph.get("total_public_functions", len(graph.get("nodes", []))),
-            "relevant_files_found": [f["path"] for f in relevant_files],
+            "heuristic_files_found": [f["path"] for f in heuristic_files],
             "entry_points": [ep.get("id", "") for ep in graph.get("entry_points", [])][:10],
         }
 
@@ -283,14 +280,89 @@ class ContributionDrafter:
         difficulty_reason = issue.get("_difficulty_reason", "Estimated based on issue content.")
         issue_url = issue.get("html_url", f"https://github.com/{owner}/{repo}/issues/{issue.get('number', '')}")
 
+        llm = llm_key_pool.get_llm(session_token, temperature=0.1)
+
+        # ─── STEP 1: RESEARCH PHASE ──────────────────────────────────────────
+        research_prompt = ChatPromptTemplate.from_messages([
+            ("system", """You are an expert open-source agent analyzing an issue to determine exactly which files you need to see in order to write a code patch.
+You are given a graph summary and a list of heuristically found relevant files.
+You MUST output a list of EXACT file paths you want to read in full (maximum 8).
+Crucially: If you identify a core file that needs modification (e.g., 'src/db.ts'), you MUST also request its corresponding test file (e.g., 'src/db.test.ts', 'tests/db.spec.ts', etc.) if one likely exists in the repo, so you can mimic the exact testing style.
+"""),
+            ("human", """GitHub Issue:
+Title: {issue_title}
+Number: #{issue_number}
+Labels: {labels}
+Body:
+{issue_body}
+
+Repository: {owner}/{repo}
+Graph Summary: {graph_summary}
+All Files in Repo (or heuristically matched if too large): {all_files}
+
+Return a ResearchRequest with the files you need to see.""")
+        ])
+        
+        # Limit all_files list size to prevent context bloat
+        all_files_list = graph.get("files", [])
+        if len(all_files_list) > 1000:
+            all_files_str = "List too large. Use heuristic_files_found from Graph Summary."
+        else:
+            all_files_str = "\n".join(all_files_list)
+
+        research_chain = research_prompt | llm.with_structured_output(ResearchRequest)
+        
+        try:
+            research_result: ResearchRequest = await research_chain.ainvoke({
+                "issue_title": issue.get("title", ""),
+                "issue_number": issue.get("number", ""),
+                "labels": ", ".join(issue.get("labels", [])),
+                "issue_body": (issue.get("body", "") or "No description provided.")[:3000],
+                "owner": owner,
+                "repo": repo,
+                "graph_summary": str(graph_summary),
+                "all_files": all_files_str
+            })
+            requested_paths = research_result.required_files[:8]
+            logger.info(f"Research phase complete. LLM requested {len(requested_paths)} files: {requested_paths}")
+        except Exception as e:
+            logger.error(f"Research phase failed: {e}. Falling back to heuristic files.")
+            requested_paths = [f["path"] for f in heuristic_files[:8]]
+
+        # ─── STEP 2: FETCH CONTEXT ───────────────────────────────────────────
+        file_snippets = ""
+        downloaded_map = {f["path"]: f for f in downloaded_files}
+        
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            for path in requested_paths:
+                if path in downloaded_map:
+                    content = downloaded_map[path]["content"]
+                else:
+                    # Dynamic fetch from Github if it was smart-sampled out
+                    try:
+                        url = f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{path}"
+                        res = await client.get(url)
+                        res.raise_for_status()
+                        content = res.text
+                        logger.info(f"Dynamically fetched missing context file: {path}")
+                    except Exception as e:
+                        logger.warning(f"Failed to fetch requested file {path}: {e}")
+                        continue
+                
+                file_snippets += f"\n--- {path} ---\n"
+                # Truncate at 15KB per file to prevent blowing up the context window
+                file_snippets += sanitize_content(content[:15000])
+
+        # ─── STEP 3: DRAFT PHASE ─────────────────────────────────────────────
         prompt = ChatPromptTemplate.from_messages([
             ("system", """You are an expert open-source mentor helping a complete beginner make their first contribution.
 
 Your output must be:
-1. HONEST: If you're not sure what code to change, say so in confidence_reason.
-2. BEGINNER-FRIENDLY: The `understanding` and `what_needs_to_change` fields must be written so a 16-year-old who can code basic Python could understand them.
+1. HONEST: If you're not sure what code to change, say so in confidence_reason and mark confidence 'low'.
+2. BEGINNER-FRIENDLY: The `understanding` and `modifications` fields must be written so a 16-year-old who can code basic Python could understand them.
 3. SPECIFIC: Always cite exact file paths and function names when you know them.
 4. PRACTICAL: The `diff` must be a real, syntactically valid unified diff.
+5. STRICT TESTING (Option 3): Do NOT leave empty test comments. You MUST write complete tests mimicking the style of the provided test files. If no test files were provided or you do not know the exact assertions, you must state 'Low Confidence' in the test_code and confidence fields rather than writing pseudocode.
 
 For the `diff` field:
 - Use standard unified diff format:
@@ -302,9 +374,9 @@ For the `diff` field:
   +added_line
 - DO NOT wrap in markdown fences inside the JSON field.
 - If you don't have enough context to write a perfect diff, provide your best-effort valid unified diff anyway (especially for simple additions like exports or imports). Only use "# Unable to generate patch" if it is completely impossible to guess.
-- confidence: 'high' = you are certain the diff is correct
+- confidence: 'high' = you are certain the diff and test are correct
 - confidence: 'partial' = the diff is directionally right but may need adjustment  
-- confidence: 'low' = you can identify WHERE to look but cannot write the actual code
+- confidence: 'low' = you can identify WHERE to look but cannot write the actual code or test
 """),
             ("human", """GitHub Issue:
 Title: {issue_title}
@@ -316,23 +388,19 @@ Body:
 Repository: {owner}/{repo}
 Graph Summary: {graph_summary}
 
-Relevant file contents (these are the files most likely to need changes):
+Relevant file contents (these are the files you requested during research):
 {file_snippets}
 
-Generate a complete ContributionGuide. Be honest about what you know and don't know.
-""")
+Generate a complete ContributionGuide. Be honest about what you know and don't know.""")
         ])
 
-        llm = llm_key_pool.get_llm(session_token, temperature=0.2)
-        structured_llm = llm.with_structured_output(ContributionGuide)
-        chain = prompt | structured_llm
+        chain = prompt | llm.with_structured_output(ContributionGuide)
 
         max_retries = 6
-        backoff = 2.0
         
         for attempt in range(1, max_retries + 1):
             try:
-                result: ContributionGuide = chain.invoke({
+                result: ContributionGuide = await chain.ainvoke({
                     "issue_title": issue.get("title", ""),
                     "issue_number": issue.get("number", ""),
                     "labels": ", ".join(issue.get("labels", [])),
@@ -340,7 +408,7 @@ Generate a complete ContributionGuide. Be honest about what you know and don't k
                     "owner": owner,
                     "repo": repo,
                     "graph_summary": str(graph_summary),
-                    "file_snippets": file_snippets or "No relevant files found in the analyzed codebase.",
+                    "file_snippets": file_snippets or "No relevant files found.",
                 })
                 # Attach metadata computed before LLM call
                 result.difficulty = difficulty
