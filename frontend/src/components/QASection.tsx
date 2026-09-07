@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 
 const Badge = ({ status }: { status: string }) => {
-  if (status === "Verified") return <span className="inline-flex items-center px-2 py-1 rounded-[4px] text-xs font-jetbrains font-bold bg-green-500/10 text-green-400 border border-green-500/30"><span className="w-3 h-3 mr-1">[+]</span> VERIFIED</span>;
-  if (status === "Inferred") return <span className="inline-flex items-center px-2 py-1 rounded-[4px] text-xs font-jetbrains font-bold bg-yellow-500/10 text-yellow-400 border border-yellow-500/30"><span className="w-3 h-3 mr-1">[?]</span> INFERRED</span>;
-  return <span className="inline-flex items-center px-2 py-1 rounded-[4px] text-xs font-jetbrains font-bold bg-red-500/10 text-red-400 border border-red-500/30"><span className="w-3 h-3 mr-1">[x]</span> UNVERIFIED</span>;
+  if (status === "Verified") return <span className="inline-flex items-center px-2 py-1 rounded-[4px] text-xs font-jetbrains font-bold bg-green-500/10 text-green-400 border border-green-500/30"><span className="mr-1">[+]</span> VERIFIED</span>;
+  if (status === "Inferred") return <span className="inline-flex items-center px-2 py-1 rounded-[4px] text-xs font-jetbrains font-bold bg-yellow-500/10 text-yellow-400 border border-yellow-500/30"><span className="mr-1">[?]</span> INFERRED</span>;
+  return <span className="inline-flex items-center px-2 py-1 rounded-[4px] text-xs font-jetbrains font-bold bg-red-500/10 text-red-400 border border-red-500/30"><span className="mr-1">[x]</span> UNVERIFIED</span>;
 };
 
 const CitationChip = ({ text }: { text: string }) => {
@@ -43,7 +43,7 @@ export function QASection({ qaHistory, asking, qaError, question, setQuestion, s
     <div className={`flex-1 w-full flex flex-col bg-[#161b22] border border-[#30363d] rounded-md overflow-hidden  ${isExpanded ? 'h-full border-none' : 'h-[700px] mt-2'}`}>
       <div className="p-5 border-b border-[#30363d] bg-[#161b22] flex items-center justify-between">
         <div>
-          <h3 className="font-space text-lg font-bold text-[#c9d1d9] flex items-center"><span className="w-4 h-4 mr-2 text-[#8b949e]">&gt;_</span> Grounded Q&A</h3>
+          <h3 className="font-space text-lg font-bold text-[#c9d1d9] flex items-center"><span className="mr-2 text-[#8b949e]">&gt;_</span> Grounded Q&A</h3>
           <p className="text-xs font-jetbrains text-[#8b949e] mt-1">Every claim verified via AST graph.</p>
         </div>
         <button 

@@ -101,7 +101,7 @@ function Mermaid({ chart }: { chart: string }) {
           <span className="w-3.5 h-3.5">[^]</span> Reset
         </button>
         <span className="ml-auto text-[#8b949e] text-xs font-jetbrains flex items-center gap-1.5">
-          <span className="w-3 h-3">[M]</span> Drag to pan · Scroll to zoom
+          <span>[M]</span> Drag to pan · Scroll to zoom
         </span>
         <span className="text-[#58a6ff] text-xs font-jetbrains bg-[#0d1117] border border-[#30363d] px-2 py-1 rounded">
           {Math.round(scale * 100)}%
@@ -458,9 +458,9 @@ function AnalyzeContent() {
   };
 
   const Badge = ({ status }: { status: string }) => {
-    if (status === "Verified") return <span className="inline-flex items-center px-2 py-1 rounded-[4px] text-xs font-jetbrains font-bold bg-green-500/10 text-green-400 border border-green-500/30"><span className="w-3 h-3 mr-1">[+]</span> VERIFIED</span>;
-    if (status === "Inferred") return <span className="inline-flex items-center px-2 py-1 rounded-[4px] text-xs font-jetbrains font-bold bg-yellow-500/10 text-yellow-400 border border-yellow-500/30"><span className="w-3 h-3 mr-1">[?]</span> INFERRED</span>;
-    return <span className="inline-flex items-center px-2 py-1 rounded-[4px] text-xs font-jetbrains font-bold bg-red-500/10 text-red-400 border border-red-500/30"><span className="w-3 h-3 mr-1">[x]</span> UNVERIFIED</span>;
+    if (status === "Verified") return <span className="inline-flex items-center px-2 py-1 rounded-[4px] text-xs font-jetbrains font-bold bg-green-500/10 text-green-400 border border-green-500/30"><span className="mr-1">[+]</span> VERIFIED</span>;
+    if (status === "Inferred") return <span className="inline-flex items-center px-2 py-1 rounded-[4px] text-xs font-jetbrains font-bold bg-yellow-500/10 text-yellow-400 border border-yellow-500/30"><span className="mr-1">[?]</span> INFERRED</span>;
+    return <span className="inline-flex items-center px-2 py-1 rounded-[4px] text-xs font-jetbrains font-bold bg-red-500/10 text-red-400 border border-red-500/30"><span className="mr-1">[x]</span> UNVERIFIED</span>;
   };
 
   const CitationChip = ({ text }: { text: string }) => {
@@ -470,7 +470,7 @@ function AnalyzeContent() {
         className="inline-flex items-center gap-1 bg-[#0d1117] border border-[#30363d] text-[#58a6ff] font-jetbrains text-[11px] px-2 py-0.5 rounded-[4px] mx-1 cursor-pointer hover:bg-[#161b22] hover:border-[#8b949e] transition-colors relative -top-0.5"
         title="Copy path"
       >
-        {text} <span className="w-3 h-3 opacity-70">[c]</span>
+        {text} <span className="opacity-70">[c]</span>
       </span>
     );
   };
@@ -510,7 +510,7 @@ function AnalyzeContent() {
           </pre>
           <div className="mt-6 flex items-center gap-4">
             <Link href="/" className="inline-flex items-center text-[#8b949e] hover:text-[#c9d1d9] transition-colors font-jetbrains text-sm">
-              <span className="w-4 h-4 mr-2">«</span> Return to input
+              <span className="mr-2">«</span> Return to input
             </Link>
             <button 
               onClick={() => handleAnalyze(repoUrl)}
@@ -538,7 +538,7 @@ function AnalyzeContent() {
       <div className="flex-none flex items-center justify-between bg-[#161b22] border-b border-[#30363d] px-4 py-3 z-10">
         <div>
           <Link href="/" className="inline-flex items-center text-[#8b949e] hover:text-[#58a6ff] font-jetbrains text-xs mb-4 uppercase tracking-wider transition-colors">
-            <span className="w-3 h-3 mr-1">«</span> New Analysis
+            <span className="mr-1">«</span> New Analysis
           </Link>
           <h1 className="font-space text-2xl font-bold text-[#c9d1d9] flex items-center tracking-tight">
             <span className="w-6 h-6 mr-3 text-[#8b949e]">|-</span>

@@ -803,7 +803,7 @@ export function ContributionDrafter({
                           rel="noreferrer"
                           className="text-xs text-[#58a6ff] hover:underline flex items-center gap-0.5"
                         >
-                          View on GitHub <span className="w-3 h-3">»</span>
+                          View on GitHub <span>»</span>
                         </a>
                       )}
                     </div>

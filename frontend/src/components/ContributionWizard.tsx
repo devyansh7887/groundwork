@@ -357,7 +357,7 @@ export function ContributionWizard({ repoUrl, action, onClose, onDraftRequest }:
           <div className="flex-1 flex flex-col p-8 bg-[#0d1117] overflow-y-auto">
             <div className="flex-1 max-w-2xl">
               <div className="flex items-center gap-2 text-[#8b949e] font-jetbrains text-xs mb-6 uppercase tracking-wider">
-                Step {currentStepIdx + 1} of {STEPS.length} <span className="w-3 h-3">»</span> {STEPS[currentStepIdx].id}
+                Step {currentStepIdx + 1} of {STEPS.length} <span>»</span> {STEPS[currentStepIdx].id}
               </div>
               {renderStepContent()}
             </div>
