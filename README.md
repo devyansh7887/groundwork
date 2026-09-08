@@ -12,6 +12,49 @@ When joining a new codebase, the hardest part isn't reading the syntax—it's un
 
 Groundwork answers these questions via a **Grounded Verification Loop** and an **Agentic Drafter**.
 
+## System Architecture
+
+```mermaid
+graph TD
+    classDef frontend fill:#0d1117,stroke:#58a6ff,stroke-width:2px,color:#c9d1d9
+    classDef backend fill:#0d1117,stroke:#3fb950,stroke-width:2px,color:#c9d1d9
+    classDef agent fill:#0d1117,stroke:#a371f7,stroke-width:2px,color:#c9d1d9
+    classDef ext fill:#161b22,stroke:#30363d,stroke-width:1px,color:#8b949e
+    
+    subgraph Frontend [Next.js Client]
+        UI[React UI]:::frontend
+        SSE[SSE Stream Receiver]:::frontend
+    end
+    
+    subgraph Backend [FastAPI Server]
+        API[API Endpoints]:::backend
+        Parser[Tree-sitter AST Parser]:::backend
+        Cache[Local Cache]:::backend
+    end
+    
+    subgraph ReActLoop [Agentic Subsystem]
+        LLM[Mixtral 8x7B LLM]:::agent
+        Tools{Agent Tools}:::agent
+        Search[search_codebase]:::agent
+        Read[read_file]:::agent
+    end
+    
+    GH[(GitHub API)]:::ext
+    
+    UI -- "1. POST /api/analyze" --> API
+    API -- "2. Fetch source" --> GH
+    GH -- "3. Downloaded files" --> Parser
+    Parser -- "4. Dependency Graph" --> Cache
+    API -- "5. Invoke Drafter" --> LLM
+    
+    LLM -- "6. Request context" --> Tools
+    Tools --> Search & Read
+    Search & Read -- "7. Return context" --> LLM
+    
+    LLM -. "8. Stream agent thoughts" .-> SSE
+    SSE -. "9. Real-time UI updates" .-> UI
+```
+
 ## Core Features
 
 - **Agentic Contribution Drafter (ReAct Loop):** Groundwork doesn't just guess a patch in one shot. It uses a custom `ReAct` loop with `search_codebase` and `read_file` tools. If an issue mentions an obscure architecture pattern (e.g. "disconnected backends"), the agent searches the codebase, reads the implementations, and iterates until it understands the architecture perfectly. *Then* it generates the `.patch`.
