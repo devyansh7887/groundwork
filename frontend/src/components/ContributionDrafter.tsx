@@ -446,7 +446,7 @@ function ContributionWizardPanel({
                 className="flex items-center gap-2 px-4 py-2 bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] text-[#c9d1d9] text-xs font-semibold rounded-lg transition-colors disabled:opacity-50"
               >
                 {storingPatch ? (
-                  <><span className="w-3.5 h-3.5 border-2 border-[#8b949e] border-t-transparent rounded-full animate-spin" /> Preparing..></>
+                  <><span className="w-3.5 h-3.5 border-2 border-[#8b949e] border-t-transparent rounded-full animate-spin" /> Preparing...</>
                 ) : (
                   <>⬇️ Download groundwork-fix-{issueNumber}.patch</>
                 )}
