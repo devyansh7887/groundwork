@@ -832,16 +832,20 @@ export function ContributionDrafter({
     if (!drafting) return;
     
     const phases = [
-      "Analyzing issue and searching file tree...",
-      "Reading test files and definitions...",
-      "Writing patch and tests...",
-      "Verifying unified diff..."
+      "Initializing Read-Only Agent Sandbox...",
+      "Analyzing issue and file graph...",
+      "Searching codebase for keywords...",
+      "Reading architectural implementations...",
+      "Exploring related dependencies...",
+      "Drafting initial patch...",
+      "Verifying edge cases and tests...",
+      "Finalizing Contribution Guide..."
     ];
     let idx = 0;
     const interval = setInterval(() => {
       idx = Math.min(idx + 1, phases.length - 1);
       setDraftPhase(phases[idx]);
-    }, 4500);
+    }, 6000);
     
     return () => clearInterval(interval);
   }, [drafting]);

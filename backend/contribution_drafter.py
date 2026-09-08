@@ -2,9 +2,12 @@ import asyncio
 import httpx
 import logging
 import re
+import json
 from typing import Dict, Any, List, Optional
 from pydantic import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.messages import SystemMessage, HumanMessage, ToolMessage, AIMessage
+from langchain_core.tools import tool
 from llm_key_pool import llm_key_pool
 from key_pool import key_pool
 from prompt_guard import sanitize_content
@@ -262,235 +265,192 @@ class ContributionDrafter:
     ) -> ContributionGuide:
         """
         Generates a full ContributionGuide for a selected issue.
-        Uses a two-step agentic process: Research -> Draft.
+        Uses an Agentic Loop to explore the codebase before writing the patch.
         """
-        logger.info(f"Drafting contribution guide for: {issue.get('title', '')[:60]}")
+        logger.info(f"Agentic Draft started for: {issue.get('title', '')[:60]}")
         
-        # 1. Heuristic file discovery (Baseline)
-        heuristic_files = find_relevant_files(issue, graph, downloaded_files)
-
-        # Build call-frequency centrality map (most-called files = highest moat)
-        from collections import Counter
-        call_targets = Counter()
-        for call in graph.get("calls", []):
-            callee = call.get("callee", "")
-            if callee:
-                call_targets[callee] += 1
-        
-        # Top files by how many functions they export that are called by others
-        file_centrality: Counter = Counter()
-        for node in graph.get("nodes", []):
-            node_id = node.get("id", "")
-            node_name = node.get("name", "")
-            freq = call_targets.get(node_name, 0)
-            if freq > 0 and ":" in node_id:
-                file_path = node_id.split(":")[0]
-                file_centrality[file_path] += freq
-        top_central_files = [f for f, _ in file_centrality.most_common(10)]
-
-        graph_summary = {
-            "total_files": len(graph.get("files", [])),
-            "total_functions": graph.get("total_public_functions", len(graph.get("nodes", []))),
-            "heuristic_files_found": [f["path"] for f in heuristic_files],
-            "entry_points": [ep.get("id", "") for ep in graph.get("entry_points", [])][:10],
-            "most_central_files": top_central_files,
-        }
-
         difficulty = issue.get("_difficulty", "medium")
         difficulty_reason = issue.get("_difficulty_reason", "Estimated based on issue content.")
-        issue_url = issue.get("html_url", f"https://github.com/{owner}/{repo}/issues/{issue.get('number', '')}")
-
-        llm = llm_key_pool.get_llm(session_token, temperature=0.1)
-
-        # ─── STEP 1: RESEARCH PHASE ──────────────────────────────────────────
-        research_prompt = ChatPromptTemplate.from_messages([
-            ("system", """You are an expert open-source agent analyzing an issue to determine exactly which files you need to see in order to write a code patch.
-
-You are given:
-- A graph summary that includes heuristically matched files AND the most_central_files (files whose functions are most frequently called across the codebase — these are the most architecturally important files).
-- A full file list (or subset if the repo is large).
-
-You MUST output a list of EXACT file paths you want to read (maximum 8).
-RULES:
-1. Prefer files from both heuristic_files_found and most_central_files when they overlap with the issue.
-2. If you identify a core file to modify (e.g. 'src/db.ts'), you MUST also request its corresponding test file (e.g. 'src/db.test.ts') so you can mimic exact testing style.
-3. Output file paths EXACTLY as they appear in the All Files list — do not guess or abbreviate.
-"""),
-            ("human", """GitHub Issue:
-Title: {issue_title}
-Number: #{issue_number}
-Labels: {labels}
-Body:
-{issue_body}
-
-Repository: {owner}/{repo}
-Graph Summary: {graph_summary}
-All Files in Repo (or heuristically matched if too large): {all_files}
-
-Return a ResearchRequest with the files you need to see.""")
-        ])
+        issue_url = f"https://github.com/{owner}/{repo}/issues/{issue.get('number', '')}"
         
-        # Limit all_files list size to prevent context bloat
-        all_files_list = graph.get("files", [])
-        if len(all_files_list) > 1000:
-            all_files_str = "List too large. Use heuristic_files_found from Graph Summary."
-        else:
-            all_files_str = "\n".join(all_files_list)
-
-        research_chain = research_prompt | llm.with_structured_output(ResearchRequest)
-        
-        try:
-            research_result: ResearchRequest = await research_chain.ainvoke({
-                "issue_title": issue.get("title", ""),
-                "issue_number": issue.get("number", ""),
-                "labels": ", ".join(issue.get("labels", [])),
-                "issue_body": (issue.get("body", "") or "No description provided.")[:3000],
-                "owner": owner,
-                "repo": repo,
-                "graph_summary": str(graph_summary),
-                "all_files": all_files_str
-            })
-            requested_paths = research_result.required_files[:8]
-            logger.info(f"Research phase complete. LLM requested {len(requested_paths)} files: {requested_paths}")
-        except Exception as e:
-            logger.error(f"Research phase failed: {e}. Falling back to heuristic files.")
-            requested_paths = [f["path"] for f in heuristic_files[:8]]
-
-        # ─── STEP 2: FETCH CONTEXT (with fuzzy path resolution) ─────────────
-        file_snippets = ""
         downloaded_map = {f["path"]: f for f in downloaded_files}
         all_repo_files = graph.get("files", [])
+        
+        # We need an httpx client for dynamically reading files during the loop
+        client = httpx.AsyncClient(timeout=10.0)
 
-        def _fuzzy_resolve(requested_path: str) -> str | None:
+        # ─── Tools for the Agent ───
+        def search_codebase(query: str) -> str:
             """
-            Resolves an LLM-requested path to the closest real path in the repo.
-            Tries exact match first, then suffix match (handles monorepo sub-paths),
-            then basename match as a last resort.
+            Search the repository files for a string or regex. Use this to find where a variable, function, or string is defined or used.
+            Returns a list of matching lines with their file paths.
             """
-            # 1. Exact match
-            if requested_path in all_repo_files:
-                return requested_path
-            # 2. Suffix match — handles when LLM omits the packages/... prefix
-            for real_path in all_repo_files:
-                if real_path.endswith(requested_path) or requested_path.endswith(real_path):
-                    return real_path
-            # 3. Basename match — last resort
-            req_basename = requested_path.split("/")[-1]
-            candidates = [p for p in all_repo_files if p.split("/")[-1] == req_basename]
-            if len(candidates) == 1:
-                return candidates[0]
-            return None
+            results = []
+            logger.info(f"Agent searching codebase for: {query}")
+            for file_path, file_data in downloaded_map.items():
+                content = file_data.get("content", "")
+                lines = content.splitlines()
+                for i, line in enumerate(lines):
+                    if query.lower() in line.lower():
+                        results.append(f"{file_path}:{i+1}: {line.strip()}")
+            
+            # Also check file names if we didn't find much in downloaded files
+            if not results:
+                for f in all_repo_files:
+                    if query.lower() in f.lower():
+                        results.append(f"File match: {f}")
 
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            for path in requested_paths:
-                resolved_path = _fuzzy_resolve(path)
-                if resolved_path and resolved_path != path:
-                    logger.info(f"Fuzzy resolved '{path}' → '{resolved_path}'")
-                lookup_path = resolved_path or path
+            if not results:
+                return f"No results found for '{query}' in downloaded context."
+            
+            return "\n".join(results[:50]) + ("\n...(truncated)" if len(results) > 50 else "")
 
-                if lookup_path in downloaded_map:
-                    content = downloaded_map[lookup_path]["content"]
-                else:
-                    # Dynamic fetch from GitHub if it was smart-sampled out
-                    try:
-                        url = f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{lookup_path}"
-                        res = await client.get(url)
-                        res.raise_for_status()
-                        content = res.text
-                        logger.info(f"Dynamically fetched missing context file: {lookup_path}")
-                    except Exception as e:
-                        logger.warning(f"Failed to fetch requested file '{path}' (resolved: '{lookup_path}'): {e}")
-                        continue
+        async def read_file(path: str) -> str:
+            """
+            Read the full contents of a file from the repository. Use this to inspect the implementation of a file you found via search.
+            """
+            logger.info(f"Agent reading file: {path}")
+            # Try to resolve fuzzy match
+            resolved_path = None
+            if path in all_repo_files:
+                resolved_path = path
+            else:
+                for p in all_repo_files:
+                    if p.endswith(path) or path.endswith(p):
+                        resolved_path = p
+                        break
+            
+            if not resolved_path:
+                return f"File '{path}' not found in repository."
+                
+            if resolved_path in downloaded_map:
+                return sanitize_content(downloaded_map[resolved_path]["content"][:15000])
+                
+            # Dynamic fetch from GitHub if it wasn't pre-downloaded
+            try:
+                url = f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{resolved_path}"
+                res = await client.get(url)
+                res.raise_for_status()
+                content = res.text
+                downloaded_map[resolved_path] = {"path": resolved_path, "content": content}
+                return sanitize_content(content[:15000])
+            except Exception as e:
+                return f"Failed to fetch {resolved_path}: {str(e)}"
 
-                file_snippets += f"\n--- {path} ---\n"
-                # Truncate at 15KB per file to prevent blowing up the context window
-                file_snippets += sanitize_content(content[:15000])
+        # We wrap these in a dict so we can invoke them dynamically
+        tools_map = {
+            "search_codebase": search_codebase,
+            "read_file": read_file
+        }
+        
+        # Pydantic schema for the final output tool
+        class SubmitContributionGuide(BaseModel):
+            """Submit the final guide once you have fully explored the codebase and have high confidence in your patch."""
+            guide: ContributionGuide
 
-        # ─── STEP 3: DRAFT PHASE ─────────────────────────────────────────────
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", """You are an expert open-source mentor helping a complete beginner make their first contribution.
+        # ─── System Prompt ───
+        system_prompt = f"""You are an autonomous expert open-source contributor. Your task is to fix a GitHub issue.
+You must ACTUALLY SOLVE the problem. Do NOT guess the answer if you don't know the exact file paths and edge cases.
+You have tools to `search_codebase` and `read_file`. Use them repeatedly to explore the codebase.
+For example, if the issue mentions "disconnected backends", you MUST search the codebase for "backend" or "disconnected" and read those files to understand the architecture BEFORE writing your patch.
 
-Your output must be:
-1. HONEST: If you're not sure what code to change, say so in confidence_reason and mark confidence 'low'.
-2. BEGINNER-FRIENDLY: The `understanding` and `modifications` fields must be written so a 16-year-old who can code basic Python could understand them.
-3. SPECIFIC: Always cite exact file paths and function names when you know them.
-4. PRACTICAL: The `diff` must be a real, syntactically valid unified diff.
-5. STRICT TESTING (Option 3): Do NOT leave empty test comments. You MUST write complete tests mimicking the style of the provided test files. If no test files were provided or you do not know the exact assertions, you must state 'Low Confidence' in the test_code and confidence fields rather than writing pseudocode.
-
-For the `diff` field:
-- Use standard unified diff format:
-  --- a/path/to/file.py
-  +++ b/path/to/file.py
-  @@ -10,7 +10,8 @@
-   context_line
-  -removed_line
-  +added_line
-- DO NOT wrap in markdown fences inside the JSON field.
-- If you don't have enough context to write a perfect diff, provide your best-effort valid unified diff anyway (especially for simple additions like exports or imports). Only use "# Unable to generate patch" if it is completely impossible to guess.
-- confidence: 'high' = you are certain the diff and test are correct
-- confidence: 'partial' = the diff is directionally right but may need adjustment  
-- confidence: 'low' = you can identify WHERE to look but cannot write the actual code or test
-"""),
-            ("human", """GitHub Issue:
-Title: {issue_title}
-Number: #{issue_number}
-Labels: {labels}
-Body:
-{issue_body}
+Once you have investigated and are 100% ready, call `SubmitContributionGuide` to provide the final patch and explanation.
 
 Repository: {owner}/{repo}
-Graph Summary: {graph_summary}
+Total files in repo: {len(all_repo_files)}
 
-Relevant file contents (these are the files you requested during research):
-{file_snippets}
+CRITICAL RULES FOR FINAL PATCH:
+1. The `diff` MUST be a real, syntactically valid unified diff using `--- a/file` and `+++ b/file` headers.
+2. If you cannot find the solution after exploring, be honest and mark confidence as 'low'.
+"""
 
-Generate a complete ContributionGuide. Be honest about what you know and don't know.""")
-        ])
+        issue_body = (issue.get("body", "") or "No description provided.")[:3000]
+        messages = [
+            SystemMessage(content=system_prompt),
+            HumanMessage(content=f"Issue #{issue.get('number', '')}: {issue.get('title', '')}\n\n{issue_body}\n\nPlease explore the codebase and then submit the final ContributionGuide.")
+        ]
 
-        chain = prompt | llm.with_structured_output(ContributionGuide)
+        llm = llm_key_pool.get_llm(session_token, temperature=0.1)
+        
+        # Bind the tools and the forced output schema
+        from langchain_core.tools import StructuredTool
+        search_tool = StructuredTool.from_function(
+            func=search_codebase,
+            name="search_codebase",
+            description="Search the repository files for a string."
+        )
+        # Using a sync wrapper for read_file in the tool definition for simplicity, 
+        # but we execute the async version in our loop.
+        read_tool = StructuredTool.from_function(
+            func=lambda path: asyncio.run(read_file(path)),
+            name="read_file",
+            description="Read the full contents of a file from the repository."
+        )
+        
+        llm_with_tools = llm.bind_tools([search_tool, read_tool, SubmitContributionGuide])
 
-        max_retries = 6
-        backoff = 2.0  # Fix: was missing, caused NameError on second retry
+        max_iterations = 8
+        final_guide = None
+        
+        try:
+            for i in range(max_iterations):
+                logger.info(f"Agent iteration {i+1}/{max_iterations}")
+                response = await llm_with_tools.ainvoke(messages)
+                messages.append(response)
 
-        for attempt in range(1, max_retries + 1):
-            try:
-                result: ContributionGuide = await chain.ainvoke({
-                    "issue_title": issue.get("title", ""),
-                    "issue_number": issue.get("number", ""),
-                    "labels": ", ".join(issue.get("labels", [])),
-                    "issue_body": (issue.get("body", "") or "No description provided.")[:3000],
-                    "owner": owner,
-                    "repo": repo,
-                    "graph_summary": str(graph_summary),
-                    "file_snippets": file_snippets or "No relevant files found.",
-                })
-                # Attach metadata computed before LLM call
-                result.difficulty = difficulty
-                result.difficulty_reason = difficulty_reason
-                result.issue_url = issue_url
-                return result
-            except Exception as e:
-                logger.warning(f"ContributionGuide attempt {attempt} failed: {e}")
-                if attempt == max_retries:
-                    logger.error("All retries exhausted for contribution guide.")
-                    return ContributionGuide(
-                        issue_title=issue.get("title", "Unknown Issue"),
-                        issue_url=issue_url,
-                        difficulty=difficulty,
-                        difficulty_reason=difficulty_reason,
-                        target_files=[f["path"] for f in relevant_files[:3]],
-                        understanding="I was unable to generate a full guide due to AI service rate limits. Please try again.",
-                        modifications=[],
-                        diff="# AI service unavailable. Please retry.",
-                        test_code="",
-                        pr_title=f"Fix: {issue.get('title', '')}",
-                        pr_description=f"Fixes #{issue.get('number', '')}",
-                        confidence="low",
-                        confidence_reason="AI service was unavailable during generation. The file discovery above is still valid — check those files for the fix."
-                    )
-                import asyncio
-                await asyncio.sleep(backoff)
-                backoff = min(backoff * 2, 10.0)
+                if not response.tool_calls:
+                    # LLM didn't call a tool. Prompt it to submit.
+                    messages.append(HumanMessage(content="Please call a tool to continue exploring, or call SubmitContributionGuide if you are finished."))
+                    continue
+                
+                # Execute tool calls
+                for tool_call in response.tool_calls:
+                    name = tool_call["name"]
+                    args = tool_call["args"]
+                    
+                    if name == "SubmitContributionGuide":
+                        logger.info("Agent submitted the final ContributionGuide.")
+                        final_guide = ContributionGuide(**args["guide"])
+                        break
+                    
+                    elif name == "search_codebase":
+                        result = search_codebase(**args)
+                        messages.append(ToolMessage(tool_call_id=tool_call["id"], content=result))
+                        
+                    elif name == "read_file":
+                        result = await read_file(**args)
+                        messages.append(ToolMessage(tool_call_id=tool_call["id"], content=result))
+                        
+                if final_guide:
+                    break
+        except Exception as e:
+            logger.error(f"Agent loop crashed: {e}")
+            
+        await client.aclose()
+        
+        if final_guide:
+            final_guide.difficulty = difficulty
+            final_guide.difficulty_reason = difficulty_reason
+            final_guide.issue_url = issue_url
+            return final_guide
+            
+        # Fallback if agent failed or ran out of iterations
+        logger.error("Agent exhausted iterations without submitting a guide.")
+        return ContributionGuide(
+            issue_title=issue.get("title", "Unknown Issue"),
+            issue_url=issue_url,
+            difficulty=difficulty,
+            difficulty_reason=difficulty_reason,
+            target_files=[],
+            understanding="I was unable to fully explore the codebase within the time limit. Please review manually.",
+            modifications=[],
+            diff="# Agent exhausted iterations",
+            test_code="",
+            pr_title=f"Fix: {issue.get('title', '')}",
+            pr_description="Draft failed.",
+            confidence="low",
+            confidence_reason="Agent exhausted max iterations."
+        )
 
     async def draft_patch(self, issue: Dict[str, Any], graph: Dict[str, Any], downloaded_files: List[Dict[str, str]], session_token: str | None = None) -> DraftPatch:
         """
