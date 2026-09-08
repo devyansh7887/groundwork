@@ -47,7 +47,7 @@ Groundwork is evaluated against hand-written ground truth files using a two-tier
 | [pallets/click](https://github.com/pallets/click) | 4 | **100%** | **100%** |
 | [lukeed/kleur](https://github.com/lukeed/kleur) | 3 | **100%** | **100%** |
 
-> Ground truth files are in [`backend/ground_truths/`](backend/ground_truths/). Run `python eval.py` to reproduce. Benchmark is intentionally small but deterministic — every fact is hand-verified against live source code.
+> Ground truth files are in [`backend/ground_truths/`](backend/ground_truths/). Run `python eval.py` to reproduce. **100% precision on an initial 3-repo validation set — expanding coverage to more repositories is in progress.**
 
 ## Architecture Notes: Free-Tier Cold Starts
 
@@ -56,7 +56,7 @@ Groundwork's backend is designed to run on a Render free-tier instance, which sl
 ## Responsible AI & Prompt Injection
 
 - **Read-Only:** Groundwork NEVER runs the user's code, avoiding sandbox escapes.
-- **No Auto-Submit:** The Contribution Drafter agent only outputs markdown locally. It does not use GitHub API endpoints that mutate state (no creating PRs, no commenting).
+- **No Auto-Submit:** The Contribution Drafter can fork a repo and create a branch on your GitHub account (using your `public_repo`-scoped token), but **never creates Pull Requests server-side**. PR creation is always a prefilled GitHub URL opened in your browser — you make the final click.
 - **Verification First:** By forcing the LLM to provide file paths and independently verifying those paths with regex and graph lookups, we drastically reduce the surface area for hallucinations and injection attacks attempting to misdirect architectural truths.
 
 ## LangSmith Tracing

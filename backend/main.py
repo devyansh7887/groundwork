@@ -2,7 +2,7 @@ import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse, JSONResponse
+from fastapi.responses import StreamingResponse, JSONResponse, Response
 from pydantic import BaseModel
 from pipeline import Pipeline
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -13,6 +13,9 @@ import asyncio
 import json
 import os
 import re
+import httpx
+import urllib.parse
+import patch_store
 
 # ─── LangSmith Tracing ───────────────────────────────────────────────────────
 # Set LANGCHAIN_TRACING_V2=true and LANGCHAIN_API_KEY in your .env to enable.
@@ -204,6 +207,29 @@ class IssuesRequest(BaseModel):
         if not re.match(r"^https://github\.com/[\w.-]+/[\w.-]+/?$", v):
             raise ValueError("Invalid GitHub repository URL")
         return v
+
+class SetupContributionRequest(BaseModel):
+    """
+    Request body for POST /api/setup-contribution.
+    Creates a fork + branch on the user's GitHub account.
+    Requires a GitHub token with public_repo scope.
+    """
+    repo_url: str
+    issue_number: int
+    pr_title: str
+    pr_description: str
+    diff: str  # The patch content to store for download
+
+    @field_validator("repo_url")
+    def validate_url(cls, v):
+        if not re.match(r"^https://github\.com/[\w.-]+/[\w.-]+/?$", v):
+            raise ValueError("Invalid GitHub repository URL")
+        return v
+
+class StorePatchRequest(BaseModel):
+    """Request body for POST /api/store-patch (client-triggered patch token creation)."""
+    diff: str
+    issue_number: int
 
 # ─── SSE Logging ──────────────────────────────────────────────────────────────
 
@@ -634,3 +660,193 @@ async def contribution_qa_endpoint(req: ContributionQARequest, request: Request)
         session_token=session_token
     )
     return result
+
+
+# ─── Patch Store (signed token creation) ───────────────────────────────────────────
+
+@app.post("/api/store-patch")
+async def store_patch(req: StorePatchRequest):
+    """
+    Stores a patch and returns a signed, single-purpose, 1-hour-expiry download token.
+    The token cannot be replayed against any other endpoint.
+    """
+    if not req.diff or req.diff.strip() == "":
+        raise HTTPException(status_code=400, detail="Patch content is empty.")
+    token = patch_store.put(req.diff, req.issue_number)
+    return {"patch_token": token}
+
+
+@app.get("/api/patch/{patch_token}")
+async def download_patch(patch_token: str):
+    """
+    Returns the stored patch as a downloadable .patch file.
+    Token is single-purpose, short-expiry (1 hour), and separate from the session token.
+    """
+    # Basic format validation — tokens are URL-safe base64, no slashes, no spaces
+    if not re.match(r"^[A-Za-z0-9_-]{40,60}$", patch_token):
+        raise HTTPException(status_code=400, detail="Invalid token format.")
+
+    entry = patch_store.get(patch_token)
+    if not entry:
+        raise HTTPException(
+            status_code=404,
+            detail="Patch not found or expired. Return to Groundwork and click Download again."
+        )
+
+    filename = f"groundwork-fix-{entry['issue_number']}.patch"
+    return Response(
+        content=entry["patch"],
+        media_type="text/plain",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            # Prevent caching of sensitive patch content in browser history / proxies
+            "Cache-Control": "no-store",
+            "X-Content-Type-Options": "nosniff",
+        },
+    )
+
+
+# ─── Fork + Branch Automation ─────────────────────────────────────────────────
+
+@app.post("/api/setup-contribution")
+async def setup_contribution(req: SetupContributionRequest, request: Request):
+    """
+    Forks the target repository to the authenticated user's GitHub account and creates
+    a feature branch named 'groundwork-fix-{issue_number}'.
+
+    SECURITY NOTES:
+    - Requires a GitHub token with `public_repo` scope (NOT `repo`).
+    - public_repo grants fork + branch creation on public repos only.
+    - Does NOT commit, push, or create a PR server-side.
+    - Does NOT call POST /repos/{owner}/{repo}/pulls anywhere in this function.
+    """
+    session_token = extract_token(request)
+    if not session_token:
+        raise HTTPException(
+            status_code=401,
+            detail=(
+                "GitHub token required. Generate one at https://github.com/settings/tokens "
+                "with the 'public_repo' scope checked. Do NOT use the full 'repo' scope."
+            )
+        )
+
+    # Parse owner/repo from URL
+    parts = req.repo_url.rstrip("/").split("/")
+    owner, repo_name = parts[-2], parts[-1]
+    branch_name = f"groundwork-fix-{req.issue_number}"
+
+    gh_headers = {
+        "Authorization": f"Bearer {session_token}",
+        "Accept": "application/vnd.github.v3+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "Groundwork-Agent",
+    }
+
+    async with httpx.AsyncClient(timeout=40.0, follow_redirects=True) as client:
+        # ─── Step 1: Fork the repository ─────────────────────────────────
+        fork_resp = await client.post(
+            f"https://api.github.com/repos/{owner}/{repo_name}/forks",
+            headers=gh_headers,
+            json={},
+        )
+        if fork_resp.status_code == 401:
+            raise HTTPException(
+                status_code=401,
+                detail="GitHub token is invalid or expired. Regenerate at https://github.com/settings/tokens with public_repo scope."
+            )
+        if fork_resp.status_code == 403:
+            raise HTTPException(
+                status_code=403,
+                detail="GitHub token lacks required permissions. Ensure 'public_repo' scope is checked when generating the token."
+            )
+        if fork_resp.status_code not in (200, 202):
+            err = fork_resp.json().get("message", "Unknown GitHub API error")
+            raise HTTPException(status_code=502, detail=f"Fork failed: {err}")
+
+        fork_data = fork_resp.json()
+        fork_owner = fork_data["owner"]["login"]
+        fork_repo_name = fork_data["name"]
+        fork_html_url = fork_data["html_url"]
+        default_branch = fork_data.get("default_branch", "main")
+
+        logger.info(f"Fork created/exists: {fork_owner}/{fork_repo_name}")
+
+        # ─── Step 2: Get the default branch SHA from the ORIGINAL repo ───────
+        # We use the original repo (not the fork) because the fork may not be
+        # fully ready when we query it immediately after creation (GitHub is async).
+        ref_resp = await client.get(
+            f"https://api.github.com/repos/{owner}/{repo_name}/git/ref/heads/{default_branch}",
+            headers=gh_headers,
+        )
+        if ref_resp.status_code != 200:
+            err = ref_resp.json().get("message", "")
+            raise HTTPException(status_code=502, detail=f"Could not read branch SHA from upstream: {err}")
+        sha = ref_resp.json()["object"]["sha"]
+
+        # ─── Step 3: Create branch on fork (poll until fork is ready) ────────
+        # GitHub creates forks asynchronously. We retry up to ~30s.
+        branch_created = False
+        for attempt in range(6):
+            await asyncio.sleep(5)  # wait for fork propagation
+            branch_resp = await client.post(
+                f"https://api.github.com/repos/{fork_owner}/{fork_repo_name}/git/refs",
+                headers=gh_headers,
+                json={"ref": f"refs/heads/{branch_name}", "sha": sha},
+            )
+            if branch_resp.status_code == 201:
+                branch_created = True
+                logger.info(f"Branch created: {branch_name} on {fork_owner}/{fork_repo_name}")
+                break
+            elif branch_resp.status_code == 422:
+                # Branch already exists — treat as success (idempotent)
+                branch_created = True
+                logger.info(f"Branch {branch_name} already exists on fork.")
+                break
+            # 404 = fork not fully provisioned yet; continue polling
+            logger.info(f"Fork not ready yet (attempt {attempt + 1}/6), retrying in 5s...")
+
+        if not branch_created:
+            raise HTTPException(
+                status_code=504,
+                detail=(
+                    f"GitHub is still provisioning your fork '{fork_owner}/{fork_repo_name}'. "
+                    "Please wait 30 seconds and click 'Setup Contribution' again."
+                )
+            )
+
+    # ─── Step 4: Store patch and build response ──────────────────────────────
+    patch_token = patch_store.put(req.diff, req.issue_number)
+
+    # Build GitHub compare/prefill URL — this opens GitHub's own PR creation page,
+    # NOT an API call. The user makes the final click. We never call POST /pulls.
+    pr_title_enc = urllib.parse.quote(req.pr_title[:200])
+    pr_body_enc = urllib.parse.quote(req.pr_description[:4000])
+    pr_prefill_url = (
+        f"https://github.com/{owner}/{repo_name}/compare/{default_branch}"
+        f"...{fork_owner}:{branch_name}"
+        f"?expand=1&title={pr_title_enc}&body={pr_body_enc}"
+    )
+
+    api_base = os.getenv("NEXT_PUBLIC_API_URL", "https://groundwork-zopq.onrender.com")
+    patch_download_url = f"{api_base}/api/patch/{patch_token}"
+    patch_filename = f"groundwork-fix-{req.issue_number}.patch"
+
+    clone_cmd = f"git clone {fork_html_url}.git && cd {fork_repo_name}"
+    checkout_cmd = f"git checkout {branch_name}"
+    apply_cmd = f"git apply {patch_filename}"
+    push_cmd = f'git add . && git commit -m "{req.pr_title[:72]}" && git push -u origin {branch_name}'
+
+    return {
+        "fork_url": fork_html_url,
+        "fork_owner": fork_owner,
+        "branch_name": branch_name,
+        "default_branch": default_branch,
+        "clone_cmd": clone_cmd,
+        "checkout_cmd": checkout_cmd,
+        "apply_cmd": apply_cmd,
+        "push_cmd": push_cmd,
+        "patch_token": patch_token,
+        "patch_download_url": patch_download_url,
+        "patch_filename": patch_filename,
+        "pr_prefill_url": pr_prefill_url,
+    }

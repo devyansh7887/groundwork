@@ -44,6 +44,21 @@ interface ContributionGuide {
   confidence_reason: string;
 }
 
+interface SetupResult {
+  fork_url: string;
+  fork_owner: string;
+  branch_name: string;
+  default_branch: string;
+  clone_cmd: string;
+  checkout_cmd: string;
+  apply_cmd: string;
+  push_cmd: string;
+  patch_token: string;
+  patch_download_url: string;
+  patch_filename: string;
+  pr_prefill_url: string;
+}
+
 interface QAMessage {
   role: "user" | "ai";
   text: string;
@@ -262,20 +277,104 @@ function ContributionWizardPanel({
   guide,
   repoUrl,
   sessionToken,
+  issueNumber,
 }: {
   guide: ContributionGuide;
   repoUrl: string;
   sessionToken: string | null;
+  issueNumber: number;
 }) {
   const [activeTab, setActiveTab] = useState<"code" | "steps">("code");
   const [showQA, setShowQA] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+
+  // Fork + branch automation state
+  const [settingUp, setSettingUp] = useState(false);
+  const [setupResult, setSetupResult] = useState<SetupResult | null>(null);
+  const [setupError, setSetupError] = useState("");
+
+  // Patch download state
+  const [patchToken, setPatchToken] = useState<string | null>(null);
+  const [storingPatch, setStoringPatch] = useState(false);
+
+  const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
   const repoPath = repoUrl.replace("https://github.com/", "").replace(/\/$/, "");
   const [, repo] = repoPath.split("/");
 
   const conf = CONFIDENCE_CONFIG[guide.confidence] || CONFIDENCE_CONFIG.low;
   const diff = guide.confidence;
+
+  // Store the patch server-side and return a signed token for download
+  const handleDownloadPatch = async () => {
+    if (patchToken) {
+      // Already stored — trigger download again directly
+      triggerPatchDownload(patchToken, issueNumber);
+      return;
+    }
+    setStoringPatch(true);
+    try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (sessionToken) headers["Authorization"] = `Bearer ${sessionToken}`;
+      const res = await fetch(`${API}/api/store-patch`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ diff: guide.diff, issue_number: issueNumber }),
+      });
+      if (!res.ok) throw new Error("Failed to store patch");
+      const data = await res.json();
+      setPatchToken(data.patch_token);
+      triggerPatchDownload(data.patch_token, issueNumber);
+    } catch (e: unknown) {
+      alert(`Could not prepare patch download: ${(e as Error).message}`);
+    } finally {
+      setStoringPatch(false);
+    }
+  };
+
+  function triggerPatchDownload(token: string, issNum: number) {
+    const a = document.createElement("a");
+    a.href = `${API}/api/patch/${token}`;
+    a.download = `groundwork-fix-${issNum}.patch`;
+    a.click();
+  }
+
+  // Fork + Branch via GitHub API
+  const handleSetupContribution = async () => {
+    if (!sessionToken) {
+      setSetupError(
+        "GitHub token required. Enter your token in the header above (public_repo scope only)."
+      );
+      return;
+    }
+    setSettingUp(true);
+    setSetupError("");
+    try {
+      const res = await fetch(`${API}/api/setup-contribution`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionToken}`,
+        },
+        body: JSON.stringify({
+          repo_url: repoUrl,
+          issue_number: issueNumber,
+          pr_title: guide.pr_title,
+          pr_description: guide.pr_description,
+          diff: guide.diff,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Setup failed");
+      setSetupResult(data as SetupResult);
+      // Also store patch token from setup response
+      if (data.patch_token) setPatchToken(data.patch_token);
+    } catch (e: unknown) {
+      setSetupError((e as Error).message);
+    } finally {
+      setSettingUp(false);
+    }
+  };
 
   const GIT_STEPS = [
     {
@@ -333,15 +432,35 @@ function ContributionWizardPanel({
               )) : <span className="text-xs text-[#8b949e]">Check the AI guidance above for specific files</span>}
             </div>
           </div>
+          {/* ── Patch download in steps tab ── */}
+          {guide.diff && (
+            <div className="bg-[#0d1117] border border-[#30363d] rounded-lg p-4 space-y-3">
+              <p className="text-xs font-bold text-[#58a6ff] mb-1">Apply with git</p>
+              <p className="text-xs text-[#8b949e] leading-relaxed">
+                Download the patch file and apply it directly — no copy-paste errors.
+              </p>
+              <CodeBlock code={`git apply groundwork-fix-${issueNumber}.patch`} label="terminal" />
+              <button
+                onClick={handleDownloadPatch}
+                disabled={storingPatch}
+                className="flex items-center gap-2 px-4 py-2 bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] text-[#c9d1d9] text-xs font-semibold rounded-lg transition-colors disabled:opacity-50"
+              >
+                {storingPatch ? (
+                  <><span className="w-3.5 h-3.5 border-2 border-[#8b949e] border-t-transparent rounded-full animate-spin" /> Preparing..></>
+                ) : (
+                  <>⬇️ Download groundwork-fix-{issueNumber}.patch</>
+                )}
+              </button>
+            </div>
+          )}
           <p className="text-sm text-[#8b949e]">
-            Open the file(s) above in your code editor and apply the change shown in the <strong className="text-[#c9d1d9]">Code Solution</strong> tab.
             Not sure what to change? Hit <span className="text-[#a371f7]">"I don't understand"</span> to ask.
           </p>
           <button
             onClick={() => setShowQA(true)}
             className="text-sm text-[#a371f7] hover:text-[#c084fc] flex items-center gap-1 transition-colors"
           >
-            <span className="w-3.5 h-3.5">[?]</span> I don't understand something
+            <span className="w-3.5 h-3.5">[?]</span> I don&apos;t understand something
           </button>
         </div>
       )
@@ -497,6 +616,118 @@ function ContributionWizardPanel({
                     <DiffBlock diff={guide.diff} />
                   </div>
                 </details>
+              )}
+
+              {/* ── Download patch + Setup CTA ─────────────────────────────── */}
+              {guide.diff && (
+                <div className="rounded-xl border border-[#238636]/40 bg-[#0d1117] overflow-hidden">
+                  {/* Setup Contribution panel */}
+                  {!setupResult ? (
+                    <div className="p-4 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[#3fb950] text-sm">⚡</span>
+                        <span className="text-sm font-semibold text-[#c9d1d9]">Ready to contribute?</span>
+                      </div>
+                      <p className="text-xs text-[#8b949e] leading-relaxed">
+                        Click below and Groundwork will <strong className="text-[#c9d1d9]">fork the repo and create your branch automatically</strong>.
+                        You&apos;ll get exact commands to apply the patch and push. Requires a GitHub token with{" "}
+                        <a
+                          href="https://github.com/settings/tokens/new?scopes=public_repo&description=Groundwork+Contribution"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-[#58a6ff] hover:underline"
+                        >
+                          public_repo scope
+                        </a>{" "}
+                        (not the full <code className="text-[#f85149] bg-[#161b22] px-1 rounded">repo</code> scope).
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          onClick={handleSetupContribution}
+                          disabled={settingUp}
+                          className="flex items-center gap-2 px-4 py-2 bg-[#238636] hover:bg-[#2ea043] disabled:opacity-50 text-white text-xs font-bold rounded-lg transition-colors"
+                        >
+                          {settingUp ? (
+                            <><span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Forking &amp; creating branch...</>
+                          ) : (
+                            <>⚡ Setup Contribution</>
+                          )}
+                        </button>
+                        <button
+                          onClick={handleDownloadPatch}
+                          disabled={storingPatch}
+                          className="flex items-center gap-2 px-4 py-2 bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] text-[#c9d1d9] text-xs font-semibold rounded-lg transition-colors disabled:opacity-50"
+                        >
+                          {storingPatch ? (
+                            <><span className="w-3.5 h-3.5 border-2 border-[#8b949e] border-t-transparent rounded-full animate-spin" /> Preparing...</>
+                          ) : (
+                            <>⬇️ Download .patch</>  
+                          )}
+                        </button>
+                      </div>
+                      {setupError && (
+                        <p className="text-xs text-red-400 bg-red-400/5 border border-red-400/20 rounded-lg p-3">{setupError}</p>
+                      )}
+                    </div>
+                  ) : (
+                    /* ── Setup success panel ── */
+                    <div className="p-4 space-y-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[#3fb950]">✓</span>
+                        <span className="text-sm font-bold text-[#3fb950]">Fork &amp; branch ready!</span>
+                        <a href={setupResult.fork_url} target="_blank" rel="noreferrer" className="ml-auto text-xs text-[#58a6ff] hover:underline">
+                          View fork →
+                        </a>
+                      </div>
+                      <p className="text-xs text-[#8b949e]">Run these 4 commands in your terminal:</p>
+
+                      {/* Step-by-step numbered commands */}
+                      <div className="space-y-2">
+                        {[
+                          { n: 1, label: "Clone your fork", cmd: setupResult.clone_cmd },
+                          { n: 2, label: "Switch to your branch", cmd: setupResult.checkout_cmd },
+                          { n: 3, label: "Apply the patch", cmd: setupResult.apply_cmd },
+                          { n: 4, label: "Commit &amp; push", cmd: setupResult.push_cmd },
+                        ].map(({ n, label, cmd }) => (
+                          <div key={n}>
+                            <div className="text-[10px] text-[#8b949e] font-jetbrains uppercase mb-1">{n}. {label}</div>
+                            <CodeBlock code={cmd} label="bash" />
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Download patch + secondary curl */}
+                      <div className="border-t border-[#30363d] pt-3 space-y-2">
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            onClick={handleDownloadPatch}
+                            className="flex items-center gap-2 px-4 py-2 bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] text-[#c9d1d9] text-xs font-semibold rounded-lg transition-colors"
+                          >
+                            ⬇️ Download {setupResult.patch_filename}
+                          </button>
+                          <a
+                            href={setupResult.pr_prefill_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center gap-2 px-4 py-2 bg-[#1f6feb] hover:bg-[#388bfd] text-white text-xs font-bold rounded-lg transition-colors"
+                          >
+                            Open PR on GitHub →
+                          </a>
+                        </div>
+                        {/* curl as secondary, collapsed, opt-in */}
+                        <details className="group">
+                          <summary className="text-[10px] text-[#484f58] cursor-pointer hover:text-[#8b949e] transition-colors">
+                            Alternative: apply via curl (advanced)
+                          </summary>
+                          <CodeBlock
+                            code={`curl -sL ${setupResult.patch_download_url} -o ${setupResult.patch_filename}\ngit apply ${setupResult.patch_filename}`}
+                            label="bash"
+                          />
+                        </details>
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
 
               {/* Test code */}
@@ -847,7 +1078,12 @@ export function ContributionDrafter({
                   </div>
                 )}
                 {guide && !drafting && (
-                  <ContributionWizardPanel guide={guide} repoUrl={repoUrl} sessionToken={sessionToken} />
+                  <ContributionWizardPanel
+                    guide={guide}
+                    repoUrl={repoUrl}
+                    sessionToken={sessionToken}
+                    issueNumber={selectedIssue?.number ?? 0}
+                  />
                 )}
               </div>
             </div>
