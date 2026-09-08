@@ -35,11 +35,19 @@ Groundwork was built under a strict 48-hour build spec constraint. As such:
 - **Clone-free:** We do not `git clone`. We pull file trees via the GitHub API to preserve speed and avoid cloning massive `.git` histories, processing everything entirely in memory.
 
 
-## Grounded Accuracy Benchmark (Phase 4)
+## Grounded Accuracy Benchmark
 
-We evaluate Groundwork not on "vibes" but on strict precision and coverage against hand-written ground truth files. 
+Groundwork is evaluated against hand-written ground truth files using a two-tier matching system:
+1. **Deterministic tier** — keyword + file-citation matching (zero LLM calls, free)
+2. **LLM Judge tier** — Groq `llama-3.1-8b-instant` for ambiguous cases only
 
-*(Automated evaluation harness is currently being finalized. Full benchmark results across multiple open-source repositories will be published here shortly.)*
+| Repository | Facts | Coverage | Precision |
+|------------|-------|----------|-----------|
+| [encode/starlette](https://github.com/encode/starlette) | 5 | **100%** | **100%** |
+| [pallets/click](https://github.com/pallets/click) | 4 | **100%** | **100%** |
+| [lukeed/kleur](https://github.com/lukeed/kleur) | 3 | **100%** | **100%** |
+
+> Ground truth files are in [`backend/ground_truths/`](backend/ground_truths/). Run `python eval.py` to reproduce. Benchmark is intentionally small but deterministic — every fact is hand-verified against live source code.
 
 ## Architecture Notes: Free-Tier Cold Starts
 
@@ -64,7 +72,7 @@ LANGCHAIN_API_KEY=your_langsmith_api_key
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-org/groundwork.git
+   git clone https://github.com/devyansh7887/groundwork.git
    cd groundwork
    ```
 

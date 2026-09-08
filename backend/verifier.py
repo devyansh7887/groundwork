@@ -200,17 +200,28 @@ Do NOT add anything else."""
     ) -> List[Dict[str, Any]]:
         # Concurrency cap: 2 simultaneous LLM calls to balance speed and free-tier limits.
         sem = asyncio.Semaphore(2)
+        _rate_limit_backoff = 0.0  # Starts at 0; grows only when a real 429 fires
 
         async def verify_with_sem(claim):
+            nonlocal _rate_limit_backoff
             async with sem:
                 try:
-                    await asyncio.sleep(2.1) 
-                    return await self.verify_claim_async(
+                    # Only sleep if a previous call actually hit a 429 — no pre-emptive stalling
+                    if _rate_limit_backoff > 0:
+                        await asyncio.sleep(_rate_limit_backoff)
+                    result = await self.verify_claim_async(
                         claim, graph, downloaded_files, session_token
                     )
+                    _rate_limit_backoff = max(0.0, _rate_limit_backoff - 0.5)  # cool-down on success
+                    return result
                 except Exception as e:
+                    error_str = str(e).lower()
+                    if "429" in error_str or "rate limit" in error_str or "quota" in error_str:
+                        _rate_limit_backoff = min(_rate_limit_backoff + 2.0, 8.0)
+                        logger.warning(f"Verifier hit rate limit. Backing off {_rate_limit_backoff}s.")
                     logger.warning(f"Failed to verify claim '{claim.get('claim', '')[:20]}...': {e}")
                     return _FallbackResult(claim.get("claim", ""))
+
 
         # Fast path: cap verification to 12 claims to absolutely prevent Render's 100s network timeout
         to_verify = claims[:12]

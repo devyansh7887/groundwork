@@ -268,12 +268,32 @@ class ContributionDrafter:
         
         # 1. Heuristic file discovery (Baseline)
         heuristic_files = find_relevant_files(issue, graph, downloaded_files)
+
+        # Build call-frequency centrality map (most-called files = highest moat)
+        from collections import Counter
+        call_targets = Counter()
+        for call in graph.get("calls", []):
+            callee = call.get("callee", "")
+            if callee:
+                call_targets[callee] += 1
         
+        # Top files by how many functions they export that are called by others
+        file_centrality: Counter = Counter()
+        for node in graph.get("nodes", []):
+            node_id = node.get("id", "")
+            node_name = node.get("name", "")
+            freq = call_targets.get(node_name, 0)
+            if freq > 0 and ":" in node_id:
+                file_path = node_id.split(":")[0]
+                file_centrality[file_path] += freq
+        top_central_files = [f for f, _ in file_centrality.most_common(10)]
+
         graph_summary = {
             "total_files": len(graph.get("files", [])),
             "total_functions": graph.get("total_public_functions", len(graph.get("nodes", []))),
             "heuristic_files_found": [f["path"] for f in heuristic_files],
             "entry_points": [ep.get("id", "") for ep in graph.get("entry_points", [])][:10],
+            "most_central_files": top_central_files,
         }
 
         difficulty = issue.get("_difficulty", "medium")
@@ -285,9 +305,16 @@ class ContributionDrafter:
         # ─── STEP 1: RESEARCH PHASE ──────────────────────────────────────────
         research_prompt = ChatPromptTemplate.from_messages([
             ("system", """You are an expert open-source agent analyzing an issue to determine exactly which files you need to see in order to write a code patch.
-You are given a graph summary and a list of heuristically found relevant files.
-You MUST output a list of EXACT file paths you want to read in full (maximum 8).
-Crucially: If you identify a core file that needs modification (e.g., 'src/db.ts'), you MUST also request its corresponding test file (e.g., 'src/db.test.ts', 'tests/db.spec.ts', etc.) if one likely exists in the repo, so you can mimic the exact testing style.
+
+You are given:
+- A graph summary that includes heuristically matched files AND the most_central_files (files whose functions are most frequently called across the codebase — these are the most architecturally important files).
+- A full file list (or subset if the repo is large).
+
+You MUST output a list of EXACT file paths you want to read (maximum 8).
+RULES:
+1. Prefer files from both heuristic_files_found and most_central_files when they overlap with the issue.
+2. If you identify a core file to modify (e.g. 'src/db.ts'), you MUST also request its corresponding test file (e.g. 'src/db.test.ts') so you can mimic exact testing style.
+3. Output file paths EXACTLY as they appear in the All Files list — do not guess or abbreviate.
 """),
             ("human", """GitHub Issue:
 Title: {issue_title}
@@ -329,26 +356,52 @@ Return a ResearchRequest with the files you need to see.""")
             logger.error(f"Research phase failed: {e}. Falling back to heuristic files.")
             requested_paths = [f["path"] for f in heuristic_files[:8]]
 
-        # ─── STEP 2: FETCH CONTEXT ───────────────────────────────────────────
+        # ─── STEP 2: FETCH CONTEXT (with fuzzy path resolution) ─────────────
         file_snippets = ""
         downloaded_map = {f["path"]: f for f in downloaded_files}
-        
+        all_repo_files = graph.get("files", [])
+
+        def _fuzzy_resolve(requested_path: str) -> str | None:
+            """
+            Resolves an LLM-requested path to the closest real path in the repo.
+            Tries exact match first, then suffix match (handles monorepo sub-paths),
+            then basename match as a last resort.
+            """
+            # 1. Exact match
+            if requested_path in all_repo_files:
+                return requested_path
+            # 2. Suffix match — handles when LLM omits the packages/... prefix
+            for real_path in all_repo_files:
+                if real_path.endswith(requested_path) or requested_path.endswith(real_path):
+                    return real_path
+            # 3. Basename match — last resort
+            req_basename = requested_path.split("/")[-1]
+            candidates = [p for p in all_repo_files if p.split("/")[-1] == req_basename]
+            if len(candidates) == 1:
+                return candidates[0]
+            return None
+
         async with httpx.AsyncClient(timeout=10.0) as client:
             for path in requested_paths:
-                if path in downloaded_map:
-                    content = downloaded_map[path]["content"]
+                resolved_path = _fuzzy_resolve(path)
+                if resolved_path and resolved_path != path:
+                    logger.info(f"Fuzzy resolved '{path}' → '{resolved_path}'")
+                lookup_path = resolved_path or path
+
+                if lookup_path in downloaded_map:
+                    content = downloaded_map[lookup_path]["content"]
                 else:
-                    # Dynamic fetch from Github if it was smart-sampled out
+                    # Dynamic fetch from GitHub if it was smart-sampled out
                     try:
-                        url = f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{path}"
+                        url = f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{lookup_path}"
                         res = await client.get(url)
                         res.raise_for_status()
                         content = res.text
-                        logger.info(f"Dynamically fetched missing context file: {path}")
+                        logger.info(f"Dynamically fetched missing context file: {lookup_path}")
                     except Exception as e:
-                        logger.warning(f"Failed to fetch requested file {path}: {e}")
+                        logger.warning(f"Failed to fetch requested file '{path}' (resolved: '{lookup_path}'): {e}")
                         continue
-                
+
                 file_snippets += f"\n--- {path} ---\n"
                 # Truncate at 15KB per file to prevent blowing up the context window
                 file_snippets += sanitize_content(content[:15000])
@@ -397,7 +450,8 @@ Generate a complete ContributionGuide. Be honest about what you know and don't k
         chain = prompt | llm.with_structured_output(ContributionGuide)
 
         max_retries = 6
-        
+        backoff = 2.0  # Fix: was missing, caused NameError on second retry
+
         for attempt in range(1, max_retries + 1):
             try:
                 result: ContributionGuide = await chain.ainvoke({
