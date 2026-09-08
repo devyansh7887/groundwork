@@ -4,7 +4,7 @@ These allow the application to bypass LLM and GitHub API rate limits.
 """
 
 DEMO_ANALYSIS = {
-    "mermaid_chart": '''graph TD
+    "diagram": '''graph TD
     classDef domain fill:#1f2937,stroke:#3b82f6,stroke-width:2px;
     classDef entry fill:#065f46,stroke:#10b981,stroke-width:2px;
     classDef core fill:#4c1d95,stroke:#8b5cf6,stroke-width:2px;
@@ -19,6 +19,7 @@ DEMO_ANALYSIS = {
     workspace --> fs
     workspace --> symlink
     ''',
+    "readme": "WorkspaceFilesystem implements public symlink primitives, but the documentation currently incorrectly labels symlinks as internal primitives.",
     "claims": [
         {
             "claim": "WorkspaceFilesystem implements public symlink primitives.",
@@ -32,14 +33,14 @@ DEMO_ANALYSIS = {
         }
     ],
     "patterns": [
-        "Uses class-based abstraction for filesystem operations.",
-        "Documentation and source code drift on public API surface."
+        {"pattern": "Uses class-based abstraction for filesystem operations.", "description": "Uses class-based abstraction for filesystem operations."},
+        {"pattern": "Documentation and source code drift on public API surface.", "description": "Documentation and source code drift on public API surface."}
     ],
-    "insights": [
-        "The workspace layer acts as the primary public entry point for file operations.",
-        "Internal utilities are exposed publicly through WorkspaceFilesystem adapters."
+    "security": [],
+    "actions": [
+        "Update documentation to correctly reflect public API surface."
     ],
-    "graph_summary": {
+    "graph": {
         "nodes": 3,
         "edges": 2,
         "most_central_files": ["src/fs/WorkspaceFilesystem.ts", "docs/04_filesystem_interface.md"]

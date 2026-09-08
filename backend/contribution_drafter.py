@@ -11,6 +11,7 @@ from langchain_core.tools import tool
 from llm_key_pool import llm_key_pool
 from key_pool import key_pool
 from prompt_guard import sanitize_content
+from cost_tracker import track
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -379,10 +380,26 @@ CRITICAL RULES FOR FINAL PATCH:
             name="search_codebase",
             description="Search the repository files for a string."
         )
-        # Using a sync wrapper for read_file in the tool definition for simplicity, 
-        # but we execute the async version in our loop.
+        def read_file_sync(path: str) -> str:
+            # Try to resolve fuzzy match
+            resolved_path = None
+            if path in all_repo_files:
+                resolved_path = path
+            else:
+                for p in all_repo_files:
+                    if p.endswith(path) or path.endswith(p):
+                        resolved_path = p
+                        break
+            
+            if not resolved_path:
+                return f"File '{path}' not found in repository."
+                
+            if resolved_path in downloaded_map:
+                return sanitize_content(downloaded_map[resolved_path]["content"][:15000])
+            return f"File '{resolved_path}' not in pre-downloaded context. Use search_codebase first."
+
         read_tool = StructuredTool.from_function(
-            func=lambda path: asyncio.run(read_file(path)),
+            func=read_file_sync,
             name="read_file",
             description="Read the full contents of a file from the repository."
         )
@@ -395,7 +412,8 @@ CRITICAL RULES FOR FINAL PATCH:
         try:
             for i in range(max_iterations):
                 logger.info(f"Agent iteration {i+1}/{max_iterations}")
-                response = await llm_with_tools.ainvoke(messages)
+                with track("contribution_drafter", "groq"):
+                    response = await llm_with_tools.ainvoke(messages)
                 messages.append(response)
 
                 if not response.tool_calls:

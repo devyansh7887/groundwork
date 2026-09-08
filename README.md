@@ -1,6 +1,6 @@
 # Groundwork
 
-**Groundwork** is an autonomous, agentic onboarding assistant for public codebases. 
+**Groundwork** is a tool that reads a GitHub repository and automatically generates a working code patch for open issues — with a cited explanation of which files to change and why.
 Unlike typical AI assistants that guess how code works based on generic patterns or LLM hallucinations, Groundwork parses a repository into a strict Abstract Syntax Tree (AST) using `tree-sitter`. It then uses a **ReAct Agentic Loop** to actively explore, cross-reference, and verify the architecture before answering questions or drafting code patches.
 
 ## Why Groundwork?

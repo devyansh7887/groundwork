@@ -239,7 +239,7 @@ class StorePatchRequest(BaseModel):
 
 log_queue_var = contextvars.ContextVar('log_queue', default=None)
 
-ALLOWED_LOG_MODULES = {"ingestor", "pipeline", "cartographer", "synthesizer", "verifier", "diagram_agent", "git_blame", "__main__"}
+ALLOWED_LOG_MODULES = {"ingestor", "pipeline", "cartographer", "synthesizer", "verifier", "diagram_agent", "git_blame", "contribution_drafter", "__main__"}
 
 class QueueHandler(logging.Handler):
     def emit(self, record):
