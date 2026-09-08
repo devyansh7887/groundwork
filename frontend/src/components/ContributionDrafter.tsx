@@ -200,6 +200,7 @@ function QAPanel({
           understanding: guide.understanding,
           modifications: guide.modifications,
           target_files: guide.target_files,
+          demo: new URLSearchParams(window.location.search).get("demo") === "true",
         }),
       });
       const data = await res.json();
@@ -863,7 +864,7 @@ export function ContributionDrafter({
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/issues`, {
         method: "POST",
         headers,
-        body: JSON.stringify({ repo_url: repoUrl }),
+        body: JSON.stringify({ repo_url: repoUrl, demo: new URLSearchParams(window.location.search).get("demo") === "true" }),
       });
       if (!res.ok) throw new Error("Failed to fetch issues");
       const data = await res.json();
@@ -889,7 +890,7 @@ export function ContributionDrafter({
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/draft`, {
         method: "POST",
         headers,
-        body: JSON.stringify({ repo_url: repoUrl, issue }),
+        body: JSON.stringify({ repo_url: repoUrl, issue, demo: new URLSearchParams(window.location.search).get("demo") === "true" }),
       });
       if (!res.ok) throw new Error("Failed to draft contribution");
       const data = await res.json();

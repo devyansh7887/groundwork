@@ -1,0 +1,8 @@
+{
+  "repo_url": "https://github.com/axios/axios",
+  "facts": [
+    {"fact": "The main entry point for axios", "expected_file": "lib/axios.js"},
+    {"fact": "The core Axios class implementation", "expected_file": "lib/core/Axios.js"},
+    {"fact": "The Node.js HTTP adapter", "expected_file": "lib/adapters/http.js"}
+  ]
+}

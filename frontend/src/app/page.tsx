@@ -83,9 +83,9 @@ export default function Home() {
                   type="button"
                   onClick={(e) => {
                     e.preventDefault();
-                    setRepoUrl("https://github.com/encode/starlette");
+                    setRepoUrl("https://github.com/demo/groundwork-demo");
                     setMode("technical");
-                    router.push(`/analyze?url=${encodeURIComponent("https://github.com/encode/starlette")}&mode=technical`);
+                    router.push(`/analyze?url=${encodeURIComponent("https://github.com/demo/groundwork-demo")}&mode=technical&demo=true`);
                   }}
                   className="px-6 py-3 rounded-md font-bold font-ibm text-[#c9d1d9] bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] transition-colors flex items-center"
                 >

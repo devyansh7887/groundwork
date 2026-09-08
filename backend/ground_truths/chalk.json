@@ -1,0 +1,7 @@
+{
+  "repo_url": "https://github.com/chalk/chalk",
+  "facts": [
+    {"fact": "The main entry point exporting the chalk instance", "expected_file": "source/index.js"},
+    {"fact": "Utilities for the chalk library", "expected_file": "source/utilities.js"}
+  ]
+}

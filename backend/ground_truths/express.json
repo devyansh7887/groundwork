@@ -1,0 +1,9 @@
+{
+  "repo_url": "https://github.com/expressjs/express",
+  "facts": [
+    {"fact": "Contains the main export for the express application", "expected_file": "lib/express.js"},
+    {"fact": "Contains the core routing logic", "expected_file": "lib/router/index.js"},
+    {"fact": "Extends the native Node.js request object", "expected_file": "lib/request.js"},
+    {"fact": "Extends the native Node.js response object", "expected_file": "lib/response.js"}
+  ]
+}

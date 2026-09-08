@@ -298,7 +298,7 @@ function AnalyzeContent() {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/analyze`, {
         method: "POST",
         headers,
-        body: JSON.stringify({ repo_url: url, mode: modeToUse || mode, force_refresh: forceRefresh })
+        body: JSON.stringify({ repo_url: url, mode: modeToUse || mode, force_refresh: forceRefresh, demo: searchParams.get("demo") === "true" })
       });
       
       if (!res.ok) {

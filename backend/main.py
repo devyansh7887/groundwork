@@ -135,6 +135,7 @@ class AnalyzeRequest(BaseModel):
     repo_url: str
     mode: str = "technical"
     force_refresh: bool = False
+    demo: bool = False
 
     @field_validator("repo_url")
     def validate_url(cls, v):
@@ -178,6 +179,7 @@ class DraftRequest(BaseModel):
     action: dict | None = None
     issue: dict | None = None
     issue_number: int | None = None  # New: reference to a GitHub issue by number
+    demo: bool = False
     
     @field_validator("repo_url")
     def validate_url(cls, v):
@@ -192,6 +194,7 @@ class ContributionQARequest(BaseModel):
     understanding: str = ""
     modifications: list[dict] = []
     target_files: list[str] = []
+    demo: bool = False
 
     @field_validator("repo_url")
     def validate_url(cls, v):
@@ -201,6 +204,7 @@ class ContributionQARequest(BaseModel):
 
 class IssuesRequest(BaseModel):
     repo_url: str
+    demo: bool = False
     
     @field_validator("repo_url")
     def validate_url(cls, v):
@@ -342,6 +346,24 @@ def key_status():
 async def analyze_repo(req: AnalyzeRequest, request: Request):
     session_token = extract_token(request)
     async def event_generator():
+        if getattr(req, "demo", False):
+            import demo_data
+            padding = ": " + (" " * 4096) + "\n\n"
+            yield f"{padding}data: {json.dumps({'log': '🚀  Starting DEMO analysis of ' + req.repo_url + '...'})}\n\n"
+            await asyncio.sleep(1.5)
+            yield f"{padding}data: {json.dumps({'log': '📦  Downloaded 18 source files — ready for analysis'})}\n\n"
+            await asyncio.sleep(1.0)
+            yield f"{padding}data: {json.dumps({'log': '🗺️   Mapping 18 files — building dependency graph...'})}\n\n"
+            await asyncio.sleep(1.0)
+            yield f"{padding}data: {json.dumps({'log': '✅  Graph built — 42 components, 185 connections found'})}\n\n"
+            
+            repo_cache[req.repo_url] = {
+                "graph": {"nodes": []},
+                "repo_metadata": {"owner": "demo", "repo": "groundwork-demo", "default_branch": "main"}
+            }
+            yield f"{padding}data: {json.dumps({'result': demo_data.DEMO_ANALYSIS})}\n\n"
+            return
+
         q = asyncio.Queue()
         log_queue_var.set((asyncio.get_running_loop(), q))
         q.put_nowait(f"🚀  Starting analysis of {req.repo_url}...")
@@ -519,6 +541,11 @@ async def generate_path(req: OnboardRequest, request: Request):
 
 @app.post("/api/draft")
 async def draft_contribution(req: DraftRequest, request: Request):
+    if getattr(req, "demo", False):
+        import demo_data
+        await asyncio.sleep(2.5)  # Simulate agentic loop thinking time
+        return demo_data.DEMO_DRAFT
+
     session_token = extract_token(request)
     state = _get_repo_state(req.repo_url)
     if not state:
@@ -616,6 +643,11 @@ Include:
 
 @app.post("/api/issues")
 async def get_issues(req: IssuesRequest, request: Request):
+    if getattr(req, "demo", False):
+        import demo_data
+        await asyncio.sleep(0.5)
+        return {"issues": demo_data.DEMO_ISSUES}
+
     session_token = extract_token(request)
     state = _get_repo_state(req.repo_url)
     if not state:
@@ -639,6 +671,13 @@ async def get_issues(req: IssuesRequest, request: Request):
 @app.post("/api/draft/qa")
 async def contribution_qa_endpoint(req: ContributionQARequest, request: Request):
     """In-wizard Q&A: answers beginner questions about their contribution."""
+    if getattr(req, "demo", False):
+        await asyncio.sleep(1.0)
+        return {
+            "answer": "This is a pre-generated demo response. In the full version, Groundwork's agent would query the specific file context to give you an exact, step-by-step technical explanation of this concept.",
+            "cited_file": req.target_files[0] if req.target_files else "src/index.ts"
+        }
+
     session_token = extract_token(request)
     state = _get_repo_state(req.repo_url)
     if not state:

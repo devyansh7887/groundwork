@@ -1,0 +1,8 @@
+{
+  "repo_url": "https://github.com/psf/requests",
+  "facts": [
+    {"fact": "Contains the main API methods like get, post, put, delete", "expected_file": "requests/api.py"},
+    {"fact": "Contains the Request and Response objects", "expected_file": "requests/models.py"},
+    {"fact": "Contains the Session object", "expected_file": "requests/sessions.py"}
+  ]
+}

@@ -108,7 +108,7 @@ def _get_groq_judge():
     """Returns a structured-output Groq LLM. Raises if unavailable."""
     if not GROQ_AVAILABLE:
         raise RuntimeError("GROQ_API_KEY not set. Set it in backend/.env to enable LLM judging.")
-    llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0.0)
+    llm = ChatGroq(model="mixtral-8x7b-32768", temperature=0.0)
     return llm.with_structured_output(EvalMatch)
 
 
@@ -251,7 +251,7 @@ async def main():
     judge_llm = None
     try:
         judge_llm = _get_groq_judge()
-        print("Groq LLM judge: ACTIVE (llama-3.1-8b-instant)")
+        print("Groq LLM judge: ACTIVE (mixtral-8x7b-32768)")
     except RuntimeError as e:
         print(f"Groq LLM judge: DISABLED ({e})")
         print("Deterministic matching only — set GROQ_API_KEY to enable LLM fallback.\n")
