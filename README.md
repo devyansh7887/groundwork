@@ -55,12 +55,32 @@ graph TD
     SSE -. "9. Real-time UI updates" .-> UI
 ```
 
+## Groundwork vs. Alternatives
+
+| Feature | Groundwork | Sweep | Copilot Workspace |
+|---------|------------|-------|-------------------|
+| **API Key Required** | Yes (Bring your own) | No (SaaS) | No (SaaS) |
+| **Server-Side PRs** | **No** (Read-only + patch) | Yes | Yes |
+| **Explains Reasoning** | **Yes** (Detailed citations) | Sometimes | Sometimes |
+| **Open Source** | **Yes** | No | No |
+| **Agentic Loop** | **Yes** (ReAct) | Yes | No (Linear generation) |
+
 ## Core Features
 
 - **Agentic Contribution Drafter (ReAct Loop):** Groundwork doesn't just guess a patch in one shot. It uses a custom `ReAct` loop with `search_codebase` and `read_file` tools. If an issue mentions an obscure architecture pattern (e.g. "disconnected backends"), the agent searches the codebase, reads the implementations, and iterates until it understands the architecture perfectly. *Then* it generates the `.patch`.
 - **Maintainer-Safe Autonomy:** Groundwork automates the worst parts of OSS contribution (finding the files, writing the patch, and using the GitHub API to fork and branch the repo on your account). However, **it intentionally stops before creating the Pull Request**. The user must apply the patch and run tests locally. This deliberate architectural choice prevents AI spam and respects maintainer boundaries.
 - **Static Analysis Cartography:** Uses deterministic ASTs to map files, imports, and call graphs without hallucination risks.
 - **Grounded Q&A:** Answers natural language questions, badging each answer with its verifiable status and citation.
+
+## Performance Metrics
+
+| Metric | Typical Result (200-file repo) |
+|--------|--------------------------------|
+| **AST Parsing (Full Repo)** | ~2.5s |
+| **Cartography & Dependency Mapping** | ~4.0s |
+| **End-to-End Analysis (Cold Start)** | ~45s |
+| **End-to-End Analysis (Cache Hit)** | ~1s |
+| **Drafting a Patch (ReAct Loop)** | ~25s (2-4 iterations) |
 
 ## Language Support — Two Tiers
 

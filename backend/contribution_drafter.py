@@ -374,7 +374,6 @@ CRITICAL RULES FOR FINAL PATCH:
         llm = llm_key_pool.get_llm(session_token, temperature=0.1)
         
         # Bind the tools and the forced output schema
-        from langchain_core.tools import StructuredTool
         search_tool = StructuredTool.from_function(
             func=search_codebase,
             name="search_codebase",

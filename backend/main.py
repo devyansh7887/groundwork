@@ -12,6 +12,7 @@ import contextvars
 import asyncio
 import json
 import os
+import threading
 import re
 import httpx
 import urllib.parse
@@ -59,6 +60,7 @@ from ingestor import Ingestor
 # Hard cap: evict oldest entry when limit is reached to prevent OOM on long-running instances
 _CACHE_MAX_ENTRIES = 20
 repo_cache: dict = {}
+cache_lock = threading.Lock()
 
 def _get_repo_state(repo_url: str) -> dict | None:
     """Dynamically loads repo state from in-memory cache or SQLite disk cache."""
@@ -73,10 +75,11 @@ def _get_repo_state(repo_url: str) -> dict | None:
             state = cache_manager.find_any_cached(owner, repo)
             if state:
                 # Add to in-memory cache and evict if needed
-                if len(repo_cache) >= _CACHE_MAX_ENTRIES:
-                    oldest_key = next(iter(repo_cache))
-                    del repo_cache[oldest_key]
-                repo_cache[repo_url] = state
+                with cache_lock:
+                    if len(repo_cache) >= _CACHE_MAX_ENTRIES:
+                        oldest_key = next(iter(repo_cache))
+                        del repo_cache[oldest_key]
+                    repo_cache[repo_url] = state
                 return state
     except Exception as e:
         logger.warning(f"Failed to dynamically load cache for {repo_url}: {e}")
@@ -287,7 +290,8 @@ async def _run_and_cache(repo_url: str, session_token: str | None, mode: str, fo
         cached = cache_manager.find_any_cached(owner, repo_name)
         if cached:
             logger.info(f"⚡  Cache hit (offline fallback)! Loading previous analysis...")
-            repo_cache[repo_url] = cached
+            with cache_lock:
+                repo_cache[repo_url] = cached
             return cached
         raise e
 
@@ -300,7 +304,8 @@ async def _run_and_cache(repo_url: str, session_token: str | None, mode: str, fo
 
     if cached:
         logger.info(f"⚡  Cache hit! Loading previous analysis in milliseconds...")
-        repo_cache[repo_url] = cached
+        with cache_lock:
+            repo_cache[repo_url] = cached
         return cached
 
     logger.info(f"🆕  No cache found — running full analysis (this takes ~60s the first time)...")
@@ -310,13 +315,17 @@ async def _run_and_cache(repo_url: str, session_token: str | None, mode: str, fo
     cache_manager.save(owner, repo_name, sha, final_state)
     final_state["sha"] = sha
 
-    # LRU eviction: keep the in-memory cache bounded to prevent OOM
-    if len(repo_cache) >= _CACHE_MAX_ENTRIES:
-        oldest_key = next(iter(repo_cache))
-        del repo_cache[oldest_key]
-        logger.info(f"♻️  Cache eviction: removed oldest entry '{oldest_key}' (limit={_CACHE_MAX_ENTRIES})")
+    # Strip session_token from cached state to prevent cross-user data leaks
+    cache_state = {k: v for k, v in final_state.items() if k != "session_token"}
 
-    repo_cache[repo_url] = final_state
+    # LRU eviction: keep the in-memory cache bounded to prevent OOM
+    with cache_lock:
+        if len(repo_cache) >= _CACHE_MAX_ENTRIES:
+            oldest_key = next(iter(repo_cache))
+            del repo_cache[oldest_key]
+            logger.info(f"♻️  Cache eviction: removed oldest entry '{oldest_key}' (limit={_CACHE_MAX_ENTRIES})")
+        repo_cache[repo_url] = cache_state
+
     return final_state
 
 # ─── Routes ───────────────────────────────────────────────────────────────────
